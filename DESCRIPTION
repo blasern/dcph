@@ -1,0 +1,15 @@
+Package: dca
+Title: Divisive Cover Algorithm
+Version: 0.1
+Date: 2017-01-11
+Authors@R: c(person("Nello", "Blaser", email = "nello.blaser@uib.no", role = c("aut", "cre")),
+	     person("Morten", "Brun", role = c("aut","ctb")))
+Description: An R package for analyzing data with the divisive cover algorithm.
+Depends:
+    R (>= 3.1.2)
+Imports:
+    methods
+License: GPL-3
+LazyData: true
+RoxygenNote: 5.0.1
+Suggests: testthat
