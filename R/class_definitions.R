@@ -52,7 +52,7 @@ check_patch <- function(object){
     msg <- "death cannot be smaller than birth"
     errors <- c(errors, msg)
   }
-    
+  
   if (length(errors) == 0) TRUE else errors
 }
 
@@ -64,23 +64,29 @@ check_patch <- function(object){
 #' @slot death Death time
 #' @rdname cover
 setClass(Class = "patch", 
-                  representation = representation(indices = "integer",
+                  representation = representation(id = "integer", 
+                                                  indices = "integer",
                                                   basepoint = "integer", 
                                                   children = "integer", 
                                                   parent = "integer", 
                                                   birth = "numeric", 
-                                                  death = "numeric"), 
+                                                  death = "numeric", 
+                                                  radius = "numeric", 
+                                                  survivors = "integer"), 
                   prototype = prototype(indices = integer(0), 
                                         basepoint = integer(0), 
+                                        id = NA_integer_,
                                         children = NA_integer_, 
                                         parent = NA_integer_, 
                                         birth = NA_real_, 
-                                        death = Inf),
+                                        death = Inf, 
+                                        radius = NA_real_, 
+                                        survivors = integer(0)),
                   validity = check_patch)
 
 # patch
-patch <- function(indices, basepoint = integer(0), children = NA_integer_, parent = NA_integer_, birth = NA_real_, death = Inf){
-  new("patch", indices = indices, basepoint = basepoint, children = children, parent = parent, birth = birth, death = death)
+patch <- function(indices, basepoint = integer(0), id = NA_integer_, children = NA_integer_, parent = NA_integer_, birth = NA_real_, death = Inf, radius = NA_real_, survivors = integer(0)){
+  new("patch", indices = indices, basepoint = basepoint, id = id, children = children, parent = parent, birth = birth, death = death, radius = radius, survivors = survivors)
 }
 
 is.patch <- function (x){
