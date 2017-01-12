@@ -10,7 +10,7 @@ An S4 class to represent a patch.
 \section{Slots}{
 
 \describe{
-\item{\code{index}}{Indices of data points in patch}
+\item{\code{indices}}{Indices of data points in patch}
 
 \item{\code{children}}{Indices of children in cover}
 

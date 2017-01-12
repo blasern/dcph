@@ -15,8 +15,8 @@ check_cover <- function(object){
   }
   
   # check that the subsets cover the data
-  if (!setequal(seq.int(nrow(object@data)), 
-                unique(unlist(lapply(object@subsets, slot, "index"))))) {
+  if (!setequal(object@indices, 
+                unique(unlist(lapply(object@subsets, slot, "indices"))))) {
     msg <- paste0("subsets do not cover the data")
     errors <- c(errors, msg)
   }
@@ -28,11 +28,16 @@ check_cover <- function(object){
 #'
 #' @slot data A data.frame
 #' @slot subsets A list of patches
+#' @param object A cover
 setClass(Class = "cover", 
-                  representation = representation(data = "data.frame", subsets = "list"), 
-                  prototype = prototype(data = data.frame(), subsets = list()), 
+                  representation = representation(indices = "integer", subsets = "list"), 
                   validity = check_cover)
 
+cover <- function(subsets){
+  new("cover", 
+      indices = unique(unlist(lapply(subsets, slot, "indices"))), 
+      subsets = subsets)
+}
 is.cover <- function (x){
   inherits(x, "cover")
 }
@@ -43,45 +48,40 @@ check_patch <- function(object){
   errors <- character()
   
   # check that death occurs after birth
-  if (is.na(object@birth)) {
-    msg <- "no birth defined" 
-    errors <- c(errors, msg)
-  }
-  if (!is.na(object@death) & object@death < object@birth) {
+  if (!is.na(object@birth) & !is.na(object@death) & object@death < object@birth) {
     msg <- "death cannot be smaller than birth"
     errors <- c(errors, msg)
   }
-  
-  # check that patches have only one parent 
-  if (length(object@parent) != 1){
-    msg <- "patches can only have 1 parent"
-    errors <- c(errors, msg)
-  }
-  
+    
   if (length(errors) == 0) TRUE else errors
 }
 
 #' An S4 class to represent a patch.
-#' @slot index Indices of data points in patch
+#' @slot indices Indices of data points in patch
 #' @slot children Indices of children in cover
 #' @slot parent Indices of parent in cover
 #' @slot birth Birth time
 #' @slot death Death time
 #' @rdname cover
 setClass(Class = "patch", 
-                  representation = representation(index = "integer",
+                  representation = representation(indices = "integer",
                                                   basepoint = "integer", 
                                                   children = "integer", 
                                                   parent = "integer", 
                                                   birth = "numeric", 
                                                   death = "numeric"), 
-                  prototype = prototype(index = integer(0), 
+                  prototype = prototype(indices = integer(0), 
                                         basepoint = integer(0), 
                                         children = NA_integer_, 
                                         parent = NA_integer_, 
                                         birth = NA_real_, 
-                                        death = NA_real_),
+                                        death = Inf),
                   validity = check_patch)
+
+# patch
+patch <- function(indices, basepoint = integer(0), children = NA_integer_, parent = NA_integer_, birth = NA_real_, death = Inf){
+  new("patch", indices = indices, basepoint = basepoint, children = children, parent = parent, birth = birth, death = death)
+}
 
 is.patch <- function (x){
   inherits(x, "patch")
