@@ -105,6 +105,7 @@ cover_coloring <- function(x, color_values){
 # function to resize nodes, edges, colors
 resize <- function(x, min, max){
   if (length(x) == 0) return(NULL)
+  if (length(x) == 1) return((max + min)/2)
   if (var(x) == 0) return((max + min)/2)
   lambda <- (max - min)/ diff(range(x, na.rm = TRUE))
   min + (x - min(x)) * lambda

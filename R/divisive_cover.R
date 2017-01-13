@@ -12,11 +12,10 @@
 #' the distances between these two matrices, then \code{distance_mode} should be \code{"dist2"}.
 #' @param gap numeric to specify the amount of overlap in each division
 #' @param  numeric to specify the maximal diameter of the final cover
-
 divisive_cover <- function(data_matrix = NULL, 
                            distance_object = NULL, 
                            distance_mode = guess_distance_mode(distance_object),
-                           relative_distance = 0.1, 
+                           relative_distance = 0.2, 
                            relative_radius = 0.7, 
                            base_point = NULL){
   # data size
@@ -78,7 +77,7 @@ divide <- function(cover, index, data_matrix, distance_object, distance_mode, re
   a <- divide_patch@basepoint
   dist_a <- distance_function(a,  divide_patch@indices, 
                               data_matrix = data_matrix, distance_object = distance_object, distance_mode = distance_mode)
-  b <- which.max(dist_a)
+  b <- divide_patch@indices[which.max(dist_a)]
   dist_b <- distance_function(b,  divide_patch@indices, 
                               data_matrix = data_matrix, distance_object = distance_object, distance_mode = distance_mode)
   
@@ -92,12 +91,12 @@ divide <- function(cover, index, data_matrix, distance_object, distance_mode, re
   # add new patches
   cover@subsets[length(cover@subsets) + 1:2] <- list(patch(A, 
                                                            basepoint = a, 
-                                                           radius = max(dist_a[A]), 
+                                                           radius = max(dist_a[match(divide_patch@indices, A, nomatch = 0)]), 
                                                            parent = divide_patch@id, 
                                                            id = length(cover@subsets) + 1L), 
                                                      patch(B, 
                                                            basepoint = b, 
-                                                           radius = max(dist_b[B]),
+                                                           radius = max(dist_b[match(divide_patch@indices, B, nomatch = 0)]),
                                                            parent = divide_patch@id, 
                                                            id = length(cover@subsets) + 2L))
   # return cover
@@ -107,14 +106,14 @@ divide <- function(cover, index, data_matrix, distance_object, distance_mode, re
 guess_distance_mode <- function(distance_object){
   if (is.matrix(distance_object)) dmode <- "matrix"
   else if (is.function(distance_object)) {
-    dm <- try(as.matrix(distance_object(diag(c(0, 0)), diag(c(0, 0)))), silent = TRUE)
+    dm <- suppressWarnings(try(as.matrix(distance_object(diag(c(0, 0)), diag(c(0, 0)))), silent = TRUE))
     dmode <- ifelse(is.matrix(dm), "dist2", "dist")
     }
   else {
     stop("Distance object must be either a function or a matrix")
   }
   if (dmode == "dist"){
-    dm <- try(as.matrix(distance_object(diag(c(0, 0)))), silent = TRUE)
+    dm <- suppressWarnings(try(as.matrix(distance_object(diag(c(0, 0)))), silent = TRUE))
     if (!is.matrix(dm)){
       stop("Could not determine the mode of distance_object")
     }
