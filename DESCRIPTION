@@ -10,7 +10,9 @@ Depends:
 Imports:
     methods, 
     igraph, 
-    RColorBrewer
+    RColorBrewer, 
+    Rcpp
+LinkingTo: Rcpp
 License: GPL-3
 LazyData: true
 RoxygenNote: 5.0.1

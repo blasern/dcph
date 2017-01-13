@@ -1,4 +1,6 @@
+#' @useDynLib dca
 #' @importFrom methods setClass 
+#' @importFrom Rcpp sourceCpp
 NULL
 
 # function to check that object is a cover
@@ -48,8 +50,8 @@ check_patch <- function(object){
   errors <- character()
   
   # check that death occurs after birth
-  if (!is.na(object@birth) & !is.na(object@death) & object@death < object@birth) {
-    msg <- "death cannot be smaller than birth"
+  if (!is.na(object@birth) & !is.na(object@death) & object@death > object@birth) {
+    msg <- "death cannot be larger than birth"
     errors <- c(errors, msg)
   }
   
@@ -79,13 +81,13 @@ setClass(Class = "patch",
                                         children = NA_integer_, 
                                         parent = NA_integer_, 
                                         birth = NA_real_, 
-                                        death = Inf, 
+                                        death = 0, 
                                         radius = NA_real_, 
                                         survivors = integer(0)),
                   validity = check_patch)
 
 # patch
-patch <- function(indices, basepoint = integer(0), id = NA_integer_, children = NA_integer_, parent = NA_integer_, birth = NA_real_, death = Inf, radius = NA_real_, survivors = integer(0)){
+patch <- function(indices, basepoint = integer(0), id = NA_integer_, children = NA_integer_, parent = NA_integer_, birth = NA_real_, death = 0, radius = NA_real_, survivors = integer(0)){
   new("patch", indices = indices, basepoint = basepoint, id = id, children = children, parent = parent, birth = birth, death = death, radius = radius, survivors = survivors)
 }
 

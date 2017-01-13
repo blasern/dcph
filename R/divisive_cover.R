@@ -10,8 +10,27 @@
 #' input and returns pairwise distances, then  \code{distance_mode} should be \code{"dist"}, 
 #' and if \code{distance_object} is a function that takes 2 matrices as input and returns 
 #' the distances between these two matrices, then \code{distance_mode} should be \code{"dist2"}.
-#' @param gap numeric to specify the amount of overlap in each division
-#' @param  numeric to specify the maximal diameter of the final cover
+#' @param relative_distance numeric to specify the amount of overlap in each division
+#' @param relative_radius numeric to specify the maximal diameter of the final cover
+#' @param base_point which point should be chosen as the first base point
+#' @examples
+#' rcircle <- function(N, r, sd){
+#'    radius <- rnorm(N, r, sd)
+#'    angle <- runif(N, 0, 2 * pi)
+#'    data.frame(x = radius * cos(angle), 
+#'               y = radius * sin(angle))
+#' }
+#' data_matrix <- rcircle(200, 1, .1)
+#' 
+#' dc <- divisive_cover(data_matrix, distance_object = dist, 
+#'                      relative_radius = 0.5, relative_distance = 0.2)
+#' rc <- radius_cover(dc, relative_radius = 0.7)
+#' 
+#' \dontrun{
+#' plot(data_matrix)
+#' plot(rc)
+#' }
+#' @export
 divisive_cover <- function(data_matrix = NULL, 
                            distance_object = NULL, 
                            distance_mode = guess_distance_mode(distance_object),
@@ -31,7 +50,7 @@ divisive_cover <- function(data_matrix = NULL,
   # generate initial cover
   radius <- get_radius(patch(1:N, basepoint = base_point), 
                        data_matrix = data_matrix, distance_object = distance_object, distance_mode = distance_mode)
-  cover <- cover(list(patch(1:N, basepoint = base_point, id = 1L, radius = radius)))
+  cover <- cover(list(patch(1:N, basepoint = base_point, id = 1L, radius = radius, birth = radius)))
   
   # minimal radius
   min_radius <- radius * relative_radius
@@ -49,6 +68,7 @@ divisive_cover <- function(data_matrix = NULL,
     new_radii <- sapply(tail(cover@subsets, 2), slot, "radius")
     radii[index] <- -Inf
     radii <- c(radii, new_radii)
+    cover@subsets[[index]]@survivors <- which(radii > -Inf)
   }
   cover
 }
@@ -87,16 +107,19 @@ divide <- function(cover, index, data_matrix, distance_object, distance_mode, re
   
   # update divide_patch
   divide_patch@children <- length(cover@subsets) + 1:2
+  divide_patch@death <- divide_patch@radius
   cover@subsets[[index]] <- divide_patch
   # add new patches
   cover@subsets[length(cover@subsets) + 1:2] <- list(patch(A, 
                                                            basepoint = a, 
                                                            radius = max(dist_a[match(divide_patch@indices, A, nomatch = 0)]), 
+                                                           birth = divide_patch@death,
                                                            parent = divide_patch@id, 
                                                            id = length(cover@subsets) + 1L), 
                                                      patch(B, 
                                                            basepoint = b, 
                                                            radius = max(dist_b[match(divide_patch@indices, B, nomatch = 0)]),
+                                                           birth = divide_patch@death, 
                                                            parent = divide_patch@id, 
                                                            id = length(cover@subsets) + 2L))
   # return cover

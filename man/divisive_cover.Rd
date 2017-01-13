@@ -6,7 +6,7 @@
 \usage{
 divisive_cover(data_matrix = NULL, distance_object = NULL,
   distance_mode = guess_distance_mode(distance_object),
-  relative_distance = 0.1, relative_radius = 0.7, base_point = NULL)
+  relative_distance = 0.2, relative_radius = 0.7, base_point = NULL)
 }
 \arguments{
 \item{data_matrix}{An data.frame or matrix (required if distance_object is a function)}
@@ -20,11 +20,31 @@ input and returns pairwise distances, then  \code{distance_mode} should be \code
 and if \code{distance_object} is a function that takes 2 matrices as input and returns 
 the distances between these two matrices, then \code{distance_mode} should be \code{"dist2"}.}
 
-\item{gap}{numeric to specify the amount of overlap in each division}
+\item{relative_distance}{numeric to specify the amount of overlap in each division}
 
-\item{numeric}{to specify the maximal diameter of the final cover}
+\item{relative_radius}{numeric to specify the maximal diameter of the final cover}
+
+\item{base_point}{which point should be chosen as the first base point}
 }
 \description{
 This function divides the data into a cover using the distance matrix.
+}
+\examples{
+rcircle <- function(N, r, sd){
+   radius <- rnorm(N, r, sd)
+   angle <- runif(N, 0, 2 * pi)
+   data.frame(x = radius * cos(angle), 
+              y = radius * sin(angle))
+}
+data_matrix <- rcircle(200, 1, .1)
+
+dc <- divisive_cover(data_matrix, distance_object = dist, 
+                     relative_radius = 0.5, relative_distance = 0.2)
+rc <- radius_cover(dc, relative_radius = 0.7)
+
+\dontrun{
+plot(data_matrix)
+plot(rc)
+}
 }
 
