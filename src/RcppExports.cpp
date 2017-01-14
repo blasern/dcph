@@ -6,12 +6,12 @@
 using namespace Rcpp;
 
 // persistence_from_filtration
-Rcpp::NumericMatrix persistence_from_filtration(Rcpp::List filtration);
+Rcpp::NumericMatrix persistence_from_filtration(Rcpp::NumericMatrix filtration);
 RcppExport SEXP dca_persistence_from_filtration(SEXP filtrationSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< Rcpp::List >::type filtration(filtrationSEXP);
+    Rcpp::traits::input_parameter< Rcpp::NumericMatrix >::type filtration(filtrationSEXP);
     rcpp_result_gen = Rcpp::wrap(persistence_from_filtration(filtration));
     return rcpp_result_gen;
 END_RCPP

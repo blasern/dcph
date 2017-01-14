@@ -6,7 +6,6 @@
 #' Calculate the persistence from the filtration
 #' 
 #' @param filtration A filtration
-#' @export
 persistence_from_filtration <- function(filtration) {
     .Call('dca_persistence_from_filtration', PACKAGE = 'dca', filtration)
 }

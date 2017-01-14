@@ -38,7 +38,16 @@ get_filtration <- function(cover){
   # order
   filt <- filt[order(pmax(filt$vertex_1, filt$vertex_2, filt$vertex_3), filt$dim), ]
   filt <- filt[!(filt$dim == 1 & filt$vertex_1 == filt$vertex_2), ]
+  # faces
+  filt[, c("face_1", "face_2", "face_3")] <- NA_integer_
+  for (i in 1:nrow(filt)){
+    if (filt[i, "dim"] == 2){
+      filt[i, "face_1"] <- which((filt[i, "vertex_1"] == filt[, "vertex_1"]) & (filt[i, "vertex_2"] == filt[, "vertex_2"]))[1]
+      filt[i, "face_2"] <- which((filt[i, "vertex_1"] == filt[, "vertex_1"]) & (filt[i, "vertex_3"] == filt[, "vertex_2"]))[1]
+      filt[i, "face_3"] <- which((filt[i, "vertex_2"] == filt[, "vertex_1"]) & (filt[i, "vertex_3"] == filt[, "vertex_2"]))[1]
+    }
+  }
   # convert to matrix
   filt <- as.matrix(filt)
-  filt[, c("dim", "vertex_1", "vertex_2", "vertex_3", "filter_value")]
+  filt[, c("dim", "vertex_1", "vertex_2", "vertex_3", "face_1", "face_2", "face_3", "filter_value")]
 }
