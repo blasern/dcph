@@ -5,6 +5,8 @@ persistent_homology <- function(cover){
   pers <- persistence_from_filtration(filtration)
   pers <- as.data.frame(pers)
   colnames(pers) <- c("Birth", "Death")
+  pers$Dimension <- filtration[pers$Birth, "dim"]
+  pers <- pers[, c("Dimension", "Birth", "Death")]
   return(pers)
 }
 
