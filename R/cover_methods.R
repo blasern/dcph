@@ -29,6 +29,7 @@ as.cover.list <- function(x){
   cover(subsets = lst)
 }
 
+#' @importFrom methods slot new
 #' @export
 c.cover <- function(..., recursive = FALSE){
   covers <- list(...)
@@ -103,6 +104,7 @@ cover_dim <- function(x){
 }
 
 # adjacency matrix
+#' @importFrom methods slot new
 as.adjacency <- function(cover){
   adj_mat <- outer(lapply(cover@subsets, slot, "indices"), 
                    lapply(cover@subsets, slot, "indices"), 

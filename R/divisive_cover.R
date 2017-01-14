@@ -2,17 +2,9 @@
 #'
 #' This function divides the data into a cover using the distance matrix. 
 #'
-#' @param data_matrix An data.frame or matrix (required if distance_object is a function)
-#' @param distance_object an n x n matrix of pairwise dissimilarities or a distance function 
-#' such as \code{dist} or \code{flexclust::dist2}
-#' @param distance_mode If \code{distance_object} is a matrix, \code{distance_mode} should be 
-#' \code{"matrix"}, if \code{distance_object} is a function that takes 1 argument as a 
-#' input and returns pairwise distances, then  \code{distance_mode} should be \code{"dist"}, 
-#' and if \code{distance_object} is a function that takes 2 matrices as input and returns 
-#' the distances between these two matrices, then \code{distance_mode} should be \code{"dist2"}.
+#' @param distance_matrix an n x n matrix of pairwise dissimilarities
 #' @param relative_distance numeric to specify the amount of overlap in each division
-#' @param relative_radius numeric to specify the maximal diameter of the final cover
-#' @param base_point which point should be chosen as the first base point
+#' @param relative_diameter numeric to specify the maximal diameter of the final cover
 #' @examples
 #' rcircle <- function(N, r, sd){
 #'    radius <- rnorm(N, r, sd)
@@ -22,124 +14,79 @@
 #' }
 #' data_matrix <- rcircle(200, 1, .1)
 #' 
-#' dc <- divisive_cover(data_matrix, distance_object = dist, 
-#'                      relative_radius = 0.5, relative_distance = 0.2)
-#' rc <- radius_cover(dc, relative_radius = 0.7)
+#' dc <- divisive_cover(distance_matrix = dist(data_matrix), 
+#'                      relative_diameter = 0.5, relative_distance = 0.2)
+#' ddc <- diameter_cover(dc, relative_diameter = 0.7)
 #' 
 #' \dontrun{
 #' plot(data_matrix)
-#' plot(rc)
+#' plot(ddc)
 #' }
 #' @export
-divisive_cover <- function(data_matrix = NULL, 
-                           distance_object = NULL, 
-                           distance_mode = guess_distance_mode(distance_object),
+divisive_cover <- function(distance_matrix = NULL, 
                            relative_distance = 0.2, 
-                           relative_radius = 0.7, 
-                           base_point = NULL){
+                           relative_diameter = 0.7){
   # data size
-  N <- ifelse(distance_mode == "matrix", 
-              nrow(as.matrix(distance_object)), 
-              nrow(data_matrix))
-  # base point
-  if (is.null(base_point)){
-    base_point <- sample.int(N, 1) 
-  }
-  base_point <- as.integer(base_point)
+  distance_matrix <- as.matrix(distance_matrix)
+  N <- nrow(distance_matrix)
   
   # generate initial cover
-  radius <- get_radius(patch(1:N, basepoint = base_point), 
-                       data_matrix = data_matrix, distance_object = distance_object, distance_mode = distance_mode)
-  cover <- cover(list(patch(1:N, basepoint = base_point, id = 1L, radius = radius, birth = radius)))
+  basepoints <- as.integer(arrayInd(which.max(distance_matrix), dim(distance_matrix)))
+  diameter <- distance_matrix[basepoints[1], basepoints[2]]
+  cover <- cover(list(patch(1:N, basepoints = basepoints, id = 1L, diameter = diameter, birth = diameter)))
   
   # minimal radius
-  min_radius <- radius * relative_radius
-  radii <- radius
-  
+  min_diam <- diameter * relative_diameter
+  diams <- diameter
   # divide into pieces
-  while (any(radii > min_radius)){
-    index <- which.max(radii)
+  while (any(diams > min_diam)){
+    index <- which.max(diams)
     cover <- divide(cover = cover, 
                     index = index, 
-                    data_matrix = data_matrix,
-                    distance_object = distance_object, 
-                    distance_mode = distance_mode,                        
+                    distance_matrix = distance_matrix,                     
                     relative_distance = relative_distance)
-    new_radii <- sapply(tail(cover@subsets, 2), slot, "radius")
-    radii[index] <- -Inf
-    radii <- c(radii, new_radii)
-    cover@subsets[[index]]@survivors <- which(radii > -Inf)
+    new_diams <- sapply(tail(cover@subsets, 2), slot, "diameter")
+    diams[index] <- -Inf
+    diams <- c(diams, new_diams)
+    data.frame(diams = diams, sapply(lapply(cover@subsets, slot, "indices"), length))
   }
   cover
 }
 
-distance_function <-  function(x, y, data_matrix, distance_object, distance_mode){
-  if (distance_mode == "matrix"){
-    d <- as.matrix(distance_object)[x, y]
-  }
-  if (distance_mode == "dist"){
-    d <- as.matrix(distance_object(data_matrix))[x, y]
-  }
-  if (distance_mode == "dist2"){
-    d <- distance_object(data_matrix[x, ], data_matrix[y, ])
-  }
-  return(d)
-} 
-
-get_radius <- function(patch, data_matrix, distance_object, distance_mode){
-  max(distance_function(patch@basepoint, patch@indices, data_matrix, distance_object, distance_mode))
-}
-
-divide <- function(cover, index, data_matrix, distance_object, distance_mode, relative_distance){
+divide <- function(cover, index, distance_matrix, relative_distance){
   divide_patch <- cover@subsets[[index]]
   
   # base points
-  a <- divide_patch@basepoint
-  dist_a <- distance_function(a,  divide_patch@indices, 
-                              data_matrix = data_matrix, distance_object = distance_object, distance_mode = distance_mode)
-  b <- divide_patch@indices[which.max(dist_a)]
-  dist_b <- distance_function(b,  divide_patch@indices, 
-                              data_matrix = data_matrix, distance_object = distance_object, distance_mode = distance_mode)
+  a <- divide_patch@basepoints[1]
+  b <- divide_patch@basepoints[2]
+  dist_a <- distance_matrix[a, divide_patch@indices]
+  dist_b <- distance_matrix[b, divide_patch@indices]
   
   # indices 
   A <- divide_patch@indices[dist_b / dist_a >= 1 - relative_distance]
   B <- divide_patch@indices[dist_a / dist_b >= 1 - relative_distance]
   
+  # basepoints
+  basepoints_a <- A[as.integer(arrayInd(which.max(distance_matrix[A, A]), rep(length(A), 2)))]
+  basepoints_b <- B[as.integer(arrayInd(which.max(distance_matrix[B, B]), rep(length(B), 2)))]
+  
   # update divide_patch
   divide_patch@children <- length(cover@subsets) + 1:2
-  divide_patch@death <- divide_patch@radius
+  divide_patch@death <- divide_patch@diameter
   cover@subsets[[index]] <- divide_patch
   # add new patches
   cover@subsets[length(cover@subsets) + 1:2] <- list(patch(A, 
-                                                           basepoint = a, 
-                                                           radius = max(dist_a[match(divide_patch@indices, A, nomatch = 0)]), 
+                                                           basepoints = basepoints_a, 
+                                                           diameter = distance_matrix[basepoints_a[1], basepoints_a[2]], 
                                                            birth = divide_patch@death,
                                                            parent = divide_patch@id, 
                                                            id = length(cover@subsets) + 1L), 
                                                      patch(B, 
-                                                           basepoint = b, 
-                                                           radius = max(dist_b[match(divide_patch@indices, B, nomatch = 0)]),
+                                                           basepoints = basepoints_b, 
+                                                           diameter = distance_matrix[basepoints_b[1], basepoints_b[2]], 
                                                            birth = divide_patch@death, 
                                                            parent = divide_patch@id, 
                                                            id = length(cover@subsets) + 2L))
   # return cover
   return(cover)
-}
-
-guess_distance_mode <- function(distance_object){
-  if (is.matrix(distance_object)) dmode <- "matrix"
-  else if (is.function(distance_object)) {
-    dm <- suppressWarnings(try(as.matrix(distance_object(diag(c(0, 0)), diag(c(0, 0)))), silent = TRUE))
-    dmode <- ifelse(is.matrix(dm), "dist2", "dist")
-    }
-  else {
-    stop("Distance object must be either a function or a matrix")
-  }
-  if (dmode == "dist"){
-    dm <- suppressWarnings(try(as.matrix(distance_object(diag(c(0, 0)))), silent = TRUE))
-    if (!is.matrix(dm)){
-      stop("Could not determine the mode of distance_object")
-    }
-  }
-  return(dmode)
 }

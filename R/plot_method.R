@@ -71,6 +71,8 @@ plot_core <- function(cover, adjacency, coloring = NULL, legend = TRUE, device =
 #' @param x cover
 #' @param color_values value for each row
 #' @importFrom RColorBrewer brewer.pal
+#' @importFrom grDevices colorRamp rgb
+#' @importFrom stats quantile var
 #' @export
 cover_coloring <- function(x, color_values){
   resized_values <- resize(color_values, 0, 1)
@@ -90,10 +92,10 @@ cover_coloring <- function(x, color_values){
                         function(point) node_color_value(resized_values[point]))
   legend_values <- quantile(node_legend_values, c(0, .25, .5, .75, 1))
   
-  cols <- apply(colorRamp(RColorBrewer::brewer.pal(9, "RdYlGn"))(node_values) / 255, 
-                1, function(col) rgb(col[1], col[2], col[3]))
-  legend_cols <- apply(colorRamp(RColorBrewer::brewer.pal(9, "RdYlGn"))(resize(legend_values, 0, 1)) / 255, 
-                       1, function(col) rgb(col[1], col[2], col[3]))
+  cols <- apply(grDevices::colorRamp(RColorBrewer::brewer.pal(9, "RdYlGn"))(node_values) / 255, 
+                1, function(col) grDevices::rgb(col[1], col[2], col[3]))
+  legend_cols <- apply(grDevices::colorRamp(RColorBrewer::brewer.pal(9, "RdYlGn"))(resize(legend_values, 0, 1)) / 255, 
+                       1, function(col) grDevices::rgb(col[1], col[2], col[3]))
   
   attr(cols, "legend") <- data.frame(value = legend_values, 
                                      color = legend_cols, 
@@ -106,7 +108,7 @@ cover_coloring <- function(x, color_values){
 resize <- function(x, min, max){
   if (length(x) == 0) return(NULL)
   if (length(x) == 1) return((max + min)/2)
-  if (var(x) == 0) return((max + min)/2)
+  if (stats::var(x) == 0) return((max + min)/2)
   lambda <- (max - min)/ diff(range(x, na.rm = TRUE))
   min + (x - min(x)) * lambda
 }

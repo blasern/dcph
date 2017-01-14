@@ -4,27 +4,15 @@
 \alias{divisive_cover}
 \title{divisive cover}
 \usage{
-divisive_cover(data_matrix = NULL, distance_object = NULL,
-  distance_mode = guess_distance_mode(distance_object),
-  relative_distance = 0.2, relative_radius = 0.7, base_point = NULL)
+divisive_cover(distance_matrix = NULL, relative_distance = 0.2,
+  relative_diameter = 0.7)
 }
 \arguments{
-\item{data_matrix}{An data.frame or matrix (required if distance_object is a function)}
-
-\item{distance_object}{an n x n matrix of pairwise dissimilarities or a distance function 
-such as \code{dist} or \code{flexclust::dist2}}
-
-\item{distance_mode}{If \code{distance_object} is a matrix, \code{distance_mode} should be 
-\code{"matrix"}, if \code{distance_object} is a function that takes 1 argument as a 
-input and returns pairwise distances, then  \code{distance_mode} should be \code{"dist"}, 
-and if \code{distance_object} is a function that takes 2 matrices as input and returns 
-the distances between these two matrices, then \code{distance_mode} should be \code{"dist2"}.}
+\item{distance_matrix}{an n x n matrix of pairwise dissimilarities}
 
 \item{relative_distance}{numeric to specify the amount of overlap in each division}
 
-\item{relative_radius}{numeric to specify the maximal diameter of the final cover}
-
-\item{base_point}{which point should be chosen as the first base point}
+\item{relative_diameter}{numeric to specify the maximal diameter of the final cover}
 }
 \description{
 This function divides the data into a cover using the distance matrix.
@@ -38,13 +26,13 @@ rcircle <- function(N, r, sd){
 }
 data_matrix <- rcircle(200, 1, .1)
 
-dc <- divisive_cover(data_matrix, distance_object = dist, 
-                     relative_radius = 0.5, relative_distance = 0.2)
-rc <- radius_cover(dc, relative_radius = 0.7)
+dc <- divisive_cover(distance_matrix = dist(data_matrix), 
+                     relative_diameter = 0.5, relative_distance = 0.2)
+ddc <- diameter_cover(dc, relative_diameter = 0.7)
 
 \dontrun{
 plot(data_matrix)
-plot(rc)
+plot(ddc)
 }
 }
 

@@ -55,6 +55,12 @@ check_patch <- function(object){
     errors <- c(errors, msg)
   }
   
+  # check that basepoints are in indices
+  if (!all(object@basepoints %in% object@indices)) {
+    msg <- "the basepoints need to be in the patch"
+    errors <- c(errors, msg)
+  }
+  
   if (length(errors) == 0) TRUE else errors
 }
 
@@ -68,27 +74,25 @@ check_patch <- function(object){
 setClass(Class = "patch", 
                   representation = representation(id = "integer", 
                                                   indices = "integer",
-                                                  basepoint = "integer", 
+                                                  basepoints = "integer", 
                                                   children = "integer", 
                                                   parent = "integer", 
                                                   birth = "numeric", 
                                                   death = "numeric", 
-                                                  radius = "numeric", 
-                                                  survivors = "integer"), 
+                                                  diameter = "numeric"), 
                   prototype = prototype(indices = integer(0), 
-                                        basepoint = integer(0), 
+                                        basepoints = integer(0), 
                                         id = NA_integer_,
                                         children = NA_integer_, 
                                         parent = NA_integer_, 
                                         birth = NA_real_, 
                                         death = 0, 
-                                        radius = NA_real_, 
-                                        survivors = integer(0)),
+                                        diameter = NA_real_),
                   validity = check_patch)
 
 # patch
-patch <- function(indices, basepoint = integer(0), id = NA_integer_, children = NA_integer_, parent = NA_integer_, birth = NA_real_, death = 0, radius = NA_real_, survivors = integer(0)){
-  new("patch", indices = indices, basepoint = basepoint, id = id, children = children, parent = parent, birth = birth, death = death, radius = radius, survivors = survivors)
+patch <- function(indices, basepoints = integer(0), id = NA_integer_, children = NA_integer_, parent = NA_integer_, birth = NA_real_, death = 0, diameter = NA_real_){
+  new("patch", indices = indices, basepoints = basepoints, id = id, children = children, parent = parent, birth = birth, death = death, diameter = diameter)
 }
 
 is.patch <- function (x){
