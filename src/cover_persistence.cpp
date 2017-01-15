@@ -49,22 +49,21 @@ Rcpp::NumericMatrix persistence_from_filtration(Rcpp::NumericMatrix filtration) 
   }
   temp_col.clear();
   
-  // print some information of the boundary matrix:
-  Rcpp::Rcout << std::endl;
-  Rcpp::Rcout << "The boundary matrix has " << boundary_matrix.get_num_cols() << " columns: " << std::endl;
-  for( phat::index col_idx = 0; col_idx < boundary_matrix.get_num_cols(); col_idx++ ) {
-    Rcpp::Rcout << "Colum " << col_idx << " represents a cell of dimension " << (int)boundary_matrix.get_dim( col_idx ) << ". ";
-    if( !boundary_matrix.is_empty( col_idx ) ) {
-      std::vector< phat::index > temp_col;
-      boundary_matrix.get_col( col_idx, temp_col ); 
-      Rcpp::Rcout << "Its boundary consists of the cells";
-      for( phat::index idx = 0; idx < (phat::index)temp_col.size(); idx++ )
-        Rcpp::Rcout << " " << temp_col[ idx ];
-    }
-    Rcpp::Rcout << std::endl;
-  }
-  Rcpp::Rcout << "Overall, the boundary matrix has " << boundary_matrix.get_num_entries() << " entries." << std::endl;  
-  
+  // // print some information of the boundary matrix:
+  // Rcpp::Rcout << std::endl;
+  // Rcpp::Rcout << "The boundary matrix has " << boundary_matrix.get_num_cols() << " columns: " << std::endl;
+  // for( phat::index col_idx = 0; col_idx < boundary_matrix.get_num_cols(); col_idx++ ) {
+  //   Rcpp::Rcout << "Colum " << col_idx << " represents a cell of dimension " << (int)boundary_matrix.get_dim( col_idx ) << ". ";
+  //   if( !boundary_matrix.is_empty( col_idx ) ) {
+  //     std::vector< phat::index > temp_col;
+  //     boundary_matrix.get_col( col_idx, temp_col ); 
+  //     Rcpp::Rcout << "Its boundary consists of the cells";
+  //     for( phat::index idx = 0; idx < (phat::index)temp_col.size(); idx++ )
+  //       Rcpp::Rcout << " " << temp_col[ idx ];
+  //   }
+  //   Rcpp::Rcout << std::endl;
+  // }
+  // Rcpp::Rcout << "Overall, the boundary matrix has " << boundary_matrix.get_num_entries() << " entries." << std::endl;  
   
   // define the object to hold the resulting persistence pairs
   phat::persistence_pairs pairs;
