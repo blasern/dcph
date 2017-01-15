@@ -38,7 +38,7 @@ Rcpp::NumericMatrix persistence_from_filtration(Rcpp::NumericMatrix filtration) 
     temp_col.clear();
     if (filtration(i, 0) == 1){
       temp_col.push_back( filtration(i, 1) - 1 );
-      temp_col.push_back( filtration(i, 2) - 1 );
+      temp_col.push_back( filtration(i, 3) - 1 );
     }
     if (filtration(i, 0) == 2){
       temp_col.push_back( filtration(i, 4) - 1 );
