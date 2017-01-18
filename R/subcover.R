@@ -1,9 +1,11 @@
-#' Diameter cover function
+#' Subcover
 #' 
-#' Find the divisive cover that corresponds to a certain diameter
+#' Find the (divisive) cover that corresponds to a certain diameter
 #' 
 #' @param cover A divisive cover
 #' @param relative_diameter The diameter to extract
+#' @param method Either "divisive" to get a divisive cover or "snapshot" 
+#' to get only the lowest level
 #' @examples
 #' rcircle <- function(N, r, sd){
 #'    radius <- rnorm(N, r, sd)
@@ -15,20 +17,24 @@
 #' 
 #' dc <- divisive_cover(distance_matrix = dist(data_matrix), 
 #'                      relative_diameter = 0.5, relative_distance = 0.2)
-#' rc <- diameter_cover(dc, relative_diameter = 0.7)
+#' dc_0.7 <- subcover(dc, relative_diameter = 0.7, method = "divisive")
+#' sc_0.7 <- subcover(dc, relative_diameter = 0.7, method = "snapshot")
 #' 
 #' \dontrun{
 #' plot(data_matrix)
-#' plot(rc)
+#' plot(sc_0.7)
 #' }
 #' @export
-diameter_cover <- function(cover, relative_diameter){
+subcover <- function(cover, relative_diameter, method = c("divisive", "snapshot")){
+  method <- match.arg(method)
   # absolute diameter
   diameter <- relative_diameter * cover@subsets[[1]]@diameter
   birth <- sapply(cover@subsets, slot, "birth")
   death <- sapply(cover@subsets, slot, "death")
   # survivors
-  surv <- diameter > death & diameter < birth
+  surv <- switch(method, 
+         "divisive" = diameter < birth, 
+         "snapshot" = diameter > death & diameter < birth) 
   # new cover
   cv <- cover
   cv@subsets <- cv@subsets[surv]

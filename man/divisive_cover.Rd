@@ -28,7 +28,7 @@ data_matrix <- rcircle(200, 1, .1)
 
 dc <- divisive_cover(distance_matrix = dist(data_matrix), 
                      relative_diameter = 0.5, relative_distance = 0.2)
-ddc <- diameter_cover(dc, relative_diameter = 0.7)
+ddc <- subcover(dc, relative_diameter = 0.7, method = "snapshot")
 
 \dontrun{
 plot(data_matrix)
