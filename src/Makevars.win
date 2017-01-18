@@ -1,3 +1,3 @@
 PKG_CXXFLAGS = -I../inst/include
 PKG_CPPFLAGS=-Iwindows -I.
-
+CXX_STD = CXX11
