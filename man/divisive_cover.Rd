@@ -4,7 +4,7 @@
 \alias{divisive_cover}
 \title{divisive cover}
 \usage{
-divisive_cover(distance_matrix = NULL, relative_distance = 0.2,
+divisive_cover(distance_matrix, relative_distance = 0.2,
   relative_diameter = 0.7)
 }
 \arguments{

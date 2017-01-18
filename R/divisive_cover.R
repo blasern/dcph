@@ -23,7 +23,7 @@
 #' plot(ddc)
 #' }
 #' @export
-divisive_cover <- function(distance_matrix = NULL, 
+divisive_cover <- function(distance_matrix, 
                            relative_distance = 0.2, 
                            relative_diameter = 0.7){
   # data size
@@ -33,7 +33,7 @@ divisive_cover <- function(distance_matrix = NULL,
   # generate initial cover
   basepoints <- as.integer(arrayInd(which.max(distance_matrix), dim(distance_matrix)))
   diameter <- distance_matrix[basepoints[1], basepoints[2]]
-  cover <- cover(list(patch(1:N, basepoints = basepoints, id = 1L, diameter = diameter, birth = diameter)))
+  cover <- cover(distance_matrix = distance_matrix, list(patch(1:N, basepoints = basepoints, id = 1L, diameter = diameter, birth = diameter)))
   
   # minimal radius
   min_diam <- diameter * relative_diameter

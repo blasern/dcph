@@ -11,7 +11,7 @@
 #' @param ... additional plotting parameters. See \code{\link[igraph]{igraph.plotting}} for the complete list.
 #' @author Nello Blaser
 #' @keywords plotting
-#' @seealso \code{\link{as.cover}}
+#' @seealso \code{\link{cover-class}}, \code{\link{subcover}}
 #' @importFrom igraph graph_from_adjacency_matrix plot.igraph E
 #' @export 
 plot.cover <- function(x, coloring = NULL, simplify = c("none", "duplicates", "subsets"), legend = TRUE, device = c("plot", "tkplot"), seed = 1, ...){

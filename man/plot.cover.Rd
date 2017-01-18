@@ -29,7 +29,7 @@
 Nello Blaser
 }
 \seealso{
-\code{\link{as.cover}}
+\code{\link{cover-class}}, \code{\link{subcover}}
 }
 \keyword{plotting}
 

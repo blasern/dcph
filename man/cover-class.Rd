@@ -4,9 +4,12 @@
 \name{cover-class}
 \alias{cover-class}
 \alias{show,cover-method}
+\alias{show,patch-method}
 \title{An S4 class to represent a cover.}
 \usage{
 \S4method{show}{cover}(object)
+
+\S4method{show}{patch}(object)
 }
 \arguments{
 \item{object}{A cover}

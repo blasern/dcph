@@ -17,7 +17,7 @@ check_cover <- function(object){
   }
   
   # check that the subsets cover the data
-  if (!setequal(object@indices, 
+  if (!setequal(1:nrow(object@distance_matrix), 
                 unique(unlist(lapply(object@subsets, slot, "indices"))))) {
     msg <- paste0("subsets do not cover the data")
     errors <- c(errors, msg)
@@ -32,12 +32,12 @@ check_cover <- function(object){
 #' @slot subsets A list of patches
 #' @param object A cover
 setClass(Class = "cover", 
-                  representation = representation(indices = "integer", subsets = "list"), 
+                  representation = representation(distance_matrix = "matrix", subsets = "list"), 
                   validity = check_cover)
 
-cover <- function(subsets){
+cover <- function(distance_matrix, subsets){
   new("cover", 
-      indices = unique(unlist(lapply(subsets, slot, "indices"))), 
+      distance_matrix = as.matrix(distance_matrix), 
       subsets = subsets)
 }
 is.cover <- function (x){
