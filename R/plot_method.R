@@ -105,6 +105,7 @@ cover_coloring <- function(x, color_values){
 }
 
 #' @rdname cover_coloring
+#' @export
 predict_coloring <- function(x){
   node_legend_values <- sapply(lapply(x@subsets, slot, "predicted"), length)
   node_values <- resize(node_legend_values, 0, 1)
