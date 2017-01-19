@@ -12,10 +12,34 @@
 \item{newdists}{a matrix of distances between the new points and the 
 points used to train the divisive cover}
 
-\item{...}{further arguments passed fromother methods}
+\item{...}{further arguments passed from other methods}
 }
 \description{
 Predict in which subsets new data come to lie when given a previous
 divisive cover
+}
+\examples{
+# generate data
+rcircle <- function(N, r, sd){
+  radius <- rnorm(N, r, sd)
+  angle <- runif(N, 0, 2 * pi)
+  data.frame(x = radius * cos(angle), 
+             y = radius * sin(angle))
+}
+data_matrix <- rcircle(200, 1, .1)
+
+# run divisive cover
+dc <- divisive_cover(distance_matrix = dist(data_matrix), 
+                     relative_diameter = 0.2, relative_distance = 0.3)
+                     
+# predict
+pred <- predict(dc, newdists = as.matrix(dist(data_matrix))[, 1:10])
+
+# plot
+sc <- subcover(pred, 0.6, "snapshot")
+col <- predict_coloring(sc)
+\dontrun{
+plot(sc, coloring = col)
+}
 }
 
