@@ -29,6 +29,7 @@
 #' \dontrun{
 #' plot(sc, coloring = col)
 #' }
+#' @export
 predict.cover <- function(object, newdists, ...){
   if (nrow(newdists) != nrow(object@distance_matrix)){
     stop("newdists must contain distances to all points of the original data points")

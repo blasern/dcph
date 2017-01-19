@@ -3,6 +3,7 @@
 S3method(c,cover)
 S3method(head,cover)
 S3method(plot,cover)
+S3method(predict,cover)
 S3method(print,cover)
 S3method(print,patch)
 S3method(tail,cover)
