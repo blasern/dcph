@@ -33,7 +33,10 @@ divisive_cover <- function(distance_matrix,
   # generate initial cover
   basepoints <- as.integer(arrayInd(which.max(distance_matrix), dim(distance_matrix)))
   diameter <- distance_matrix[basepoints[1], basepoints[2]]
-  cover <- cover(distance_matrix = distance_matrix, list(patch(1:N, basepoints = basepoints, id = 1L, diameter = diameter, birth = diameter)))
+  cover <- cover(distance_matrix = distance_matrix, 
+                 subsets = list(patch(1:N, basepoints = basepoints, id = 1L, diameter = diameter, birth = diameter)), 
+                 parameters = list(relative_distance = relative_distance, relative_diameter = relative_diameter), 
+                 type = "divisive")
   
   # minimal radius
   min_diam <- diameter * relative_diameter

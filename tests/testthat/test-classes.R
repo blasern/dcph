@@ -17,6 +17,6 @@ test_that("cover dimension is correct", {
 test_that("covers are concatinated correctly", {
   c1 <- cover(diag(1:3), list(patch(indices = 1:3)))
   c2 <- cover(diag(1:3), list(patch(indices = 1:3), patch(indices = 1:3)))
-  expect_equal(c(c1, c1), 
-               c2)
+  expect_equal(c(c1, c1)@subsets, 
+               c2@subsets)
 })

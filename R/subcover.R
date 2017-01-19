@@ -38,5 +38,6 @@ subcover <- function(cover, relative_diameter, method = c("divisive", "snapshot"
   # new cover
   cv <- cover
   cv@subsets <- cv@subsets[surv]
+  cv@type <- method
   cv
 }

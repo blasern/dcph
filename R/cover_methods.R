@@ -5,11 +5,12 @@ c.cover <- function(..., recursive = FALSE){
   distances <- lapply(covers, slot, "distance_matrix")
   
   # check that the dimensions are the same 
-  if (!all(sapply(distances, dim) == nrow(distances[[1]]))){
+  if (!all(sapply(distances, nrow) == nrow(distances[[1]]))){
     stop("Only covers of the same space can be concatinated.")
   }
-  res <- cover(distance_matrix = do.call("+", lapply(covers, slot, "distance_matrix"))/length(covers), 
-               subsets = do.call(c, lapply(covers, slot, "subsets")))
+  res <- cover(distance_matrix = distances[[1]], 
+               subsets = do.call(c, lapply(covers, slot, "subsets")), 
+               type = "concat")
   res
 }
 

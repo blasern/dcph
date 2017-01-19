@@ -12,6 +12,8 @@ An S4 class to represent a patch.
 \describe{
 \item{\code{indices}}{Indices of data points in patch}
 
+\item{\code{predicted}}{Indices of predicted points}
+
 \item{\code{children}}{Indices of children in cover}
 
 \item{\code{parent}}{Indices of parent in cover}

@@ -17,7 +17,7 @@ check_cover <- function(object){
   }
   
   # check that the subsets cover the data
-  if (!setequal(1:nrow(object@distance_matrix), 
+  if (!setequal(1:ncol(object@distance_matrix), 
                 unique(unlist(lapply(object@subsets, slot, "indices"))))) {
     msg <- paste0("subsets do not cover the data")
     errors <- c(errors, msg)
@@ -32,13 +32,17 @@ check_cover <- function(object){
 #' @slot subsets A list of patches
 #' @param object A cover
 setClass(Class = "cover", 
-                  representation = representation(distance_matrix = "matrix", subsets = "list"), 
+                  representation = representation(distance_matrix = "matrix", subsets = "list",
+                                                  parameters = "list", type = "character"), 
                   validity = check_cover)
 
-cover <- function(distance_matrix, subsets){
+cover <- function(distance_matrix, subsets, parameters = list(), 
+                  type = c("divisive", "snapshot", "predict", "concat")){
   new("cover", 
       distance_matrix = as.matrix(distance_matrix), 
-      subsets = subsets)
+      subsets = subsets, 
+      parameters = parameters, 
+      type = match.arg(type))
 }
 is.cover <- function (x){
   inherits(x, "cover")
@@ -55,17 +59,18 @@ check_patch <- function(object){
     errors <- c(errors, msg)
   }
   
-  # check that basepoints are in indices
-  if (!all(object@basepoints %in% object@indices)) {
-    msg <- "the basepoints need to be in the patch"
-    errors <- c(errors, msg)
-  }
+  # # check that basepoints are in indices
+  # if (!all(object@basepoints %in% object@indices)) {
+  #   msg <- "the basepoints need to be in the patch"
+  #   errors <- c(errors, msg)
+  # }
   
   if (length(errors) == 0) TRUE else errors
 }
 
 #' An S4 class to represent a patch.
 #' @slot indices Indices of data points in patch
+#' @slot predicted Indices of predicted points
 #' @slot children Indices of children in cover
 #' @slot parent Indices of parent in cover
 #' @slot birth Birth time
@@ -74,13 +79,15 @@ check_patch <- function(object){
 setClass(Class = "patch", 
                   representation = representation(id = "integer", 
                                                   indices = "integer",
+                                                  predicted = "integer",
                                                   basepoints = "integer", 
                                                   children = "integer", 
                                                   parent = "integer", 
                                                   birth = "numeric", 
                                                   death = "numeric", 
                                                   diameter = "numeric"), 
-                  prototype = prototype(indices = integer(0), 
+                  prototype = prototype(indices = integer(0),
+                                        predicted = integer(0), 
                                         basepoints = integer(0), 
                                         id = NA_integer_,
                                         children = NA_integer_, 
@@ -91,8 +98,8 @@ setClass(Class = "patch",
                   validity = check_patch)
 
 # patch
-patch <- function(indices, basepoints = integer(0), id = NA_integer_, children = NA_integer_, parent = NA_integer_, birth = NA_real_, death = 0, diameter = NA_real_){
-  new("patch", indices = indices, basepoints = basepoints, id = id, children = children, parent = parent, birth = birth, death = death, diameter = diameter)
+patch <- function(indices, predicted = integer(0), basepoints = integer(0), id = NA_integer_, children = NA_integer_, parent = NA_integer_, birth = NA_real_, death = 0, diameter = NA_real_){
+  new("patch", indices = indices, predicted = predicted, basepoints = basepoints, id = id, children = children, parent = parent, birth = birth, death = death, diameter = diameter)
 }
 
 is.patch <- function (x){

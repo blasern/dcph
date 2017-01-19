@@ -86,9 +86,9 @@ cover_coloring <- function(x, color_values){
     else return(as.character(getmode(values)))
   }
   
-  node_legend_values <- sapply(x$points_in_vertex, 
+  node_legend_values <- sapply(lapply(x@subsets, slot, "indices"), 
                                function(point) node_color_value(color_values[point]))
-  node_values <- sapply(x$points_in_vertex, 
+  node_values <- sapply(lapply(x@subsets, slot, "indices"), 
                         function(point) node_color_value(resized_values[point]))
   legend_values <- quantile(node_legend_values, c(0, .25, .5, .75, 1))
   
@@ -103,6 +103,25 @@ cover_coloring <- function(x, color_values){
   
   return(cols)
 }
+
+#' @rdname cover_coloring
+predict_coloring <- function(x){
+  node_legend_values <- sapply(lapply(x@subsets, slot, "predicted"), length)
+  node_values <- resize(node_legend_values, 0, 1)
+  legend_values <- quantile(node_legend_values, c(0, .25, .5, .75, 1))
+  
+  cols <- apply(grDevices::colorRamp(RColorBrewer::brewer.pal(9, "RdYlGn"))(node_values) / 255, 
+                1, function(col) grDevices::rgb(col[1], col[2], col[3]))
+  legend_cols <- apply(grDevices::colorRamp(RColorBrewer::brewer.pal(9, "RdYlGn"))(resize(legend_values, 0, 1)) / 255, 
+                       1, function(col) grDevices::rgb(col[1], col[2], col[3]))
+  
+  attr(cols, "legend") <- data.frame(value = legend_values, 
+                                     color = legend_cols, 
+                                     stringsAsFactors = FALSE)
+  
+  return(cols)
+}
+
 
 # function to resize nodes, edges, colors
 resize <- function(x, min, max){

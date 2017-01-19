@@ -2,9 +2,12 @@
 % Please edit documentation in R/plot_method.R
 \name{cover_coloring}
 \alias{cover_coloring}
+\alias{predict_coloring}
 \title{Generate coloring for cover}
 \usage{
 cover_coloring(x, color_values)
+
+predict_coloring(x)
 }
 \arguments{
 \item{x}{cover}
