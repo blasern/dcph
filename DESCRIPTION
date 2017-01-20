@@ -11,7 +11,8 @@ Imports:
     methods, 
     igraph, 
     RColorBrewer, 
-    Rcpp
+    Rcpp,
+    ggplot2
 LinkingTo: Rcpp
 License: GPL-3
 LazyData: true

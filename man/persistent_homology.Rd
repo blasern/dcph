@@ -25,12 +25,8 @@ dc <- divisive_cover(distance_matrix = dist(data_matrix),
                      relative_diameter = 0.5, relative_distance = 0.2)
 pers <- persistent_homology(dc)
 \dontrun{
-maxpers <- max(pers[, c("Birth", "Death")])
-plot(pers$Birth, pers$Death, col = pers$Dimension, 
-     xlim = c(0, maxpers), ylim = c(0, maxpers))
-legend("bottomright", pch = 1, col = sort(unique(pers$Dimension)),
-       legend = sort(unique(pers$Dimension)))
-lines(c(0, maxpers), c(0, maxpers))
+plot_persistence(pers, mode = "diag")
+plot_persistence(pers, mode = "bars")
 }
 }
 
