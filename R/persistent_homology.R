@@ -22,16 +22,24 @@
 #' @export
 persistent_homology <- function(cover){
   # extract subset indices as a list
-  indices <- lapply(cover@subsets, slot, "indices")
+  # indices <- lapply(cover@subsets, slot, "indices")
   # calculate persistent homology
   pers <- persistence_from_cover(cover)
   # add column names 
   pers <- as.data.frame(pers)
   colnames(pers) <- c("Dimension", "Birth", "Death")
-  pers <- pers[pers[, "Birth"] != pers[, "Death"], ]
+  # minimum diameter
+  min_diameter <- cover@parameters$relative_diameter * cover@subsets[[1]]@diameter
+  # add survivor
   pers <- rbind(pers, data.frame(Dimension = 0, 
-                                 Birth = cover@parameters$relative_diameter * cover@subsets[[1]]@diameter, 
+                                 Birth = min_diameter, 
                                  Death = cover@subsets[[1]]@diameter))
+  # make values compatible with minimum diameter
+  pers$Birth[pers$Birth < min_diameter] <- min_diameter
+  pers$Death[pers$Death < min_diameter] <- min_diameter
+  # remove diagonal
+  pers <- pers[pers$Birth != pers$Death, ]
   attr(pers, "maxdiam") <- cover@subsets[[1]]@diameter
+  attr(pers, "mindiam") <- min_diameter
   return(pers)
 }

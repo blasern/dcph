@@ -25,11 +25,11 @@ Rcpp::NumericMatrix persistence_from_cover(Rcpp::S4 cover) {
   // extract indices and diameter
   Rcpp::List subsets = cover.slot("subsets");
   Rcpp::List indices(subsets.length());
-  Rcpp::NumericVector birth_diameters(subsets.length()); 
+  Rcpp::NumericVector death_diameters(subsets.length()); 
   for (int i = 0; i < subsets.length(); ++i){
     Rcpp::S4 subset = subsets(i);
     indices(i) = subset.slot("indices");
-    birth_diameters(i) = subset.slot("birth");
+    death_diameters(i) = subset.slot("death");
   }
   
   // calculate 3-fold overlaps between nodes
@@ -37,13 +37,17 @@ Rcpp::NumericMatrix persistence_from_cover(Rcpp::S4 cover) {
   int len = std::pow(indices_length, 3)/6 + indices_length*5/6 + 1;
   Rcpp::NumericMatrix overlap = Rcpp::NumericMatrix(len, 6);
   int m = 0;
+  Rcpp::NumericVector diams = Rcpp::NumericVector(3);
   for (int i = 0; i < indices_length; ++i){
     Rcpp::NumericVector loc_i = Rcpp::as<Rcpp::NumericVector>(indices[i]);
+    diams(0) = death_diameters(i);
     for (int j = 0; j <= i; ++j){
       Rcpp::NumericVector loc_j = Rcpp::as<Rcpp::NumericVector>(indices[j]);
       Rcpp::NumericVector intersect_ij = Rcpp::intersect(loc_i, loc_j);
+      diams(1) = death_diameters(j);
       for (int k = 0; k <= j; ++k){
         if ((k == j) && (j < i)) continue; 
+        diams(2) = death_diameters(k);
         Rcpp::NumericVector loc_k = Rcpp::as<Rcpp::NumericVector>(indices[k]);
         Rcpp::NumericVector intersect_ijk = Rcpp::intersect(intersect_ij, loc_k);
         overlap(m, 0) = k;
@@ -51,7 +55,7 @@ Rcpp::NumericMatrix persistence_from_cover(Rcpp::S4 cover) {
         overlap(m, 2) = i;
         overlap(m, 3) = intersect_ijk.length();
         overlap(m, 4) = 2 - int(k == j) - int(j == i);
-        overlap(m, 5) = birth_diameters(k);
+        overlap(m, 5) = Rcpp::max(diams);
         // Rcpp::Rcout << overlap(m, 0) << " " << overlap(m, 1) << " " << overlap(m, 2) << " " << overlap(m, 3) << " " << overlap(m, 4) << " " << overlap(m, 5) << std::endl;
         m ++;
       }
