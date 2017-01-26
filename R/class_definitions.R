@@ -82,7 +82,8 @@ setClass(Class = "patch",
                                                   predicted = "integer",
                                                   basepoints = "integer", 
                                                   children = "integer", 
-                                                  parent = "integer", 
+                                                  parent = "integer",
+                                                  ancestor = "integer",
                                                   birth = "numeric", 
                                                   death = "numeric", 
                                                   diameter = "numeric"), 
@@ -90,16 +91,17 @@ setClass(Class = "patch",
                                         predicted = integer(0), 
                                         basepoints = integer(0), 
                                         id = NA_integer_,
-                                        children = NA_integer_, 
-                                        parent = NA_integer_, 
+                                        children = integer(0), 
+                                        parent = integer(0), 
+                                        ancestor = integer(0),
                                         birth = NA_real_, 
                                         death = 0, 
                                         diameter = NA_real_),
                   validity = check_patch)
 
 # patch
-patch <- function(indices, predicted = integer(0), basepoints = integer(0), id = NA_integer_, children = NA_integer_, parent = NA_integer_, birth = NA_real_, death = 0, diameter = NA_real_){
-  new("patch", indices = indices, predicted = predicted, basepoints = basepoints, id = id, children = children, parent = parent, birth = birth, death = death, diameter = diameter)
+patch <- function(indices, predicted = integer(0), basepoints = integer(0), id = NA_integer_, children = integer(0), parent = integer(0), ancestor = integer(0), birth = NA_real_, death = 0, diameter = NA_real_){
+  new("patch", indices = indices, predicted = predicted, basepoints = basepoints, id = id, children = children, parent = parent, ancestor = ancestor, birth = birth, death = death, diameter = diameter)
 }
 
 is.patch <- function (x){

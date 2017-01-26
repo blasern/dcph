@@ -83,12 +83,14 @@ divide <- function(cover, index, distance_matrix, relative_distance){
                                                            diameter = distance_matrix[basepoints_a[1], basepoints_a[2]], 
                                                            birth = divide_patch@death,
                                                            parent = divide_patch@id, 
+                                                           ancestor = c(divide_patch@id, divide_patch@ancestor), 
                                                            id = length(cover@subsets) + 1L), 
                                                      patch(B, 
                                                            basepoints = basepoints_b, 
                                                            diameter = distance_matrix[basepoints_b[1], basepoints_b[2]], 
                                                            birth = divide_patch@death, 
                                                            parent = divide_patch@id, 
+                                                           ancestor = c(divide_patch@id, divide_patch@ancestor), 
                                                            id = length(cover@subsets) + 2L))
   # return cover
   return(cover)
