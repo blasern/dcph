@@ -22,19 +22,23 @@
 // [[Rcpp::export]]
 Rcpp::NumericMatrix persistence_from_cover(Rcpp::S4 cover) {
   if (!cover.inherits("cover")) Rcpp::stop("Input must be a cover");
+  // Rcpp::Rcout << "Starting persistent homology calculation" << std::endl;
   // extract indices and diameter
   Rcpp::List subsets = cover.slot("subsets");
   Rcpp::List indices(subsets.length());
   Rcpp::NumericVector death_diameters(subsets.length()); 
+  // Rcpp::Rcout << "Extract indices" << std::endl;
   for (int i = 0; i < subsets.length(); ++i){
     Rcpp::S4 subset = subsets(i);
     indices(i) = subset.slot("indices");
     death_diameters(i) = subset.slot("death");
   }
-  
+  // Rcpp::Rcout << "Indicees extracted." << std::endl;
   // calculate 3-fold overlaps between nodes
-  int indices_length = indices.length();
-  int len = std::pow(indices_length, 3)/6 + indices_length*5/6 + 1;
+  unsigned int indices_length = indices.length();
+  unsigned int len = std::pow(indices_length, 3)/6 + indices_length*5/6 + 1;
+  // Rcpp::Rcout << indices_length << std::endl;
+  // Rcpp::Rcout << len << std::endl;
   Rcpp::NumericMatrix overlap = Rcpp::NumericMatrix(len, 6);
   int m = 0;
   Rcpp::NumericVector diams = Rcpp::NumericVector(3);
@@ -70,27 +74,24 @@ Rcpp::NumericMatrix persistence_from_cover(Rcpp::S4 cover) {
   // Rcpp::Rcout << "Ordering... " << std::endl;
   Rcpp::IntegerVector order = order5(overlap(Rcpp::_, 5), overlap(Rcpp::_, 4), overlap(Rcpp::_, 0), overlap(Rcpp::_, 1), overlap(Rcpp::_, 2)) - 1;
   Rcpp::NumericMatrix ordered_overlap = Rcpp::NumericMatrix(overlap.nrow(), overlap.ncol());
+  std::map<std::string, Rcpp::NumericVector> filtration;
   for (int m = 0; m < overlap.nrow(); ++m){
     ordered_overlap(m, Rcpp::_) = overlap(order(m), Rcpp::_);
     // Rcpp::Rcout << ordered_overlap(m, 0) << " " << ordered_overlap(m, 1) << " " << ordered_overlap(m, 2) << " " << ordered_overlap(m, 3) << " " << ordered_overlap(m, 4) << " " << ordered_overlap(m, 5) << std::endl;
-  }
-  // Rcpp::Rcout << "Ordering done" << std::endl;
-  
-  // save as map
-  std::map<std::string, Rcpp::NumericVector> filtration;
-  for (int i = 0; i < ordered_overlap.nrow(); ++i){
-    std::string str = std::to_string(ordered_overlap(i, 0)) + "_" +  
-      std::to_string(ordered_overlap(i, 1)) + "_" + 
-      std::to_string(ordered_overlap(i, 2));
+    // save as map
+    std::string str = std::to_string(ordered_overlap(m, 0)) + "_" +  
+      std::to_string(ordered_overlap(m, 1)) + "_" + 
+      std::to_string(ordered_overlap(m, 2));
     Rcpp::NumericVector filt = Rcpp::NumericVector(6);
-    filt(0) = ordered_overlap(i, 0);
-    filt(1) = ordered_overlap(i, 1);
-    filt(2) = ordered_overlap(i, 2);
-    filt(3) = i;
-    filt(4) = ordered_overlap(i, 4);
-    filt(5) = ordered_overlap(i, 5);
+    filt(0) = ordered_overlap(m, 0);
+    filt(1) = ordered_overlap(m, 1);
+    filt(2) = ordered_overlap(m, 2);
+    filt(3) = m;
+    filt(4) = ordered_overlap(m, 4);
+    filt(5) = ordered_overlap(m, 5);
     filtration[str] = filt;
   }
+  // Rcpp::Rcout << "Ordering done" << std::endl;
   
   // define a boundary matrix
   phat::boundary_matrix< phat::vector_vector > boundary_matrix;
@@ -108,6 +109,7 @@ Rcpp::NumericMatrix persistence_from_cover(Rcpp::S4 cover) {
   for(int i = 0; i < ordered_overlap.nrow(); ++i) {
     temp_col.clear();
     if (ordered_overlap(i, 4) == 1){
+      // 1-dimensional  
       Rcpp::NumericVector points = Rcpp::NumericVector(2);
       std::string first_index = std::to_string(ordered_overlap(i, 0)) + "_" + 
         std::to_string(ordered_overlap(i, 0)) + "_" +
@@ -117,13 +119,12 @@ Rcpp::NumericMatrix persistence_from_cover(Rcpp::S4 cover) {
         std::to_string(ordered_overlap(i, 2));
       points(0) = filtration[first_index](3);
       points(1) = filtration[second_index](3);
-      // points(0) = Rcpp::which_max((filtration(Rcpp::_, 0) == filtration(i, 0)) & (filtration(Rcpp::_, 1) == filtration(i, 0)) & (filtration(Rcpp::_, 2) == filtration(i, 0)));
-      // points(1) = Rcpp::which_max((filtration(Rcpp::_, 0) == filtration(i, 2)) & (filtration(Rcpp::_, 1) == filtration(i, 2)) & (filtration(Rcpp::_, 2) == filtration(i, 2)));
       points.sort();
       temp_col.push_back(points(0));
       temp_col.push_back(points(1));
     }
     if (ordered_overlap(i, 4) == 2){
+      // 2-dimensional 
       Rcpp::NumericVector points = Rcpp::NumericVector(3);
       std::string first_index = std::to_string(ordered_overlap(i, 0)) + "_" + 
         std::to_string(ordered_overlap(i, 1)) + "_" +
@@ -137,9 +138,6 @@ Rcpp::NumericMatrix persistence_from_cover(Rcpp::S4 cover) {
       points(0) = filtration[first_index](3);
       points(1) = filtration[second_index](3);
       points(2) = filtration[third_index](3);
-      // points(0) = Rcpp::which_max((filtration(Rcpp::_, 0) == filtration(i, 0)) & (filtration(Rcpp::_, 1) == filtration(i, 1)) & (filtration(Rcpp::_, 2) == filtration(i, 1))); 
-      // points(1) = Rcpp::which_max((filtration(Rcpp::_, 0) == filtration(i, 0)) & (filtration(Rcpp::_, 1) == filtration(i, 2)) & (filtration(Rcpp::_, 2) == filtration(i, 2)));
-      // points(2) = Rcpp::which_max((filtration(Rcpp::_, 0) == filtration(i, 1)) & (filtration(Rcpp::_, 1) == filtration(i, 2)) & (filtration(Rcpp::_, 2) == filtration(i, 2)));
       points.sort();
       temp_col.push_back(points(0));
       temp_col.push_back(points(1));
@@ -147,29 +145,6 @@ Rcpp::NumericMatrix persistence_from_cover(Rcpp::S4 cover) {
     }
     boundary_matrix.set_col(i, temp_col);
   }
-  
-  // for (int i = 0; i < filtration.nrow(); ++i){
-  //   temp_col.clear();
-  //   if (filtration(i, 4) == 1){
-  //     Rcpp::NumericVector points = Rcpp::NumericVector(2);
-  //     points(0) = Rcpp::which_max((filtration(Rcpp::_, 0) == filtration(i, 0)) & (filtration(Rcpp::_, 1) == filtration(i, 0)) & (filtration(Rcpp::_, 2) == filtration(i, 0)));
-  //     points(1) = Rcpp::which_max((filtration(Rcpp::_, 0) == filtration(i, 2)) & (filtration(Rcpp::_, 1) == filtration(i, 2)) & (filtration(Rcpp::_, 2) == filtration(i, 2)));
-  //     points.sort();
-  //     temp_col.push_back(points(0));
-  //     temp_col.push_back(points(1));
-  //   }
-  //   if (filtration(i, 4) == 2){
-  //     Rcpp::NumericVector points = Rcpp::NumericVector(3);
-  //     points(0) = Rcpp::which_max((filtration(Rcpp::_, 0) == filtration(i, 0)) & (filtration(Rcpp::_, 1) == filtration(i, 1)) & (filtration(Rcpp::_, 2) == filtration(i, 1))); 
-  //     points(1) = Rcpp::which_max((filtration(Rcpp::_, 0) == filtration(i, 0)) & (filtration(Rcpp::_, 1) == filtration(i, 2)) & (filtration(Rcpp::_, 2) == filtration(i, 2)));
-  //     points(2) = Rcpp::which_max((filtration(Rcpp::_, 0) == filtration(i, 1)) & (filtration(Rcpp::_, 1) == filtration(i, 2)) & (filtration(Rcpp::_, 2) == filtration(i, 2)));
-  //     points.sort();
-  //     temp_col.push_back(points(0));
-  //     temp_col.push_back(points(1));
-  //     temp_col.push_back(points(2));
-  //   }
-  //   boundary_matrix.set_col(i, temp_col);
-  // }
   temp_col.clear();
   // Rcpp::Rcout << "Boundary matrix defined." << std::endl;
   
