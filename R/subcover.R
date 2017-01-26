@@ -25,7 +25,7 @@
 #' plot(sc_0.7)
 #' }
 #' @export
-subcover <- function(cover, relative_diameter, method = c("divisive", "snapshot")){
+subcover <- function(cover, relative_diameter, method = c("divisive", "snapshot", "range")){
   method <- match.arg(method)
   # absolute diameter
   diameter <- relative_diameter * cover@subsets[[1]]@diameter
@@ -34,7 +34,8 @@ subcover <- function(cover, relative_diameter, method = c("divisive", "snapshot"
   # survivors
   surv <- switch(method, 
          "divisive" = diameter < birth, 
-         "snapshot" = diameter > death & diameter < birth) 
+         "snapshot" = diameter > death & diameter < birth, 
+         "range" = diameter[1] < birth & diameter[2] > death) 
   # new cover
   cv <- cover
   cv@parameters$relative_diameter <- relative_diameter
