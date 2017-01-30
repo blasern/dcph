@@ -21,8 +21,8 @@
 #' }
 #' @export
 persistent_homology <- function(cover){
-  # extract subset indices as a list
-  # indices <- lapply(cover@subsets, slot, "indices")
+  # remove duplicates
+  cover <- simplify_cover(cover, method = "duplicates")
   # calculate persistent homology
   pers <- persistence_from_cover(cover)
   # add column names 
@@ -40,6 +40,7 @@ persistent_homology <- function(cover){
   pers$Death[pers$Death < min_diameter] <- min_diameter
   # remove diagonal
   pers <- pers[pers$Birth != pers$Death, ]
+  rownames(pers) <- NULL
   attr(pers, "maxdiam") <- max_diameter
   attr(pers, "mindiam") <- min_diameter
   return(pers)

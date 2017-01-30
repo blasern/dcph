@@ -4,7 +4,8 @@
 \alias{subcover}
 \title{Subcover}
 \usage{
-subcover(cover, relative_diameter, method = c("divisive", "snapshot"))
+subcover(cover, relative_diameter, method = c("divisive", "snapshot",
+  "range"))
 }
 \arguments{
 \item{cover}{A divisive cover}
