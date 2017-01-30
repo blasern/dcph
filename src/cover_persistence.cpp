@@ -75,6 +75,22 @@ Rcpp::NumericMatrix persistence_from_cover(Rcpp::S4 cover) {
     death_diameters.push_back(subset.slot("death"));
   }
   
+  // // reindex
+  // Rcpp::NumericMatrix distance_matrix = cover.slot("distance_matrix");
+  // int n = distance_matrix.nrow();
+  // // std::set<std::tuple<std::set<int>, double>> contained_in;
+  // std::set<std::set<int>> contained_in;
+  // for (int i = 0; i < n; ++i){
+  //   std::set<int> contained;
+  //   for (auto const& ind: indices){
+  //     const bool is_in = ind.find(i) != ind.end();
+  //     if (is_in){
+  //       contained.insert(i);
+  //     }
+  //   }
+  //   contained_in.insert(contained);
+  // }
+  
   // calculate 3-fold overlaps between nodes
   std::vector<filtration_tuple> overlap;
   Rcpp::NumericVector diams = Rcpp::NumericVector(3);
