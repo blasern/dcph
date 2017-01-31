@@ -3,8 +3,10 @@
 #' This function divides the data into a cover using the distance matrix. 
 #'
 #' @param distance_matrix an n x n matrix of pairwise dissimilarities
-#' @param relative_distance numeric to specify the amount of overlap in each division
-#' @param relative_diameter numeric to specify the maximal diameter of the final cover
+#' @param relative_distance amount of overlap in each division 
+#' @param relative_diameter maximal diameter of the final cover
+#' @param max_nodes maximum number of nodes the algorithm should generate
+#' @param cover a divisive cover used to update
 #' @examples
 #' rcircle <- function(N, r, sd){
 #'    radius <- rnorm(N, r, sd)
@@ -14,9 +16,10 @@
 #' }
 #' data_matrix <- rcircle(200, 1, .1)
 #' 
-#' dc <- divisive_cover(distance_matrix = dist(data_matrix), 
-#'                      relative_diameter = 0.5, relative_distance = 0.2)
-#' ddc <- subcover(dc, relative_diameter = 0.7, method = "snapshot")
+#' dc1 <- divisive_cover(distance_matrix = dist(data_matrix), 
+#'                      relative_diameter = 0.7, relative_distance = 0.2)
+#' dc2 <- update_divisive_cover(dc1, relative_diameter = 0.5)
+#' ddc <- subcover(dc2, relative_diameter = 0.7, method = "snapshot")
 #' 
 #' \dontrun{
 #' plot(data_matrix)
@@ -25,7 +28,8 @@
 #' @export
 divisive_cover <- function(distance_matrix, 
                            relative_distance = 0.2, 
-                           relative_diameter = 0.7){
+                           relative_diameter = 0.7, 
+                           max_nodes = Inf){
   # data size
   distance_matrix <- as.matrix(distance_matrix)
   N <- nrow(distance_matrix)
@@ -42,7 +46,7 @@ divisive_cover <- function(distance_matrix,
   min_diam <- diameter * relative_diameter
   diams <- diameter
   # divide into pieces
-  while (any(diams > min_diam)){
+  while (any(diams > min_diam) && sum(diams > -Inf) < max_nodes){
     index <- which.max(diams)
     cover <- divide(cover = cover, 
                     index = index, 
@@ -51,7 +55,36 @@ divisive_cover <- function(distance_matrix,
     new_diams <- sapply(tail(cover@subsets, 2), slot, "diameter")
     diams[index] <- -Inf
     diams <- c(diams, new_diams)
-    data.frame(diams = diams, sapply(lapply(cover@subsets, slot, "indices"), length))
+  }
+  cover
+}
+
+#' @rdname divisive_cover
+#' @export
+update_divisive_cover <- function(cover, 
+                         relative_distance = cover@parameters[["relative_distance"]], 
+                         relative_diameter = 0.1, 
+                         max_nodes = Inf){
+  if (cover@type != "divisive"){
+    stop("can only update divisive covers")
+  }
+  # extract diameters
+  diameter <- cover@subsets[[1]]@diameter
+  min_diam <- diameter * relative_diameter
+  survivors <- sapply(cover@subsets, slot, "death") == 0
+  diams <- sapply(cover@subsets, slot, "diameter")
+  diams[!survivors] <- -Inf
+  # update division
+  # divide into pieces
+  while (any(diams > min_diam) && sum(diams > -Inf) < max_nodes){
+    index <- which.max(diams)
+    cover <- divide(cover = cover, 
+                    index = index, 
+                    distance_matrix = cover@distance_matrix,                     
+                    relative_distance = relative_distance)
+    new_diams <- sapply(tail(cover@subsets, 2), slot, "diameter")
+    diams[index] <- -Inf
+    diams <- c(diams, new_diams)
   }
   cover
 }
