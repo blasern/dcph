@@ -2,17 +2,26 @@
 % Please edit documentation in R/divisive_cover.R
 \name{divisive_cover}
 \alias{divisive_cover}
+\alias{update_divisive_cover}
 \title{divisive cover}
 \usage{
 divisive_cover(distance_matrix, relative_distance = 0.2,
-  relative_diameter = 0.7)
+  relative_diameter = 0.7, max_nodes = Inf)
+
+update_divisive_cover(cover,
+  relative_distance = cover@parameters[["relative_distance"]],
+  relative_diameter = 0.1, max_nodes = Inf)
 }
 \arguments{
 \item{distance_matrix}{an n x n matrix of pairwise dissimilarities}
 
-\item{relative_distance}{numeric to specify the amount of overlap in each division}
+\item{relative_distance}{amount of overlap in each division}
 
-\item{relative_diameter}{numeric to specify the maximal diameter of the final cover}
+\item{relative_diameter}{maximal diameter of the final cover}
+
+\item{max_nodes}{maximum number of nodes the algorithm should generate}
+
+\item{cover}{a divisive cover used to update}
 }
 \description{
 This function divides the data into a cover using the distance matrix.
@@ -26,9 +35,10 @@ rcircle <- function(N, r, sd){
 }
 data_matrix <- rcircle(200, 1, .1)
 
-dc <- divisive_cover(distance_matrix = dist(data_matrix), 
-                     relative_diameter = 0.5, relative_distance = 0.2)
-ddc <- subcover(dc, relative_diameter = 0.7, method = "snapshot")
+dc1 <- divisive_cover(distance_matrix = dist(data_matrix), 
+                     relative_diameter = 0.7, relative_distance = 0.2)
+dc2 <- update_divisive_cover(dc1, relative_diameter = 0.5)
+ddc <- subcover(dc2, relative_diameter = 0.7, method = "snapshot")
 
 \dontrun{
 plot(data_matrix)
