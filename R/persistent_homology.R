@@ -3,6 +3,7 @@
 #' Calculate the persistent homology from the divisive cover complex
 #' 
 #' @param cover The divisive cover
+#' @param max_dim The maximal dimension to calculate
 #' @examples 
 #' rcircle <- function(N, r, sd){
 #'    radius <- rnorm(N, r, sd)
@@ -20,11 +21,11 @@
 #' plot_persistence(pers, mode = "bars")
 #' }
 #' @export
-persistent_homology <- function(cover){
+persistent_homology <- function(cover, max_dim = 1){
   # remove duplicates
   cover <- simplify_cover(cover, method = "duplicates")
   # calculate persistent homology
-  pers <- persistence_from_cover(cover)
+  pers <- persistence_from_cover(cover, max_dim = max_dim)
   # add column names 
   pers <- as.data.frame(pers)
   colnames(pers) <- c("Dimension", "Birth", "Death")
@@ -41,7 +42,8 @@ persistent_homology <- function(cover){
   # remove diagonal
   pers <- pers[pers$Birth != pers$Death, ]
   rownames(pers) <- NULL
-  attr(pers, "maxdiam") <- max_diameter
-  attr(pers, "mindiam") <- min_diameter
+  attr(pers, "max_diameter") <- max_diameter
+  attr(pers, "min_diameter") <- min_diameter
+  attr(pers, "max_dimension") <- max_dim
   return(pers)
 }

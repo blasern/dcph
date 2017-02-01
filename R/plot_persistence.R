@@ -12,10 +12,10 @@ plot_persistence <- function(pers, mode = c("diag", "bars"), relative = TRUE){
   mode = match.arg(mode)
   pers$Dimension <- as.factor(pers$Dimension)
   if (relative){
-    maxdiam <- attr(pers, "maxdiam")
+    maxdiam <- attr(pers, "max_diameter")
     pers$Birth <- pers$Birth/maxdiam
     pers$Death <- pers$Death/maxdiam
-    attr(pers, "maxdiam") <- 1
+    attr(pers, "max_diameter") <- 1
   }
   if (mode == "diag"){
     p <- plot_diag(pers)
@@ -27,7 +27,7 @@ plot_persistence <- function(pers, mode = c("diag", "bars"), relative = TRUE){
 }
 
 plot_diag <- function(pers){
-  maxdiam <- attr(pers, "maxdiam")
+  maxdiam <- attr(pers, "max_diameter")
   p <- ggplot2::ggplot(pers, ggplot2::aes_string(x = "Birth", y = "Death")) + 
     ggplot2::geom_point(ggplot2::aes_string(color = "Dimension")) + 
     ggplot2::geom_line(data = data.frame(Birth = c(0, maxdiam), Death = c(0, maxdiam))) +
@@ -36,7 +36,7 @@ plot_diag <- function(pers){
 }
 
 plot_bars <- function(pers){
-  maxdiam <- attr(pers, "maxdiam")
+  maxdiam <- attr(pers, "max_diameter")
   pers <- pers[order(pers$Dimension, pers$Birth, pers$Death), ]
   pers$y <- 1:nrow(pers)
   p <- ggplot2::ggplot(pers) +

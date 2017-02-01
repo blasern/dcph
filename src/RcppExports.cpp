@@ -6,13 +6,14 @@
 using namespace Rcpp;
 
 // persistence_from_cover
-Rcpp::NumericMatrix persistence_from_cover(Rcpp::S4 cover);
-RcppExport SEXP dca_persistence_from_cover(SEXP coverSEXP) {
+Rcpp::NumericMatrix persistence_from_cover(Rcpp::S4 cover, Rcpp::IntegerVector max_dim);
+RcppExport SEXP dca_persistence_from_cover(SEXP coverSEXP, SEXP max_dimSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< Rcpp::S4 >::type cover(coverSEXP);
-    rcpp_result_gen = Rcpp::wrap(persistence_from_cover(cover));
+    Rcpp::traits::input_parameter< Rcpp::IntegerVector >::type max_dim(max_dimSEXP);
+    rcpp_result_gen = Rcpp::wrap(persistence_from_cover(cover, max_dim));
     return rcpp_result_gen;
 END_RCPP
 }

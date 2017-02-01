@@ -13,7 +13,7 @@
 #include <phat/algorithms/row_reduction.h>
 #include <phat/algorithms/twist_reduction.h>
 
-// filtration_value, diameter, V1, V2, V3
+// filtration_value, dimension, V1, V2, V3
 typedef std::tuple<double, int, int, int, int> filtration_tuple;
 // function to sort filtration
 bool compare_filtration (const filtration_tuple &lhs, const filtration_tuple &rhs){
@@ -50,16 +50,35 @@ bool is_disjoint(const Set1 &set1, const Set2 &set2)
   return true;
 }
 
+// combination subset
+std::vector<std::set<int>> combinations(int n, int k){
+  std::vector<std::set<int>> out; 
+  std::vector<bool> v(n);
+  std::fill(v.begin(), v.begin() + k, true);
+  
+  do {
+    std::set<int> vec;
+    for (int i = 0; i < n; ++i){
+      if (v[i]) {
+        vec.insert(i);
+      }
+    }
+    out.push_back(vec);
+  } while (std::prev_permutation(v.begin(), v.end()));
+  return out;
+}
+
 //' Persistence from cover
 //' 
 //' Calculate the persistence from the cover
 //' 
 //' @param cover A cover
+//' @param max_dim maximal dimension
 // [[Rcpp::export]]
-Rcpp::NumericMatrix persistence_from_cover(Rcpp::S4 cover) {
+Rcpp::NumericMatrix persistence_from_cover(Rcpp::S4 cover, Rcpp::IntegerVector max_dim) {
   // check that input is a cover
   if (!cover.inherits("cover")) Rcpp::stop("Input must be a cover");
-  
+  int maxdim = max_dim(0);
   // extract indices and diameter
   Rcpp::List subsets = cover.slot("subsets");
   std::vector<std::set<int>> indices;
@@ -75,61 +94,115 @@ Rcpp::NumericMatrix persistence_from_cover(Rcpp::S4 cover) {
     death_diameters.push_back(subset.slot("death"));
   }
   
-  // // reindex
-  // Rcpp::NumericMatrix distance_matrix = cover.slot("distance_matrix");
-  // int n = distance_matrix.nrow();
-  // // std::set<std::tuple<std::set<int>, double>> contained_in;
-  // std::set<std::set<int>> contained_in;
-  // for (int i = 0; i < n; ++i){
-  //   std::set<int> contained;
-  //   for (auto const& ind: indices){
-  //     const bool is_in = ind.find(i) != ind.end();
-  //     if (is_in){
-  //       contained.insert(i);
-  //     }
-  //   }
-  //   contained_in.insert(contained);
-  // }
+  // reindex
+  Rcpp::NumericMatrix distance_matrix = cover.slot("distance_matrix");
+  int n = distance_matrix.nrow();
+  std::set<std::vector<std::pair<int, double>>> contained_in;
+  for (int i = 0; i < n; ++i){
+    std::vector<std::pair<int, double>> contained;
+    // for (auto const& ind: indices){
+    for (unsigned int j = 0; j < indices.size(); ++j){
+      std::set<int> ind = indices[j];
+      const bool is_in = ind.find(i+1) != ind.end();
+      if (is_in){
+        contained.push_back(std::make_pair(j, death_diameters[j]));
+      }
+    }
+    contained_in.insert(contained);
+  }
   
-  // calculate 3-fold overlaps between nodes
-  std::vector<filtration_tuple> overlap;
-  Rcpp::NumericVector diams = Rcpp::NumericVector(3);
-  for (unsigned int i = 0; i < indices.size(); ++i){
-    std::set<int> loc_i = indices[i];
-    diams(0) = death_diameters[i];
-    for (unsigned int j = 0; j <= i; ++j){
-      std::set<int> loc_j = indices[j];
-      std::set<int> intersect_ij;
-      set_intersection(loc_i.begin(), loc_i.end(), loc_j.begin(), loc_j.end(),
-                       std::inserter(intersect_ij, intersect_ij.begin()));
-      if (intersect_ij.size() == 0) continue; 
-      diams(1) = death_diameters[j];
-      for (unsigned int k = 0; k <= j; ++k){
-        if ((k == j) && (j < i)) continue; 
-        diams(2) = death_diameters[k];
-        std::set<int> loc_k = indices[k];
-        if (is_disjoint(loc_k, intersect_ij)) continue; 
-        // set_intersection(loc_k.begin(), loc_k.end(), intersect_ij.begin(), intersect_ij.end(),
-        //                  std::inserter(intersect_ijk, intersect_ijk.begin()));
-        // if (intersect_ijk.size() == 0) continue; 
-        overlap.push_back(std::make_tuple(Rcpp::max(diams), 
-                                           2 - int(k == j) - int(j == i), 
-                                           k, j, i));
+  // calculate 2-sceleton 
+  std::set<std::vector<std::pair<int, double>>> low_card_sets;
+  for (int dim = 1; dim < maxdim + 3; ++dim){
+    for (auto cont_set: contained_in){
+      std::vector<std::set<int>> a = combinations(cont_set.size(), dim);
+      for (unsigned int i = 0; i < a.size(); ++i){
+        std::set<int> mset = a[i];
+        std::vector<std::pair<int, double>> low_card_set;
+        for(auto j : mset){
+          std::pair<int, double> in_set = cont_set[j];
+          low_card_set.push_back(in_set);
+        }
+        low_card_sets.insert(low_card_set);
       }
     }
   }
   
-  // sort overlap
-  sort(overlap.begin(), overlap.end(), compare_filtration);
+  // save as filtration vector
+  std::vector<filtration_tuple> filtration_vector;
+  for (auto lcs : low_card_sets){
+    // filtration_value, dimension, V1, V2, V3
+    std::vector<int> vertices;
+    std::vector<double> values;
+    for (auto lc : lcs){
+      vertices.push_back(lc.first);
+      values.push_back(lc.second);
+      // Rcpp::Rcout << lc.first << " " << lc.second << "; ";
+    }
+    double diam = *max_element(values.begin(), values.end());
+    int dim = vertices.size() - 1;
+    for (int i = dim; i < maxdim + 1; ++i){
+      vertices.push_back(vertices[dim]);
+    }
+    filtration_vector.push_back(std::make_tuple(diam, dim,  
+                                                vertices[0], vertices[1], vertices[2]));
+    // Rcpp::Rcout << std::endl;
+  }
+  // Rcpp::Rcout << std::endl;
+
+  // sort filtration_vector
+  sort(filtration_vector.begin(), filtration_vector.end(), compare_filtration);
+  
+  // for(unsigned int i = 0; i < filtration_vector.size(); ++i) {
+  //   Rcpp::Rcout << "dim: " << std::get<1>(filtration_vector[i]) << 
+  //     "; vertices: " << std::get<2>(filtration_vector[i]) << ", " <<
+  //       std::get<3>(filtration_vector[i]) << ", " << 
+  //         std::get<4>(filtration_vector[i]) << "; diameter: " << 
+  //           std::get<0>(filtration_vector[i]) << std::endl;
+  // }
+  // Rcpp::Rcout << std::endl;
+
+  // // calculate 3-fold overlaps between nodes
+  // std::vector<filtration_tuple> overlap;
+  // Rcpp::NumericVector diams = Rcpp::NumericVector(3);
+  // for (unsigned int i = 0; i < indices.size(); ++i){
+  //   std::set<int> loc_i = indices[i];
+  //   diams(0) = death_diameters[i];
+  //   for (unsigned int j = 0; j <= i; ++j){
+  //     std::set<int> loc_j = indices[j];
+  //     std::set<int> intersect_ij;
+  //     set_intersection(loc_i.begin(), loc_i.end(), loc_j.begin(), loc_j.end(),
+  //                      std::inserter(intersect_ij, intersect_ij.begin()));
+  //     if (intersect_ij.size() == 0) continue;
+  //     diams(1) = death_diameters[j];
+  //     for (unsigned int k = 0; k <= j; ++k){
+  //       if ((k == j) && (j < i)) continue;
+  //       diams(2) = death_diameters[k];
+  //       std::set<int> loc_k = indices[k];
+  //       if (is_disjoint(loc_k, intersect_ij)) continue;
+  //       // set_intersection(loc_k.begin(), loc_k.end(), intersect_ij.begin(), intersect_ij.end(),
+  //       //                  std::inserter(intersect_ijk, intersect_ijk.begin()));
+  //       // if (intersect_ijk.size() == 0) continue;
+  //       overlap.push_back(std::make_tuple(Rcpp::max(diams),
+  //                                          2 - int(k == j) - int(j == i),
+  //                                          k, j, i));
+  //     }
+  //   }
+  // }
+  // 
+  // // sort overlap
+  // sort(overlap.begin(), overlap.end(), compare_filtration);
+  
+  std::vector<filtration_tuple> overlap = filtration_vector;
   
   // save as map
   std::map<std::tuple<int, int, int>, std::tuple<int, double, int>> filtration;
   for(std::vector<filtration_tuple>::iterator it = overlap.begin(); it != overlap.end(); ++it) {
-    filtration[std::make_tuple(std::get<2>(*it), std::get<3>(*it), std::get<4>(*it))] = 
-      std::make_tuple(std::distance(overlap.begin(), it), 
+    filtration[std::make_tuple(std::get<2>(*it), std::get<3>(*it), std::get<4>(*it))] =
+      std::make_tuple(std::distance(overlap.begin(), it),
                       std::get<0>(*it), std::get<1>(*it));
   }
-  
+
   // define a boundary matrix
   phat::boundary_matrix< phat::vector_vector > boundary_matrix;
   
@@ -173,12 +246,11 @@ Rcpp::NumericMatrix persistence_from_cover(Rcpp::S4 cover) {
     boundary_matrix.set_col(i, temp_col);
   }
   temp_col.clear();
-  // Rcpp::Rcout << "Boundary matrix defined." << std::endl;
   
   // // print some information of the boundary matrix:
   // Rcpp::Rcout << std::endl;
   // Rcpp::Rcout << "The boundary matrix has " << boundary_matrix.get_num_cols() << " columns: " << std::endl;
-  // for( phat::index col_idx = 0; col_idx < boundary_matrix.get_num_cols(); col_idx++ ) { 
+  // for( phat::index col_idx = 0; col_idx < boundary_matrix.get_num_cols(); col_idx++ ) {
   //   Rcpp::Rcout << "Colum " << col_idx << " represents a cell of dimension " << (int)boundary_matrix.get_dim( col_idx ) << ". ";
   //   if( !boundary_matrix.is_empty( col_idx ) ) {
   //     std::vector< phat::index > temp_col;

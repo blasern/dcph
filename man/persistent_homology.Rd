@@ -4,10 +4,12 @@
 \alias{persistent_homology}
 \title{Persistent homology}
 \usage{
-persistent_homology(cover)
+persistent_homology(cover, max_dim = 1)
 }
 \arguments{
 \item{cover}{The divisive cover}
+
+\item{max_dim}{The maximal dimension to calculate}
 }
 \description{
 Calculate the persistent homology from the divisive cover complex

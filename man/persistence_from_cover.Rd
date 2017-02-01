@@ -4,10 +4,12 @@
 \alias{persistence_from_cover}
 \title{Persistence from cover}
 \usage{
-persistence_from_cover(cover)
+persistence_from_cover(cover, max_dim)
 }
 \arguments{
 \item{cover}{A cover}
+
+\item{max_dim}{maximal dimension}
 }
 \description{
 Calculate the persistence from the cover

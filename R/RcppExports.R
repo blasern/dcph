@@ -6,7 +6,8 @@
 #' Calculate the persistence from the cover
 #' 
 #' @param cover A cover
-persistence_from_cover <- function(cover) {
-    .Call('dca_persistence_from_cover', PACKAGE = 'dca', cover)
+#' @param max_dim maximal dimension
+persistence_from_cover <- function(cover, max_dim) {
+    .Call('dca_persistence_from_cover', PACKAGE = 'dca', cover, max_dim)
 }
 
