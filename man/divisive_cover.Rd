@@ -6,7 +6,7 @@
 \title{divisive cover}
 \usage{
 divisive_cover(distance_matrix, relative_distance = 0.2,
-  relative_diameter = 0.7, max_nodes = Inf)
+  relative_diameter = 0, max_nodes = Inf)
 
 update_divisive_cover(cover,
   relative_distance = cover@parameters[["relative_distance"]],

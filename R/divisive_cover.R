@@ -28,8 +28,13 @@
 #' @export
 divisive_cover <- function(distance_matrix, 
                            relative_distance = 0.2, 
-                           relative_diameter = 0.7, 
+                           relative_diameter = 0, 
                            max_nodes = Inf){
+  # check input
+  if (relative_diameter == 0 && max_nodes == Inf){
+    stop("Either relative diameter or max_nodes has to be specified.")
+  }
+  
   # data size
   distance_matrix <- as.matrix(distance_matrix)
   N <- nrow(distance_matrix)
