@@ -1,4 +1,4 @@
-#' @useDynLib dca
+#' @useDynLib dcph
 #' @importFrom methods setClass 
 #' @importFrom Rcpp sourceCpp
 NULL

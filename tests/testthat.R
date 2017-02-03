@@ -1,4 +1,4 @@
 library(testthat)
-library(dca)
+library(dcph)
 
-test_check("dca")
+test_check("dcph")
