@@ -170,9 +170,9 @@ Rcpp::NumericMatrix persistence_from_cover(Rcpp::S4 cover, Rcpp::IntegerVector m
   // sort filtration_vector
   sort(filtration_vector.begin(), filtration_vector.end(), compare_filtration);
   sort(filtration_vector2.begin(), filtration_vector2.end(), compare_filtration2);
-  
-  Rcpp::Rcout << filtration_vector.size() << std::endl;
-  Rcpp::Rcout << filtration_vector2.size() << std::endl;
+  // 
+  // Rcpp::Rcout << filtration_vector.size() << std::endl;
+  // Rcpp::Rcout << filtration_vector2.size() << std::endl;
   
   // save as map
   std::map<std::tuple<int, int, int>, std::tuple<int, double, int>> filtration;
@@ -205,43 +205,15 @@ Rcpp::NumericMatrix persistence_from_cover(Rcpp::S4 cover, Rcpp::IntegerVector m
   std::vector< phat::index > temp_col;
   for(unsigned int i = 0; i < filtration_vector2.size(); ++i) {
     temp_col.clear();
-    if (std::get<1>(filtration_vector2[i]) == 1){
-      // 1-dimensional  
-      // Rcpp::NumericVector points = Rcpp::NumericVector(2);
-      std::set<int> p_set = std::get<2>(filtration_vector2[i]);
-      for (auto p : p_set){
-        std::set<int> point_set;
-        point_set.insert(p);
-        temp_col.push_back(std::get<0>(filtration2[point_set]));
-      }
-      // int p1 = std::get<4>(filtration_vector2[i]);
-      // points(0) = std::get<0>(filtration[std::make_tuple(p0, p0, p0)]);
-      // points(1) = std::get<0>(filtration[std::make_tuple(p1, p1, p1)]);
-      // points.sort();
-      // temp_col.push_back(points(0));
-      // temp_col.push_back(points(1));
-    }
-    if (std::get<1>(filtration_vector2[i]) == 2){
-      // 2-dimensional 
+    if (std::get<1>(filtration_vector2[i]) > 0){
       std::set<int> p_set = std::get<2>(filtration_vector2[i]);
       for (auto p : p_set){
         std::set<int> point_set = p_set;
         point_set.erase(p);
         temp_col.push_back(std::get<0>(filtration2[point_set]));
       }
-      // 
-      // Rcpp::NumericVector points = Rcpp::NumericVector(3);
-      // int p0 = std::get<2>(filtration_vector[i]);
-      // int p1 = std::get<3>(filtration_vector[i]);
-      // int p2 = std::get<4>(filtration_vector[i]);
-      // points(0) = std::get<0>(filtration[std::make_tuple(p0, p1, p1)]);
-      // points(1) = std::get<0>(filtration[std::make_tuple(p0, p2, p2)]);
-      // points(2) = std::get<0>(filtration[std::make_tuple(p1, p2, p2)]);
-      // points.sort();
-      // temp_col.push_back(points(0));
-      // temp_col.push_back(points(1));
-      // temp_col.push_back(points(2));
     }
+    std::sort(temp_col.begin(), temp_col.end());
     boundary_matrix.set_col(i, temp_col);
   }
   temp_col.clear();
