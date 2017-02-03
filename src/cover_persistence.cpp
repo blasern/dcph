@@ -14,18 +14,10 @@
 #include <phat/algorithms/twist_reduction.h>
 
 // filtration_value, dimension, vertices
-typedef std::tuple<double, int, std::set<int>> filtration_tuple2;
-typedef std::tuple<double, int, int, int, int> filtration_tuple;
+typedef std::tuple<double, int, std::set<int>> filtration_tuple;
+
 // function to sort filtration
 bool compare_filtration (const filtration_tuple &lhs, const filtration_tuple &rhs){
-  if (std::get<0>(lhs) == std::get<0>(rhs)){
-    return std::get<1>(lhs) < std::get<1>(rhs);
-  }
-  else{
-    return std::get<0>(lhs) < std::get<0>(rhs);
-  }
-}
-bool compare_filtration2 (const filtration_tuple2 &lhs, const filtration_tuple2 &rhs){
   if (std::get<0>(lhs) == std::get<0>(rhs)){
     return std::get<1>(lhs) < std::get<1>(rhs);
   }
@@ -143,49 +135,30 @@ Rcpp::NumericMatrix persistence_from_cover(Rcpp::S4 cover, Rcpp::IntegerVector m
   
   // save as filtration vector
   std::vector<filtration_tuple> filtration_vector;
-  std::vector<filtration_tuple2> filtration_vector2;
   for (auto lcs : low_card_sets){
-    // filtration_value, dimension, V1, V2, V3
-    std::vector<int> vertices;
-    std::set<int> vertices2;
+    // filtration_value, dimension, vertices
+    std::set<int> vertices;
     std::vector<double> values;
     for (auto lc : lcs){
-      vertices.push_back(lc);
-      vertices2.insert(lc);
+      vertices.insert(lc);
       values.push_back(death_diameters[lc]);
       // Rcpp::Rcout << lc.first << " " << lc.second << "; ";
     }
     double diam = *max_element(values.begin(), values.end());
     int dim = vertices.size() - 1;
-    for (int i = dim; i < maxdim + 1; ++i){
-      vertices.push_back(vertices[dim]);
-    }
-    filtration_vector.push_back(std::make_tuple(diam, dim,  
-                                                vertices[0], vertices[1], vertices[2]));
-    filtration_vector2.push_back(std::make_tuple(diam, dim, vertices2));
+    filtration_vector.push_back(std::make_tuple(diam, dim, vertices));
     // Rcpp::Rcout << std::endl;
   }
   // Rcpp::Rcout << std::endl;
 
   // sort filtration_vector
   sort(filtration_vector.begin(), filtration_vector.end(), compare_filtration);
-  sort(filtration_vector2.begin(), filtration_vector2.end(), compare_filtration2);
-  // 
-  // Rcpp::Rcout << filtration_vector.size() << std::endl;
-  // Rcpp::Rcout << filtration_vector2.size() << std::endl;
   
   // save as map
-  std::map<std::tuple<int, int, int>, std::tuple<int, double, int>> filtration;
+  std::map<std::set<int>, std::tuple<int, double, int>> filtration;
   for(std::vector<filtration_tuple>::iterator it = filtration_vector.begin(); it != filtration_vector.end(); ++it) {
-    filtration[std::make_tuple(std::get<2>(*it), std::get<3>(*it), std::get<4>(*it))] =
+    filtration[std::get<2>(*it)] =
       std::make_tuple(std::distance(filtration_vector.begin(), it),
-                      std::get<0>(*it), std::get<1>(*it));
-  }
-  // save as map
-  std::map<std::set<int>, std::tuple<int, double, int>> filtration2;
-  for(std::vector<filtration_tuple2>::iterator it = filtration_vector2.begin(); it != filtration_vector2.end(); ++it) {
-    filtration2[std::get<2>(*it)] =
-      std::make_tuple(std::distance(filtration_vector2.begin(), it),
                       std::get<0>(*it), std::get<1>(*it));
   }
 
@@ -193,24 +166,24 @@ Rcpp::NumericMatrix persistence_from_cover(Rcpp::S4 cover, Rcpp::IntegerVector m
   phat::boundary_matrix< phat::vector_vector > boundary_matrix;
   
   // set the number of columns 
-  boundary_matrix.set_num_cols(filtration2.size());
+  boundary_matrix.set_num_cols(filtration.size());
   
   // set the dimension of the cell that a column represents:
-  for(unsigned int i = 0; i < filtration_vector2.size(); ++i) {
-    boundary_matrix.set_dim(i, std::get<1>(filtration_vector2[i]) );
+  for(unsigned int i = 0; i < filtration_vector.size(); ++i) {
+    boundary_matrix.set_dim(i, std::get<1>(filtration_vector[i]) );
   }
   
   // Rcpp::Rcout << "Initializing boundary matrix..." << std::endl;
   // set the respective columns -- the columns entries have to be sorted
   std::vector< phat::index > temp_col;
-  for(unsigned int i = 0; i < filtration_vector2.size(); ++i) {
+  for(unsigned int i = 0; i < filtration_vector.size(); ++i) {
     temp_col.clear();
-    if (std::get<1>(filtration_vector2[i]) > 0){
-      std::set<int> p_set = std::get<2>(filtration_vector2[i]);
+    if (std::get<1>(filtration_vector[i]) > 0){
+      std::set<int> p_set = std::get<2>(filtration_vector[i]);
       for (auto p : p_set){
         std::set<int> point_set = p_set;
         point_set.erase(p);
-        temp_col.push_back(std::get<0>(filtration2[point_set]));
+        temp_col.push_back(std::get<0>(filtration[point_set]));
       }
     }
     std::sort(temp_col.begin(), temp_col.end());
@@ -261,9 +234,9 @@ Rcpp::NumericMatrix persistence_from_cover(Rcpp::S4 cover, Rcpp::IntegerVector m
   }
   // add dimension and filter values
   for (int i = 0; i < out.nrow(); ++i){
-    out(i, 0) = std::get<1>(filtration_vector2[out(i, 1)]);
-    out(i, 1) = std::get<0>(filtration_vector2[out(i, 1)]);
-    out(i, 2) = std::get<0>(filtration_vector2[out(i, 2)]);
+    out(i, 0) = std::get<1>(filtration_vector[out(i, 1)]);
+    out(i, 1) = std::get<0>(filtration_vector[out(i, 1)]);
+    out(i, 2) = std::get<0>(filtration_vector[out(i, 2)]);
   }
   // Rcpp::NumericMatrix out(3, 2);
   return out;
