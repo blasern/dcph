@@ -13,7 +13,8 @@
 #' @keywords plotting
 #' @seealso \code{\link{cover-class}}, \code{\link{subcover}}
 #' @importFrom igraph graph_from_adjacency_matrix plot.igraph E
-#' @export 
+#' @method plot cover
+#' @export
 plot.cover <- function(x, coloring = NULL, simplify = c("none", "duplicates", "subsets"), legend = TRUE, device = c("plot", "tkplot"), seed = 1, ...){
   x <- simplify_cover(x, method = match.arg(simplify))
   plot_core(cover = x, adjacency = as.adjacency(x), coloring = coloring, legend = legend, device = device, seed = seed, ...)

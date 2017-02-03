@@ -32,7 +32,7 @@ persistent_homology <- function(cover, max_dim = 1){
   # minimum diameter
   max_diameter <- cover@subsets[[1]]@diameter
   # min_diameter <- cover@parameters$relative_diameter * max_diameter
-  min_diameter <- min(sapply(dc@subsets, slot, "birth"))
+  min_diameter <- min(sapply(cover@subsets, slot, "birth"))
   # add survivor
   pers <- rbind(pers, data.frame(Dimension = 0, 
                                  Birth = min_diameter, 
