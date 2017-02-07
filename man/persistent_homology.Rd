@@ -14,6 +14,9 @@ persistent_homology(cover, max_dim = 1)
 \description{
 Calculate the persistent homology from the divisive cover complex
 }
+\details{
+The calculation of persistent homology is done with PHAT.
+}
 \examples{
 rcircle <- function(N, r, sd){
    radius <- rnorm(N, r, sd)
@@ -30,5 +33,8 @@ pers <- persistent_homology(dc)
 plot_persistence(pers, mode = "diag")
 plot_persistence(pers, mode = "bars")
 }
+}
+\references{
+Bauer U., Kerber M., Reininghaus J., Wagner H. (2014) PHAT - Persistent Homology Algorithms Toolbox.
 }
 

@@ -2,6 +2,8 @@
 #' 
 #' Calculate the persistent homology from the divisive cover complex
 #' 
+#' @details The calculation of persistent homology is done with PHAT. 
+#' @references Bauer U., Kerber M., Reininghaus J., Wagner H. (2014) PHAT - Persistent Homology Algorithms Toolbox.
 #' @param cover The divisive cover
 #' @param max_dim The maximal dimension to calculate
 #' @examples 
