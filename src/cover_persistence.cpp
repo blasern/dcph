@@ -73,15 +73,15 @@ std::vector<std::set<int>> combinations(int n, int k){
 //' 
 //' Calculate the persistence from the cover
 //' 
-//' @param cover A cover
-//' @param max_dim maximal dimension
+//' @param cover The divisive cover
+//' @param max_dim The maximal dimension to calculate
+//' @param reduction Reduction method from PHAT
 // [[Rcpp::export]]
-Rcpp::NumericMatrix persistence_from_cover(Rcpp::S4 cover, Rcpp::IntegerVector max_dim) {
+Rcpp::NumericMatrix persistence_from_cover(Rcpp::S4 cover, int max_dim, Rcpp::String reduction) {
   // check that input is a cover
   if (!cover.inherits("cover")) Rcpp::stop("Input must be a cover");
   
   // extract indices and diameter
-  int maxdim = max_dim(0);
   Rcpp::List subsets = cover.slot("subsets");
   std::vector<std::set<int>> indices;
   std::vector<double> death_diameters; 
@@ -117,7 +117,7 @@ Rcpp::NumericMatrix persistence_from_cover(Rcpp::S4 cover, Rcpp::IntegerVector m
   // calculate 2-sceleton 
   // Rcpp::Rcout << "Calculate 2-sceleton..." << std::endl;
   std::set<std::vector<int>> low_card_sets;
-  for (int dim = 1; dim < maxdim + 3; ++dim){
+  for (int dim = 1; dim < max_dim + 3; ++dim){
     for (auto cont_set: contained_in){
       std::vector<std::set<int>> a = combinations(cont_set.size(), dim);
       for (unsigned int i = 0; i < a.size(); ++i){
@@ -214,7 +214,21 @@ Rcpp::NumericMatrix persistence_from_cover(Rcpp::S4 cover, Rcpp::IntegerVector m
 
   // choose an algorithm (choice affects performance) and compute the persistence pair
   // (modifies boundary_matrix)
-  phat::compute_persistence_pairs< phat::twist_reduction >( pairs, boundary_matrix );
+  // standard_reduction, chunk_reduction, row_reduction, twist_reduction
+  // phat::compute_persistence_pairs< phat::twist_reduction >( pairs, boundary_matrix );
+  std::string reduce = reduction;
+  if (!(reduce.compare("twist"))){
+    phat::compute_persistence_pairs< phat::twist_reduction >( pairs, boundary_matrix );
+  }
+  if (!(reduce.compare("standard"))){
+    phat::compute_persistence_pairs< phat::standard_reduction >( pairs, boundary_matrix );
+  }
+  if (!(reduce.compare("chunk"))){
+    phat::compute_persistence_pairs< phat::chunk_reduction >( pairs, boundary_matrix );
+  }
+  if (!(reduce.compare("row"))){
+    phat::compute_persistence_pairs< phat::row_reduction >( pairs, boundary_matrix );
+  }  
 
   // sort the persistence pairs by birth index
   pairs.sort();

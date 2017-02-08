@@ -6,6 +6,7 @@
 #' @references Bauer U., Kerber M., Reininghaus J., Wagner H. (2014) PHAT - Persistent Homology Algorithms Toolbox.
 #' @param cover The divisive cover
 #' @param max_dim The maximal dimension to calculate
+#' @param reduction Reduction method from PHAT
 #' @examples 
 #' rcircle <- function(N, r, sd){
 #'    radius <- rnorm(N, r, sd)
@@ -23,11 +24,13 @@
 #' plot_persistence(pers, mode = "bars")
 #' }
 #' @export
-persistent_homology <- function(cover, max_dim = 1){
+persistent_homology <- function(cover, max_dim = 1, reduction = c("twist", "standard", "chunk", "row")){
+  # get reduction right
+  reduction <- match.arg(reduction)
   # remove duplicates
   cover <- simplify_cover(cover, method = "duplicates")
   # calculate persistent homology
-  pers <- persistence_from_cover(cover, max_dim = max_dim)
+  pers <- persistence_from_cover(cover, max_dim = max_dim, reduction = reduction)
   # add column names 
   pers <- as.data.frame(pers)
   colnames(pers) <- c("Dimension", "Birth", "Death")

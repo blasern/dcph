@@ -4,12 +4,14 @@
 \alias{persistence_from_cover}
 \title{Persistence from cover}
 \usage{
-persistence_from_cover(cover, max_dim)
+persistence_from_cover(cover, max_dim, reduction)
 }
 \arguments{
-\item{cover}{A cover}
+\item{cover}{The divisive cover}
 
-\item{max_dim}{maximal dimension}
+\item{max_dim}{The maximal dimension to calculate}
+
+\item{reduction}{Reduction method from PHAT}
 }
 \description{
 Calculate the persistence from the cover

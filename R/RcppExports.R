@@ -5,9 +5,10 @@
 #' 
 #' Calculate the persistence from the cover
 #' 
-#' @param cover A cover
-#' @param max_dim maximal dimension
-persistence_from_cover <- function(cover, max_dim) {
-    .Call('dcph_persistence_from_cover', PACKAGE = 'dcph', cover, max_dim)
+#' @param cover The divisive cover
+#' @param max_dim The maximal dimension to calculate
+#' @param reduction Reduction method from PHAT
+persistence_from_cover <- function(cover, max_dim, reduction) {
+    .Call('dcph_persistence_from_cover', PACKAGE = 'dcph', cover, max_dim, reduction)
 }
 

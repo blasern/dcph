@@ -4,12 +4,15 @@
 \alias{persistent_homology}
 \title{Persistent homology}
 \usage{
-persistent_homology(cover, max_dim = 1)
+persistent_homology(cover, max_dim = 1, reduction = c("twist", "standard",
+  "chunk", "row"))
 }
 \arguments{
 \item{cover}{The divisive cover}
 
 \item{max_dim}{The maximal dimension to calculate}
+
+\item{reduction}{Reduction method from PHAT}
 }
 \description{
 Calculate the persistent homology from the divisive cover complex
