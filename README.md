@@ -10,10 +10,10 @@ An R package for calculating persistent homology with the divisive cover algorit
 
 To install the stable version of this R package from CRAN:
 
-    install.packages("dca", dependencies=TRUE)
+    install.packages("dcph", dependencies=TRUE)
 
 To install the latest version of this R package directly from github:
 
     install.packages("devtools")
     library(devtools)
-    devtools::install_github("nello.blaser/dca")
+    devtools::install_github("blasern/dcph")
