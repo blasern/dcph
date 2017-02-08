@@ -95,6 +95,7 @@ Rcpp::NumericMatrix persistence_from_cover(Rcpp::S4 cover, int max_dim, Rcpp::St
     indices.push_back(ind_set);
     death_diameters.push_back(subset.slot("death"));
   }
+  Rcpp::checkUserInterrupt();
   
   // reindex
   // Rcpp::Rcout << "reindexing..." << std::endl;
@@ -112,6 +113,7 @@ Rcpp::NumericMatrix persistence_from_cover(Rcpp::S4 cover, int max_dim, Rcpp::St
   for (auto con : contained_in_vec){
     contained_in.insert(con);
   }
+  Rcpp::checkUserInterrupt();
   // Rcpp::Rcout << "reindexed..." << std::endl;
   
   // calculate 2-sceleton 
@@ -131,6 +133,7 @@ Rcpp::NumericMatrix persistence_from_cover(Rcpp::S4 cover, int max_dim, Rcpp::St
       }
     }
   }
+  Rcpp::checkUserInterrupt();
   // Rcpp::Rcout << "2-sceleton calculated" << std::endl;
   
   // save as filtration vector
@@ -149,10 +152,12 @@ Rcpp::NumericMatrix persistence_from_cover(Rcpp::S4 cover, int max_dim, Rcpp::St
     filtration_vector.push_back(std::make_tuple(diam, dim, vertices));
     // Rcpp::Rcout << std::endl;
   }
+  Rcpp::checkUserInterrupt();
   // Rcpp::Rcout << std::endl;
 
   // sort filtration_vector
   sort(filtration_vector.begin(), filtration_vector.end(), compare_filtration);
+  Rcpp::checkUserInterrupt();
   
   // save as map
   std::map<std::set<int>, std::tuple<int, double, int>> filtration;
@@ -161,6 +166,7 @@ Rcpp::NumericMatrix persistence_from_cover(Rcpp::S4 cover, int max_dim, Rcpp::St
       std::make_tuple(std::distance(filtration_vector.begin(), it),
                       std::get<0>(*it), std::get<1>(*it));
   }
+  Rcpp::checkUserInterrupt();
 
   // define a boundary matrix
   phat::boundary_matrix< phat::vector_vector > boundary_matrix;
@@ -172,6 +178,7 @@ Rcpp::NumericMatrix persistence_from_cover(Rcpp::S4 cover, int max_dim, Rcpp::St
   for(unsigned int i = 0; i < filtration_vector.size(); ++i) {
     boundary_matrix.set_dim(i, std::get<1>(filtration_vector[i]) );
   }
+  Rcpp::checkUserInterrupt();
   
   // Rcpp::Rcout << "Initializing boundary matrix..." << std::endl;
   // set the respective columns -- the columns entries have to be sorted
@@ -190,6 +197,7 @@ Rcpp::NumericMatrix persistence_from_cover(Rcpp::S4 cover, int max_dim, Rcpp::St
     boundary_matrix.set_col(i, temp_col);
   }
   temp_col.clear();
+  Rcpp::checkUserInterrupt();
   // Rcpp::Rcout << "Boundary matrix initialized" << std::endl;
   
   // // print some information of the boundary matrix:
@@ -229,9 +237,11 @@ Rcpp::NumericMatrix persistence_from_cover(Rcpp::S4 cover, int max_dim, Rcpp::St
   if (!(reduce.compare("row"))){
     phat::compute_persistence_pairs< phat::row_reduction >( pairs, boundary_matrix );
   }  
+  Rcpp::checkUserInterrupt();
 
   // sort the persistence pairs by birth index
   pairs.sort();
+  Rcpp::checkUserInterrupt();
   // Rcpp::Rcout << "Persistent homology calculated... " << std::endl;
 
   // // print the pairs:

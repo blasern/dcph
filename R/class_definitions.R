@@ -2,6 +2,9 @@
 #' @importFrom methods setClass 
 #' @importFrom Rcpp sourceCpp
 NULL
+.onUnload <- function (libpath) {
+  library.dynam.unload("dcph", libpath)
+}
 
 # function to check that object is a cover
 check_cover <- function(object){
