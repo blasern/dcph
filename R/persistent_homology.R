@@ -15,11 +15,14 @@
 #'               y = radius * sin(angle))
 #' }
 #' data_matrix <- rcircle(200, 1, .1)
-#' 
+#' # get divisive cover
 #' dc <- divisive_cover(distance_matrix = dist(data_matrix), 
-#'                      relative_diameter = 0.5, relative_distance = 0.2)
+#'                      delta = 0.1, 
+#'                      relative_diameter = 0.5)
+#' # calculate persistent homology
 #' pers <- persistent_homology(dc)
 #' \dontrun{
+#' # plot persistence diagram and barcode
 #' plot_persistence(pers, mode = "diag")
 #' plot_persistence(pers, mode = "bars")
 #' }

@@ -18,7 +18,8 @@
 #'
 #' # run divisive cover
 #' dc <- divisive_cover(distance_matrix = dist(data_matrix), 
-#'                      relative_diameter = 0.2, relative_distance = 0.3)
+#'                      delta = 0.1, 
+#'                      relative_diameter = 0.2)
 #' # get subcover
 #' sc <- subcover(dc, 0.3, "snapshot")
 #' 

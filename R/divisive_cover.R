@@ -3,7 +3,7 @@
 #' This function divides the data into a cover using the distance matrix. 
 #'
 #' @param distance_matrix an n x n matrix of pairwise dissimilarities
-#' @param relative_distance amount of overlap in each division 
+#' @param delta delta-parameter for delta-filtered cover (0 < delta <= 1/2)
 #' @param relative_diameter maximal diameter of the final cover
 #' @param max_nodes maximum number of nodes the algorithm should generate
 #' @param cover a divisive cover used to update
@@ -16,9 +16,13 @@
 #' }
 #' data_matrix <- rcircle(200, 1, .1)
 #' 
-#' dc1 <- divisive_cover(distance_matrix = dist(data_matrix), 
-#'                      relative_diameter = 0.7, relative_distance = 0.2)
+#' # calculate and update divisive cover
+#' dc1 <- divisive_cover(distance_matrix = dist(data_matrix),
+#'                       delta = 0.1, 
+#'                       relative_diameter = 0.7)
 #' dc2 <- update_divisive_cover(dc1, relative_diameter = 0.5)
+#' 
+#' # get one snapshot for plotting
 #' ddc <- subcover(dc2, relative_diameter = 0.7, method = "snapshot")
 #' 
 #' \dontrun{
@@ -27,13 +31,17 @@
 #' }
 #' @export
 divisive_cover <- function(distance_matrix, 
-                           relative_distance = 0.2, 
+                           delta, 
                            relative_diameter = 0, 
                            max_nodes = Inf){
   # check input
   if (relative_diameter == 0 && max_nodes == Inf){
     stop("Either relative diameter or max_nodes has to be specified.")
   }
+  stopifnot(0 <= delta && delta <= 0.5)
+
+  # find factor
+  relative_distance <- (1-2 * delta)/(1+2 * delta)
   
   # data size
   distance_matrix <- as.matrix(distance_matrix)
@@ -44,7 +52,7 @@ divisive_cover <- function(distance_matrix,
   diameter <- distance_matrix[basepoints[1], basepoints[2]]
   cover <- cover(distance_matrix = distance_matrix, 
                  subsets = list(patch(1:N, basepoints = basepoints, id = 1L, diameter = diameter, birth = diameter)), 
-                 parameters = list(relative_distance = relative_distance, relative_diameter = relative_diameter), 
+                 parameters = list(delta = delta, relative_diameter = relative_diameter), 
                  type = "divisive")
   
   # minimal radius
@@ -67,12 +75,14 @@ divisive_cover <- function(distance_matrix,
 #' @rdname divisive_cover
 #' @export
 update_divisive_cover <- function(cover, 
-                         relative_distance = cover@parameters[["relative_distance"]], 
+                         delta = cover@parameters[["delta"]], 
                          relative_diameter = 0.1, 
                          max_nodes = Inf){
   if (cover@type != "divisive"){
     stop("can only update divisive covers")
   }
+  # find factor
+  relative_distance <- (1-2 * delta)/(1+2 * delta)
   # extract diameters
   diameter <- cover@subsets[[1]]@diameter
   min_diam <- diameter * relative_diameter
@@ -104,8 +114,8 @@ divide <- function(cover, index, distance_matrix, relative_distance){
   dist_b <- distance_matrix[b, divide_patch@indices]
   
   # indices 
-  A <- divide_patch@indices[dist_b / dist_a >= 1 - relative_distance]
-  B <- divide_patch@indices[dist_a / dist_b >= 1 - relative_distance]
+  A <- divide_patch@indices[dist_b / dist_a >= relative_distance]
+  B <- divide_patch@indices[dist_a / dist_b >= relative_distance]
   
   # basepoints
   basepoints_a <- A[as.integer(arrayInd(which.max(distance_matrix[A, A]), rep(length(A), 2)))]

@@ -67,12 +67,8 @@ test_that("persistent homology works", {
                     min_diameter = 1.43361784347283, 
                     max_dimension = 1)
   
-  gap_to_rd <- function(x){
-    1 - (1-x) / (1 + x)
-  }
-  
-  dc <- divisive_cover(distance_matrix = dist(df), 
-                       relative_distance = gap_to_rd(.02), 
+  dc <- divisive_cover(distance_matrix = dist(df),
+                       delta = 0.01, 
                        max_nodes = 7, 
                        relative_diameter = 0.1)
   

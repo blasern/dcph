@@ -23,10 +23,10 @@ rcircle <- function(N, r, sd){
 data_matrix <- rcircle(200, 1, .1)
 # calculate covers
 dc1 <- divisive_cover(distance_matrix = dist(data_matrix), 
-                      relative_distance = 0.2,
+                      delta = 0.1,
                       relative_diameter = 0.1)
 dc2 <- divisive_cover(distance_matrix = dist(data_matrix), 
-                      relative_distance = 0.1,
+                      delta = 0.05,
                       relative_diameter = 0.3)
 cover1 <- subcover(dc1, 0.1, "snapshot")
 cover2 <- subcover(dc2, 0.5, "snapshot")

@@ -5,17 +5,16 @@
 \alias{update_divisive_cover}
 \title{divisive cover}
 \usage{
-divisive_cover(distance_matrix, relative_distance = 0.2,
-  relative_diameter = 0, max_nodes = Inf)
+divisive_cover(distance_matrix, delta, relative_diameter = 0,
+  max_nodes = Inf)
 
-update_divisive_cover(cover,
-  relative_distance = cover@parameters[["relative_distance"]],
+update_divisive_cover(cover, delta = cover@parameters[["delta"]],
   relative_diameter = 0.1, max_nodes = Inf)
 }
 \arguments{
 \item{distance_matrix}{an n x n matrix of pairwise dissimilarities}
 
-\item{relative_distance}{amount of overlap in each division}
+\item{delta}{delta-parameter for delta-filtered cover (0 < delta <= 1/2)}
 
 \item{relative_diameter}{maximal diameter of the final cover}
 
@@ -35,9 +34,13 @@ rcircle <- function(N, r, sd){
 }
 data_matrix <- rcircle(200, 1, .1)
 
-dc1 <- divisive_cover(distance_matrix = dist(data_matrix), 
-                     relative_diameter = 0.7, relative_distance = 0.2)
+# calculate and update divisive cover
+dc1 <- divisive_cover(distance_matrix = dist(data_matrix),
+                      delta = 0.1, 
+                      relative_diameter = 0.7)
 dc2 <- update_divisive_cover(dc1, relative_diameter = 0.5)
+
+# get one snapshot for plotting
 ddc <- subcover(dc2, relative_diameter = 0.7, method = "snapshot")
 
 \dontrun{

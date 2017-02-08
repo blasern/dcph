@@ -18,7 +18,8 @@
 #' 
 #' # run divisive cover
 #' dc <- divisive_cover(distance_matrix = dist(data_matrix), 
-#'                      relative_diameter = 0.2, relative_distance = 0.3)
+#'                      delta = 0.1, 
+#'                      relative_diameter = 0.2)
 #'                      
 #' # predict
 #' pred <- predict(dc, newdists = as.matrix(dist(data_matrix))[, 1:10])
@@ -34,7 +35,6 @@ predict.cover <- function(object, newdists, ...){
   if (nrow(newdists) != nrow(object@distance_matrix)){
     stop("newdists must contain distances to all points of the original data points")
   }
-  relative_distance <- object@parameters[["relative_distance"]]
   
   newcover <- object
   newcover@type = "predict"
@@ -50,6 +50,10 @@ predict.cover <- function(object, newdists, ...){
 divide_pred <- function(cover, index, distance_matrix){
   parent_patch <- cover@subsets[[cover@subsets[[index]]@parent]]
   
+  # find factor
+  delta <- cover@parameters[["delta"]]
+  relative_distance <- (1-2 * delta)/(1+2 * delta)
+  
   # base points
   basepoints <- parent_patch@basepoints
   bp <- basepoints %in% cover@subsets[[index]]@indices
@@ -59,7 +63,7 @@ divide_pred <- function(cover, index, distance_matrix){
   dist_b <- distance_matrix[b, parent_patch@predicted]
   
   # indices 
-  A <- parent_patch@predicted[dist_b / dist_a >= 1 - cover@parameters[["relative_distance"]]]
+  A <- parent_patch@predicted[dist_b / dist_a >= relative_distance]
   
   # update 
   cover@subsets[[index]]@predicted <- A
