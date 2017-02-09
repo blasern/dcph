@@ -59,7 +59,7 @@ plot_core <- function(cover, adjacency, coloring = NULL, legend = TRUE, device =
                    vertex.label=NA, 
                    vertex.color = coloring,
                    edge.width = resize(igraph::E(g1)$weight, min = 1, max = 5), 
-                   vertex.size = resize(sapply(cover, length), min = 10, max = 20), 
+                   vertex.size = resize(sapply(lapply(cover@subsets, slot, "indices"), length), min = 10, max = 20), 
                    ...
     )
   }
