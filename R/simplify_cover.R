@@ -15,7 +15,9 @@ simplify_cover <- function(x, method = c("none", "duplicates", "subsets")){
 }
 
 remove_duplicates <- function(x){
-  x@subsets <- x@subsets[!duplicated(lapply(sapply(x@subsets, slot, "indices"), sort))]
+  simple <- which(!duplicated(lapply(sapply(x@subsets, slot, "indices"), sort)))
+  x@subsets <- x@subsets[simple]
+  attr(x, "simple") <- simple
   x
 }
 
@@ -27,5 +29,6 @@ remove_subsets <- function(x){
   #
   is_subset[which(adjmat == dimmat, arr.ind = TRUE)[, 1]] <- TRUE
   x@subsets <- x@subsets[!is_subset]
+  attr(x, "simple") <- which(!is_subset)
   x
 }
