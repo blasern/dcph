@@ -5,7 +5,8 @@
 \title{Plot cover output}
 \usage{
 \method{plot}{cover}(x, coloring = NULL, simplify = c("none", "duplicates",
-  "subsets"), legend = TRUE, device = c("plot", "tkplot"), seed = 1, ...)
+  "subsets"), label = sapply(x@subsets, slot, "id"), legend = TRUE,
+  device = c("plot", "tkplot"), seed = 1, ...)
 }
 \arguments{
 \item{x}{A cover}
@@ -13,6 +14,8 @@
 \item{coloring}{color values. See \code{\link{cover_coloring}}}
 
 \item{simplify}{simplification method. See \code{\link{simplify_cover}}}
+
+\item{label}{how should the nodes be labeled. Set NA for no labels.}
 
 \item{legend}{should color legend be displayed}
 

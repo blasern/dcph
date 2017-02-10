@@ -5,6 +5,7 @@
 #' @param x A cover
 #' @param coloring color values. See \code{\link{cover_coloring}}
 #' @param simplify simplification method. See \code{\link{simplify_cover}}
+#' @param label how should the nodes be labeled. Set NA for no labels. 
 #' @param legend should color legend be displayed
 #' @param seed random seed used to make plots look the same 
 #' @param device use igraph::plot.igraph or igraph::tkplot
@@ -15,12 +16,19 @@
 #' @importFrom igraph graph_from_adjacency_matrix plot.igraph E
 #' @method plot cover
 #' @export
-plot.cover <- function(x, coloring = NULL, simplify = c("none", "duplicates", "subsets"), legend = TRUE, device = c("plot", "tkplot"), seed = 1, ...){
+plot.cover <- function(x, coloring = NULL, simplify = c("none", "duplicates", "subsets"), 
+                       label = sapply(x@subsets, slot, "id"), legend = TRUE, device = c("plot", "tkplot"), seed = 1, ...){
   x <- simplify_cover(x, method = match.arg(simplify))
-  plot_core(cover = x, adjacency = as.adjacency(x), coloring = coloring, legend = legend, device = device, seed = seed, ...)
+  if (simplify != "none"){
+    simple <- attr(x, "simple")
+    label <- label[simple]
+    coloring <- coloring[simple]
+  }
+  plot_core(cover = x, adjacency = as.adjacency(x), coloring = coloring, 
+            label = label, legend = legend, device = device, seed = seed, ...)
 }
 
-plot_core <- function(cover, adjacency, coloring = NULL, legend = TRUE, device = c("plot", "tkplot"), seed = 1, ...){
+plot_core <- function(cover, adjacency, label = NA, coloring = NULL, legend = TRUE, device = c("plot", "tkplot"), seed = 1, ...){
   # set random seed for repetability
   old_seed <- .Random.seed
   on.exit(.Random.seed <<- old_seed)
@@ -42,7 +50,7 @@ plot_core <- function(cover, adjacency, coloring = NULL, legend = TRUE, device =
   # plot
   if (device == "plot"){
     igraph::plot.igraph(g1, 
-                        vertex.label = NA, 
+                        vertex.label = label, 
                         vertex.color = coloring,
                         edge.width = resize(igraph::E(g1)$weight, min = 1, max = 5), 
                         vertex.size = resize(sapply(lapply(cover@subsets, slot, "indices"), length), min = 10, max = 20), 
@@ -56,7 +64,7 @@ plot_core <- function(cover, adjacency, coloring = NULL, legend = TRUE, device =
   }
   else {
     igraph::tkplot(g1, 
-                   vertex.label=NA, 
+                   vertex.label = label, 
                    vertex.color = coloring,
                    edge.width = resize(igraph::E(g1)$weight, min = 1, max = 5), 
                    vertex.size = resize(sapply(lapply(cover@subsets, slot, "indices"), length), min = 10, max = 20), 
