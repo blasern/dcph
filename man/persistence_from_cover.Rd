@@ -4,12 +4,14 @@
 \alias{persistence_from_cover}
 \title{Persistence from cover}
 \usage{
-persistence_from_cover(cover, max_dim, reduction)
+persistence_from_cover(cover, max_dim, representation, reduction)
 }
 \arguments{
 \item{cover}{The divisive cover}
 
 \item{max_dim}{The maximal dimension to calculate}
+
+\item{representation}{Boundary matrix representation from PHAT}
 
 \item{reduction}{Reduction method from PHAT}
 }

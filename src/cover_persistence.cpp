@@ -12,6 +12,25 @@
 #include <phat/algorithms/chunk_reduction.h>
 #include <phat/algorithms/row_reduction.h>
 #include <phat/algorithms/twist_reduction.h>
+#include <phat/algorithms/spectral_sequence_reduction.h>
+
+#include <phat/representations/vector_vector.h>
+#include <phat/representations/vector_heap.h>
+#include <phat/representations/vector_set.h>
+#include <phat/representations/vector_list.h>
+#include <phat/representations/sparse_pivot_column.h>
+#include <phat/representations/heap_pivot_column.h>
+#include <phat/representations/full_pivot_column.h>
+#include <phat/representations/bit_tree_pivot_column.h>
+
+typedef phat::sparse_pivot_column Sparse;
+typedef phat::heap_pivot_column Heap;
+typedef phat::full_pivot_column Full;
+typedef phat::bit_tree_pivot_column BitTree;
+typedef phat::vector_vector Vec_vec;
+typedef phat::vector_heap Vec_heap;
+typedef phat::vector_set Vec_set;
+typedef phat::vector_list Vec_list;
 
 // filtration_value, dimension, vertices
 typedef std::tuple<double, int, std::set<int>> filtration_tuple;
@@ -69,17 +88,41 @@ std::vector<std::set<int>> combinations(int n, int k){
   return out;
 }
 
+// write to output
+Rcpp::NumericMatrix return_output(phat::persistence_pairs dual_pairs, std::vector<filtration_tuple> filtration_vector){
+  Rcpp::NumericMatrix out(dual_pairs.get_num_pairs(), 3);
+  for( phat::index idx = 0; idx < dual_pairs.get_num_pairs(); idx++ ){
+    out(idx, 1) = dual_pairs.get_pair( idx ).first;
+    out(idx, 2) = dual_pairs.get_pair( idx ).second;
+  }
+  // add dimension and filter values
+  for (int i = 0; i < out.nrow(); ++i){
+    out(i, 0) = std::get<1>(filtration_vector[out(i, 1)]);
+    out(i, 1) = std::get<0>(filtration_vector[out(i, 1)]);
+    out(i, 2) = std::get<0>(filtration_vector[out(i, 2)]);
+  }
+  // return result
+  return out;
+}
+
+
+
 //' Persistence from cover
 //' 
 //' Calculate the persistence from the cover
 //' 
 //' @param cover The divisive cover
 //' @param max_dim The maximal dimension to calculate
+//' @param representation Boundary matrix representation from PHAT
 //' @param reduction Reduction method from PHAT
 // [[Rcpp::export]]
-Rcpp::NumericMatrix persistence_from_cover(Rcpp::S4 cover, int max_dim, Rcpp::String reduction) {
+Rcpp::NumericMatrix persistence_from_cover(Rcpp::S4 cover, int max_dim, Rcpp::String representation, Rcpp::String reduction) {
   // check that input is a cover
   if (!cover.inherits("cover")) Rcpp::stop("Input must be a cover");
+  
+  // translate input
+  std::string represent = representation;
+  std::string reduce = reduction;
   
   // extract indices and diameter
   Rcpp::List subsets = cover.slot("subsets");
@@ -200,6 +243,202 @@ Rcpp::NumericMatrix persistence_from_cover(Rcpp::S4 cover, int max_dim, Rcpp::St
   Rcpp::checkUserInterrupt();
   // Rcpp::Rcout << "Boundary matrix initialized" << std::endl;
   
+  phat::persistence_pairs dual_pairs;
+  
+  // Calculate persistent homology
+  if (!(represent.compare("sparse_pivot_column"))){
+    phat::boundary_matrix< Sparse > dual_boundary_matrix = boundary_matrix;
+    phat::persistence_pairs dual_pairs;
+    if (!(reduce.compare("twist"))){
+      phat::compute_persistence_pairs_dualized< phat::twist_reduction >( dual_pairs, dual_boundary_matrix );
+    }
+    if (!(reduce.compare("standard"))){
+      phat::compute_persistence_pairs_dualized< phat::standard_reduction >( dual_pairs, dual_boundary_matrix );
+    }
+    if (!(reduce.compare("chunk"))){
+      phat::compute_persistence_pairs_dualized< phat::chunk_reduction >( dual_pairs, dual_boundary_matrix );
+    }
+    if (!(reduce.compare("row"))){
+      phat::compute_persistence_pairs_dualized< phat::row_reduction >( dual_pairs, dual_boundary_matrix );
+    }  
+    if (!(reduce.compare("spectral_sequence"))){
+      phat::compute_persistence_pairs_dualized< phat::spectral_sequence_reduction >( dual_pairs, dual_boundary_matrix );
+    }  
+    // sort the persistence pairs by birth index
+    dual_pairs.sort();
+    // calculate and return output matrix
+    Rcpp::NumericMatrix out = return_output(dual_pairs, filtration_vector);
+    return out;
+  }
+  if (!(represent.compare("heap_pivot_column"))){
+    phat::boundary_matrix< Heap > dual_boundary_matrix = boundary_matrix;
+    phat::persistence_pairs dual_pairs;
+    if (!(reduce.compare("twist"))){
+      phat::compute_persistence_pairs_dualized< phat::twist_reduction >( dual_pairs, dual_boundary_matrix );
+    }
+    if (!(reduce.compare("standard"))){
+      phat::compute_persistence_pairs_dualized< phat::standard_reduction >( dual_pairs, dual_boundary_matrix );
+    }
+    if (!(reduce.compare("chunk"))){
+      phat::compute_persistence_pairs_dualized< phat::chunk_reduction >( dual_pairs, dual_boundary_matrix );
+    }
+    if (!(reduce.compare("row"))){
+      phat::compute_persistence_pairs_dualized< phat::row_reduction >( dual_pairs, dual_boundary_matrix );
+    }  
+    if (!(reduce.compare("spectral_sequence"))){
+      phat::compute_persistence_pairs_dualized< phat::spectral_sequence_reduction >( dual_pairs, dual_boundary_matrix );
+    }  
+    // sort the persistence pairs by birth index
+    dual_pairs.sort();
+    // calculate and return output matrix
+    Rcpp::NumericMatrix out = return_output(dual_pairs, filtration_vector);
+    return out;
+  }
+  if (!(represent.compare("full_pivot_column"))){
+    phat::boundary_matrix< Full > dual_boundary_matrix = boundary_matrix;
+    phat::persistence_pairs dual_pairs;
+    if (!(reduce.compare("twist"))){
+      phat::compute_persistence_pairs_dualized< phat::twist_reduction >( dual_pairs, dual_boundary_matrix );
+    }
+    if (!(reduce.compare("standard"))){
+      phat::compute_persistence_pairs_dualized< phat::standard_reduction >( dual_pairs, dual_boundary_matrix );
+    }
+    if (!(reduce.compare("chunk"))){
+      phat::compute_persistence_pairs_dualized< phat::chunk_reduction >( dual_pairs, dual_boundary_matrix );
+    }
+    if (!(reduce.compare("row"))){
+      phat::compute_persistence_pairs_dualized< phat::row_reduction >( dual_pairs, dual_boundary_matrix );
+    }  
+    if (!(reduce.compare("spectral_sequence"))){
+      phat::compute_persistence_pairs_dualized< phat::spectral_sequence_reduction >( dual_pairs, dual_boundary_matrix );
+    }  
+    // sort the persistence pairs by birth index
+    dual_pairs.sort();
+    // calculate and return output matrix
+    Rcpp::NumericMatrix out = return_output(dual_pairs, filtration_vector);
+    return out;
+  }
+  if (!(represent.compare("bit_tree_pivot_column"))){
+    phat::boundary_matrix< BitTree > dual_boundary_matrix = boundary_matrix;
+    phat::persistence_pairs dual_pairs;
+    if (!(reduce.compare("twist"))){
+      phat::compute_persistence_pairs_dualized< phat::twist_reduction >( dual_pairs, dual_boundary_matrix );
+    }
+    if (!(reduce.compare("standard"))){
+      phat::compute_persistence_pairs_dualized< phat::standard_reduction >( dual_pairs, dual_boundary_matrix );
+    }
+    if (!(reduce.compare("chunk"))){
+      phat::compute_persistence_pairs_dualized< phat::chunk_reduction >( dual_pairs, dual_boundary_matrix );
+    }
+    if (!(reduce.compare("row"))){
+      phat::compute_persistence_pairs_dualized< phat::row_reduction >( dual_pairs, dual_boundary_matrix );
+    }  
+    if (!(reduce.compare("spectral_sequence"))){
+      phat::compute_persistence_pairs_dualized< phat::spectral_sequence_reduction >( dual_pairs, dual_boundary_matrix );
+    }  
+    // sort the persistence pairs by birth index
+    dual_pairs.sort();
+    // calculate and return output matrix
+    Rcpp::NumericMatrix out = return_output(dual_pairs, filtration_vector);
+    return out;
+  }
+  if (!(represent.compare("vector_vector"))){
+    phat::boundary_matrix< Vec_vec > dual_boundary_matrix = boundary_matrix;
+    phat::persistence_pairs dual_pairs;
+    if (!(reduce.compare("twist"))){
+      phat::compute_persistence_pairs_dualized< phat::twist_reduction >( dual_pairs, dual_boundary_matrix );
+    }
+    if (!(reduce.compare("standard"))){
+      phat::compute_persistence_pairs_dualized< phat::standard_reduction >( dual_pairs, dual_boundary_matrix );
+    }
+    if (!(reduce.compare("chunk"))){
+      phat::compute_persistence_pairs_dualized< phat::chunk_reduction >( dual_pairs, dual_boundary_matrix );
+    }
+    if (!(reduce.compare("row"))){
+      phat::compute_persistence_pairs_dualized< phat::row_reduction >( dual_pairs, dual_boundary_matrix );
+    }  
+    if (!(reduce.compare("spectral_sequence"))){
+      phat::compute_persistence_pairs_dualized< phat::spectral_sequence_reduction >( dual_pairs, dual_boundary_matrix );
+    }  
+    // sort the persistence pairs by birth index
+    dual_pairs.sort();
+    // calculate and return output matrix
+    Rcpp::NumericMatrix out = return_output(dual_pairs, filtration_vector);
+    return out;
+  }
+  if (!(represent.compare("vector_heap"))){
+    phat::boundary_matrix< Vec_heap > dual_boundary_matrix = boundary_matrix;
+    phat::persistence_pairs dual_pairs;
+    if (!(reduce.compare("twist"))){
+      phat::compute_persistence_pairs_dualized< phat::twist_reduction >( dual_pairs, dual_boundary_matrix );
+    }
+    if (!(reduce.compare("standard"))){
+      phat::compute_persistence_pairs_dualized< phat::standard_reduction >( dual_pairs, dual_boundary_matrix );
+    }
+    if (!(reduce.compare("chunk"))){
+      phat::compute_persistence_pairs_dualized< phat::chunk_reduction >( dual_pairs, dual_boundary_matrix );
+    }
+    if (!(reduce.compare("row"))){
+      phat::compute_persistence_pairs_dualized< phat::row_reduction >( dual_pairs, dual_boundary_matrix );
+    }  
+    if (!(reduce.compare("spectral_sequence"))){
+      phat::compute_persistence_pairs_dualized< phat::spectral_sequence_reduction >( dual_pairs, dual_boundary_matrix );
+    }  
+    // sort the persistence pairs by birth index
+    dual_pairs.sort();
+    // calculate and return output matrix
+    Rcpp::NumericMatrix out = return_output(dual_pairs, filtration_vector);
+    return out;
+  }
+  if (!(represent.compare("vector_set"))){
+    phat::boundary_matrix< Vec_set > dual_boundary_matrix = boundary_matrix;
+    phat::persistence_pairs dual_pairs;
+    if (!(reduce.compare("twist"))){
+      phat::compute_persistence_pairs_dualized< phat::twist_reduction >( dual_pairs, dual_boundary_matrix );
+    }
+    if (!(reduce.compare("standard"))){
+      phat::compute_persistence_pairs_dualized< phat::standard_reduction >( dual_pairs, dual_boundary_matrix );
+    }
+    if (!(reduce.compare("chunk"))){
+      phat::compute_persistence_pairs_dualized< phat::chunk_reduction >( dual_pairs, dual_boundary_matrix );
+    }
+    if (!(reduce.compare("row"))){
+      phat::compute_persistence_pairs_dualized< phat::row_reduction >( dual_pairs, dual_boundary_matrix );
+    }  
+    if (!(reduce.compare("spectral_sequence"))){
+      phat::compute_persistence_pairs_dualized< phat::spectral_sequence_reduction >( dual_pairs, dual_boundary_matrix );
+    }  
+    // sort the persistence pairs by birth index
+    dual_pairs.sort();
+    // calculate and return output matrix
+    Rcpp::NumericMatrix out = return_output(dual_pairs, filtration_vector);
+    return out;
+  }
+  if (!(represent.compare("vector_list"))){
+    phat::boundary_matrix< Vec_list > dual_boundary_matrix = boundary_matrix;
+    phat::persistence_pairs dual_pairs;
+    if (!(reduce.compare("twist"))){
+      phat::compute_persistence_pairs_dualized< phat::twist_reduction >( dual_pairs, dual_boundary_matrix );
+    }
+    if (!(reduce.compare("standard"))){
+      phat::compute_persistence_pairs_dualized< phat::standard_reduction >( dual_pairs, dual_boundary_matrix );
+    }
+    if (!(reduce.compare("chunk"))){
+      phat::compute_persistence_pairs_dualized< phat::chunk_reduction >( dual_pairs, dual_boundary_matrix );
+    }
+    if (!(reduce.compare("row"))){
+      phat::compute_persistence_pairs_dualized< phat::row_reduction >( dual_pairs, dual_boundary_matrix );
+    }  
+    if (!(reduce.compare("spectral_sequence"))){
+      phat::compute_persistence_pairs_dualized< phat::spectral_sequence_reduction >( dual_pairs, dual_boundary_matrix );
+    }  
+    // sort the persistence pairs by birth index
+    dual_pairs.sort();
+    // calculate and return output matrix
+    Rcpp::NumericMatrix out = return_output(dual_pairs, filtration_vector);
+    return out;
+  }
+  
   // // print some information of the boundary matrix:
   // Rcpp::Rcout << std::endl;
   // Rcpp::Rcout << "The boundary matrix has " << boundary_matrix.get_num_cols() << " columns: " << std::endl;
@@ -216,32 +455,11 @@ Rcpp::NumericMatrix persistence_from_cover(Rcpp::S4 cover, int max_dim, Rcpp::St
   // }
   // Rcpp::Rcout << "Overall, the boundary matrix has " << boundary_matrix.get_num_entries() << " entries." << std::endl;
 
-  // define the object to hold the resulting persistence pairs
-  // Rcpp::Rcout << "Calculating persistent homology... " << std::endl;
-  phat::persistence_pairs pairs;
-
   // choose an algorithm (choice affects performance) and compute the persistence pair
   // (modifies boundary_matrix)
   // standard_reduction, chunk_reduction, row_reduction, twist_reduction
   // phat::compute_persistence_pairs< phat::twist_reduction >( pairs, boundary_matrix );
-  std::string reduce = reduction;
-  if (!(reduce.compare("twist"))){
-    phat::compute_persistence_pairs< phat::twist_reduction >( pairs, boundary_matrix );
-  }
-  if (!(reduce.compare("standard"))){
-    phat::compute_persistence_pairs< phat::standard_reduction >( pairs, boundary_matrix );
-  }
-  if (!(reduce.compare("chunk"))){
-    phat::compute_persistence_pairs< phat::chunk_reduction >( pairs, boundary_matrix );
-  }
-  if (!(reduce.compare("row"))){
-    phat::compute_persistence_pairs< phat::row_reduction >( pairs, boundary_matrix );
-  }  
-  Rcpp::checkUserInterrupt();
 
-  // sort the persistence pairs by birth index
-  pairs.sort();
-  Rcpp::checkUserInterrupt();
   // Rcpp::Rcout << "Persistent homology calculated... " << std::endl;
 
   // // print the pairs:
@@ -250,18 +468,5 @@ Rcpp::NumericMatrix persistence_from_cover(Rcpp::S4 cover, int max_dim, Rcpp::St
   // for( phat::index idx = 0; idx < pairs.get_num_pairs(); idx++ )
   //   Rcpp::Rcout << "Birth: " << pairs.get_pair( idx ).first << ", Death: " << pairs.get_pair( idx ).second << std::endl;
 
-  // write to output
-  Rcpp::NumericMatrix out(pairs.get_num_pairs(), 3);
-  for( phat::index idx = 0; idx < pairs.get_num_pairs(); idx++ ){
-    out(idx, 1) = pairs.get_pair( idx ).first;
-    out(idx, 2) = pairs.get_pair( idx ).second;
-  }
-  // add dimension and filter values
-  for (int i = 0; i < out.nrow(); ++i){
-    out(i, 0) = std::get<1>(filtration_vector[out(i, 1)]);
-    out(i, 1) = std::get<0>(filtration_vector[out(i, 1)]);
-    out(i, 2) = std::get<0>(filtration_vector[out(i, 2)]);
-  }
-  // Rcpp::NumericMatrix out(3, 2);
-  return out;
+
 }
