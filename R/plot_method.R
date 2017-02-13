@@ -19,7 +19,8 @@
 plot.cover <- function(x, coloring = NULL, simplify = c("none", "duplicates", "subsets"), 
                        label = sapply(x@subsets, slot, "id"), legend = TRUE, device = c("plot", "tkplot"), seed = 1, ...){
   force(label)
-  x <- simplify_cover(x, method = match.arg(simplify))
+  simplify <-  match.arg(simplify)
+  x <- simplify_cover(x, method = simplify)
   if (simplify != "none"){
     simple <- attr(x, "simple")
     label <- label[simple]
