@@ -246,6 +246,8 @@ Rcpp::NumericMatrix persistence_from_cover(Rcpp::S4 cover, int max_dim, Rcpp::St
   phat::persistence_pairs dual_pairs;
   
   // Calculate persistent homology
+  // choose an algorithm (choice affects performance) and compute the persistence pair
+  // (modifies boundary_matrix)
   if (!(represent.compare("sparse_pivot_column"))){
     phat::boundary_matrix< Sparse > dual_boundary_matrix = boundary_matrix;
     phat::persistence_pairs dual_pairs;
@@ -438,35 +440,8 @@ Rcpp::NumericMatrix persistence_from_cover(Rcpp::S4 cover, int max_dim, Rcpp::St
     Rcpp::NumericMatrix out = return_output(dual_pairs, filtration_vector);
     return out;
   }
-  
-  // // print some information of the boundary matrix:
-  // Rcpp::Rcout << std::endl;
-  // Rcpp::Rcout << "The boundary matrix has " << boundary_matrix.get_num_cols() << " columns: " << std::endl;
-  // for( phat::index col_idx = 0; col_idx < boundary_matrix.get_num_cols(); col_idx++ ) {
-  //   Rcpp::Rcout << "Colum " << col_idx << " represents a cell of dimension " << (int)boundary_matrix.get_dim( col_idx ) << ". ";
-  //   if( !boundary_matrix.is_empty( col_idx ) ) {
-  //     std::vector< phat::index > temp_col;
-  //     boundary_matrix.get_col( col_idx, temp_col );
-  //     Rcpp::Rcout << "Its boundary consists of the cells";
-  //     for( phat::index idx = 0; idx < (phat::index)temp_col.size(); idx++ )
-  //       Rcpp::Rcout << " " << temp_col[ idx ];
-  //   }
-  //   Rcpp::Rcout << std::endl;
-  // }
-  // Rcpp::Rcout << "Overall, the boundary matrix has " << boundary_matrix.get_num_entries() << " entries." << std::endl;
 
-  // choose an algorithm (choice affects performance) and compute the persistence pair
-  // (modifies boundary_matrix)
-  // standard_reduction, chunk_reduction, row_reduction, twist_reduction
-  // phat::compute_persistence_pairs< phat::twist_reduction >( pairs, boundary_matrix );
-
-  // Rcpp::Rcout << "Persistent homology calculated... " << std::endl;
-
-  // // print the pairs:
-  // Rcpp::Rcout << std::endl;
-  // Rcpp::Rcout << "There are " << pairs.get_num_pairs() << " persistence pairs: " << std::endl;
-  // for( phat::index idx = 0; idx < pairs.get_num_pairs(); idx++ )
-  //   Rcpp::Rcout << "Birth: " << pairs.get_pair( idx ).first << ", Death: " << pairs.get_pair( idx ).second << std::endl;
-
-
+  // in case nothing gets returned
+  Rcpp::NumericMatrix out;
+  return out;
 }
