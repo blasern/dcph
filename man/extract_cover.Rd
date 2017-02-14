@@ -6,16 +6,16 @@
 \alias{index_from_cover_id}
 \title{Extract data from cover}
 \usage{
-index_from_cover_id(data, cover, ids)
+index_from_cover_id(cover, ids)
 
 data_from_cover_id(data, cover, ids)
 }
 \arguments{
-\item{data}{Data from which to extract subset}
-
 \item{cover}{A cover}
 
 \item{ids}{Cover ids, for example extracted from plot}
+
+\item{data}{Data from which to extract subset}
 }
 \description{
 Functions to extract relevant data from covers
