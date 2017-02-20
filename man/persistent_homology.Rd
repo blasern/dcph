@@ -4,13 +4,18 @@
 \alias{persistent_homology}
 \title{Persistent homology}
 \usage{
-persistent_homology(cover, max_dim = 1, reduction = c("twist", "standard",
-  "chunk", "row"))
+persistent_homology(cover, max_dim = 1,
+  representation = c("bit_tree_pivot_column", "vector_vector",
+  "sparse_pivot_column", "heap_pivot_column", "full_pivot_column",
+  "vector_heap", "vector_set", "vector_list"), reduction = c("twist",
+  "standard", "chunk", "row", "spectral_sequence"))
 }
 \arguments{
 \item{cover}{The divisive cover}
 
 \item{max_dim}{The maximal dimension to calculate}
+
+\item{representation}{Boundary matrix representation from PHAT}
 
 \item{reduction}{Reduction method from PHAT}
 }
@@ -42,5 +47,7 @@ plot_persistence(pers, mode = "bars")
 }
 \references{
 Bauer U., Kerber M., Reininghaus J., Wagner H. (2014) PHAT - Persistent Homology Algorithms Toolbox.
+
+https://bitbucket.org/phat-code/phat
 }
 

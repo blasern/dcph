@@ -18,11 +18,15 @@
 #' @export
 plot.cover <- function(x, coloring = NULL, simplify = c("none", "duplicates", "subsets"), 
                        label = sapply(x@subsets, slot, "id"), legend = TRUE, device = c("plot", "tkplot"), seed = 1, ...){
-  x <- simplify_cover(x, method = match.arg(simplify))
+  force(label)
+  simplify <-  match.arg(simplify)
+  x <- simplify_cover(x, method = simplify)
   if (simplify != "none"){
     simple <- attr(x, "simple")
     label <- label[simple]
+    color_legend <- attr(coloring, "legend")
     coloring <- coloring[simple]
+    attr(coloring, "legend") <- color_legend 
   }
   plot_core(cover = x, adjacency = as.adjacency(x), coloring = coloring, 
             label = label, legend = legend, device = device, seed = seed, ...)
