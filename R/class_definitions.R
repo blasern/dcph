@@ -43,7 +43,8 @@ setClass(Class = "cover",
                                                   parameters = "list", type = "character"), 
                   validity = check_cover)
 
-cover <- function(distance_matrix, data, subsets, parameters = list(), 
+cover <- function(distance_matrix = matrix(numeric(0)), data = matrix(numeric(0)), 
+                  subsets, parameters = list(), 
                   type = c("divisive", "snapshot", "predict", "concat")){
   new("cover", 
       distance_matrix = as.matrix(distance_matrix), 
