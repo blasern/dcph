@@ -11,7 +11,7 @@ simplify_cover <- function(x, method = c("none", "duplicates", "subsets")){
   switch(method, 
          'none' = x, 
          'duplicates' = remove_duplicates(x), 
-         'subsets' = remove_subsets(x))
+         'subsets' = remove_subsets(remove_duplicates(x)))
 }
 
 remove_duplicates <- function(x){
