@@ -52,8 +52,8 @@ fast_divisive_cover <- function(data,
   diameter <- as.numeric(as.matrix(distance_function(data_matrix[basepoints[1], ], data_matrix[basepoints[2], ])))
   cover <- cover(data = as.matrix(data),
                  subsets = list(patch(1:N, basepoints = basepoints, id = 1L, diameter = diameter, birth = diameter)), 
-                 parameters = list(delta = delta, relative_diameter = relative_diameter), 
-                 type = "divisive")
+                 parameters = list(delta = delta, relative_diameter = relative_diameter, distance_function = distance_function), 
+                 type = "fast_divisive")
   
   # minimal radius
   min_diam <- diameter * relative_diameter

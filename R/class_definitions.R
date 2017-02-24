@@ -45,7 +45,7 @@ setClass(Class = "cover",
 
 cover <- function(distance_matrix = matrix(numeric(0)), data = matrix(numeric(0)), 
                   subsets, parameters = list(), 
-                  type = c("divisive", "snapshot", "predict", "concat")){
+                  type = c("divisive", "fast_divisive", "snapshot", "predict", "concat")){
   new("cover", 
       distance_matrix = as.matrix(distance_matrix), 
       data = as.matrix(data), 

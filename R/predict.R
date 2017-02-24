@@ -31,20 +31,40 @@
 #' plot(sc, coloring = col)
 #' }
 #' @export
-predict.cover <- function(object, newdists, ...){
-  if (nrow(newdists) != nrow(object@distance_matrix)){
+predict.cover <- function(object, newdists = NULL, newdata = NULL, ...){
+  if (!(object@type %in% c("divisive", "fast_divisive"))){
+    stop("can only predict from divisive cover")
+  }
+  if (!is.null(newdists) && nrow(newdists) != nrow(object@distance_matrix)){
     stop("newdists must contain distances to all points of the original data points")
+  }
+  if (!is.null(newdata) && ncol(newdata) != ncol(object@data)){
+    stop("newdata must be of same dimension as original data")
   }
   
   newcover <- object
   newcover@type = "predict"
-  newcover@subsets[[1]]@predicted <- 1:ncol(newdists)
-  for (ix in 2:length(object@subsets)){
-    newcover <- divide_pred(cover = newcover, 
-                            index = ix, 
-                            distance_matrix = newdists)
+  
+  if (object@type == "divisive") {
+    newcover@subsets[[1]]@predicted <- 1:ncol(newdists)
+    for (ix in 2:length(object@subsets)){
+      newcover <- divide_pred(cover = newcover, 
+                              index = ix, 
+                              distance_matrix = newdists)
+    }
   }
-  newcover
+  if (object@type == "fast_divisive") {
+    newcover@subsets[[1]]@predicted <- 1:nrow(newdata)
+    distance_function <- object@parameters[["distance_function"]]
+    for (ix in 2:length(object@subsets)){
+      newcover <- fast_divide_pred(cover = newcover, 
+                                   index = ix, 
+                                   data = newdata, 
+                                   distance_function = distance_function)
+    }
+  }
+
+  return(newcover)
 }
 
 divide_pred <- function(cover, index, distance_matrix){
@@ -65,6 +85,31 @@ divide_pred <- function(cover, index, distance_matrix){
   # indices 
   A <- parent_patch@predicted[dist_b / dist_a >= relative_distance]
   
+  # update 
+  cover@subsets[[index]]@predicted <- A
+  
+  # return cover
+  return(cover)
+}
+
+fast_divide_pred <- function(cover, index, data, distance_function){
+  parent_patch <- cover@subsets[[cover@subsets[[index]]@parent]]
+  
+  # find factor
+  delta <- cover@parameters[["delta"]]
+  relative_distance <- (1-2 * delta)/(1+2 * delta)
+  
+  # base points
+  basepoints <- parent_patch@basepoints
+  bp <- basepoints %in% cover@subsets[[index]]@indices
+  a <- basepoints[bp]
+  b <- basepoints[!bp]
+  dist_a <- as.matrix(distance_function(cover@data[a, ], data[parent_patch@predicted, ]))
+  dist_b <- as.matrix(distance_function(cover@data[b, ], data[parent_patch@predicted, ]))
+  
+  # indices 
+  A <- parent_patch@predicted[dist_b / dist_a >= relative_distance]
+
   # update 
   cover@subsets[[index]]@predicted <- A
   
