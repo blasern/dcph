@@ -5,6 +5,7 @@
 #' @param object a divisive cover
 #' @param newdists a matrix of distances between the new points and the 
 #' points used to train the divisive cover
+#' @param newdata new data in case of fast divisive cover
 #' @param ... further arguments passed from other methods
 #' @examples 
 #' # generate data

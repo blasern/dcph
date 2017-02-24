@@ -11,7 +11,7 @@ simplify_cover <- function(x, method = c("none", "duplicates", "subsets")){
   switch(method, 
          'none' = x, 
          'duplicates' = remove_duplicates(x), 
-         'subsets' = remove_subsets(remove_duplicates(x)))
+         'subsets' = remove_subsets(x))
 }
 
 remove_duplicates <- function(x){
@@ -22,6 +22,8 @@ remove_duplicates <- function(x){
 }
 
 remove_subsets <- function(x){
+  # remove duplicates first
+  x <- remove_duplicates(x)
   # which are the subsets
   is_subset <- rep(FALSE, length(x@subsets))
   adjmat <- as.adjacency(x)
@@ -29,6 +31,6 @@ remove_subsets <- function(x){
   #
   is_subset[which(adjmat == dimmat, arr.ind = TRUE)[, 1]] <- TRUE
   x@subsets <- x@subsets[!is_subset]
-  attr(x, "simple") <- which(!is_subset)
+  attr(x, "simple") <- attr(x, "simple")[!is_subset]
   x
 }

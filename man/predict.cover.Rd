@@ -4,13 +4,15 @@
 \alias{predict.cover}
 \title{Predict}
 \usage{
-\method{predict}{cover}(object, newdists, ...)
+\method{predict}{cover}(object, newdists = NULL, newdata = NULL, ...)
 }
 \arguments{
 \item{object}{a divisive cover}
 
 \item{newdists}{a matrix of distances between the new points and the 
 points used to train the divisive cover}
+
+\item{newdata}{new data in case of fast divisive cover}
 
 \item{...}{further arguments passed from other methods}
 }

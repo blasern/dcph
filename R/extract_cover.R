@@ -4,7 +4,7 @@
 #' 
 #' @param cover A cover
 #' @param ids Cover ids, for example extracted from plot
-#' @param weigths Should cover weights be calculated
+#' @param weights Should cover weights be calculated
 #' @param data Data from which to extract subset
 #' @name extract_cover
 NULL

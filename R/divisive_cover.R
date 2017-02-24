@@ -38,7 +38,7 @@ divisive_cover <- function(distance_matrix,
   if (relative_diameter == 0 && max_nodes == Inf){
     stop("Either relative diameter or max_nodes has to be specified.")
   }
-  stopifnot(0 <= delta && delta <= 0.5)
+  stopifnot(0 <= delta && delta < 0.5)
 
   # find factor
   relative_distance <- (1-2 * delta)/(1+2 * delta)

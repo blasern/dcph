@@ -6,14 +6,16 @@
 \alias{index_from_cover_id}
 \title{Extract data from cover}
 \usage{
-index_from_cover_id(cover, ids)
+index_from_cover_id(cover, ids, weights = FALSE)
 
-data_from_cover_id(data, cover, ids)
+data_from_cover_id(data, cover, ids, weights = FALSE)
 }
 \arguments{
 \item{cover}{A cover}
 
 \item{ids}{Cover ids, for example extracted from plot}
+
+\item{weights}{Should cover weights be calculated}
 
 \item{data}{Data from which to extract subset}
 }
