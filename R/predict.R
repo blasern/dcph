@@ -105,8 +105,8 @@ fast_divide_pred <- function(cover, index, data, distance_function){
   bp <- basepoints %in% cover@subsets[[index]]@indices
   a <- basepoints[bp]
   b <- basepoints[!bp]
-  dist_a <- as.matrix(distance_function(cover@data[a, , drop = TRUE], data[parent_patch@predicted, , drop = TRUE]))
-  dist_b <- as.matrix(distance_function(cover@data[b, , drop = TRUE], data[parent_patch@predicted, , drop = TRUE]))
+  dist_a <- as.matrix(distance_function(cover@data[a, , drop = FALSE], data[parent_patch@predicted, , drop = FALSE]))
+  dist_b <- as.matrix(distance_function(cover@data[b, , drop = FALSE], data[parent_patch@predicted, , drop = FALSE]))
   
   # indices 
   A <- parent_patch@predicted[dist_b / dist_a >= relative_distance]
