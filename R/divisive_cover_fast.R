@@ -49,7 +49,7 @@ fast_divisive_cover <- function(data,
   
   # generate initial cover
   basepoints <- get_basepoints_fast(data_matrix, distance_function)
-  diameter <- as.numeric(as.matrix(distance_function(data_matrix[basepoints[1], ], data_matrix[basepoints[2], ])))
+  diameter <- as.numeric(as.matrix(distance_function(data_matrix[basepoints[1], , drop = FALSE], data_matrix[basepoints[2], , drop = FALSE])))
   cover <- cover(data = as.matrix(data),
                  subsets = list(patch(1:N, basepoints = basepoints, id = 1L, diameter = diameter, birth = diameter)), 
                  parameters = list(delta = delta, relative_diameter = relative_diameter, distance_function = distance_function), 
@@ -74,8 +74,8 @@ fast_divisive_cover <- function(data,
 }
 
 get_basepoints_fast <- function(mat, distance_function){
-  a <- which.max(as.matrix(distance_function(mat[1, ], mat)))
-  b <- which.max(as.matrix(distance_function(mat[a, ], mat)))
+  a <- which.max(as.matrix(distance_function(mat[1, , drop = FALSE], mat)))
+  b <- which.max(as.matrix(distance_function(mat[a, , drop = FALSE], mat)))
   return(c(a, b))
 }
 
@@ -105,14 +105,14 @@ divide_fast <- function(cover, index, data_matrix, distance_function, relative_d
   # add new patches
   cover@subsets[length(cover@subsets) + 1:2] <- list(patch(A, 
                                                            basepoints = basepoints_a, 
-                                                           diameter = as.numeric(as.matrix(distance_function(data_matrix[basepoints_a[1], ], data_matrix[basepoints_a[2], ]))), 
+                                                           diameter = as.numeric(as.matrix(distance_function(data_matrix[basepoints_a[1], , drop = FALSE], data_matrix[basepoints_a[2], , drop = FALSE]))), 
                                                            birth = divide_patch@death,
                                                            parent = divide_patch@id, 
                                                            ancestor = c(divide_patch@id, divide_patch@ancestor), 
                                                            id = length(cover@subsets) + 1L), 
                                                      patch(B, 
                                                            basepoints = basepoints_b, 
-                                                           diameter = as.numeric(as.matrix(distance_function(data_matrix[basepoints_b[1], ], data_matrix[basepoints_b[2], ]))), 
+                                                           diameter = as.numeric(as.matrix(distance_function(data_matrix[basepoints_b[1], , drop = FALSE], data_matrix[basepoints_b[2], , drop = FALSE]))), 
                                                            birth = divide_patch@death, 
                                                            parent = divide_patch@id, 
                                                            ancestor = c(divide_patch@id, divide_patch@ancestor), 
