@@ -21,7 +21,7 @@ cover_matrix <- function(cover){
 #' @export
 predict_cover_matrix <- function(cover){
   # get number of points
-  npoints <- length(unique(unlist(lapply(cover@predict, slot, "predicted"))))
+  npoints <- length(unique(unlist(lapply(cover@subsets, slot, "predicted"))))
   # calculate cover matrix
   sapply(cover@subsets, function(x, npoints){
     vec <- rep(0, npoints)
