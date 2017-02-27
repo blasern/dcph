@@ -35,8 +35,8 @@ subcover <- function(cover, relative_diameter, method = c("divisive", "snapshot"
   # survivors
   surv <- switch(method, 
          "divisive" = diameter < birth, 
-         "snapshot" = diameter > death & diameter < birth, 
-         "range" = diameter[1] < birth & diameter[2] > death) 
+         "snapshot" = diameter >= death & diameter < birth, 
+         "range" = diameter[1] < birth & diameter[2] >= death) 
   # new cover
   cv <- cover
   cv@parameters$relative_diameter <- relative_diameter
