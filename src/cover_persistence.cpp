@@ -4,9 +4,6 @@
 // wrapper algorithm that computes the persistence pairs of a given boundary matrix using a specified algorithm
 #include <phat/compute_persistence_pairs.h>
 
-// main data structure (choice affects performance)
-#include <phat/representations/vector_vector.h>
-
 // algorithm (choice affects performance)
 #include <phat/algorithms/standard_reduction.h>
 #include <phat/algorithms/chunk_reduction.h>
@@ -14,6 +11,7 @@
 #include <phat/algorithms/twist_reduction.h>
 #include <phat/algorithms/spectral_sequence_reduction.h>
 
+// main data structure (choice affects performance)
 #include <phat/representations/vector_vector.h>
 #include <phat/representations/vector_heap.h>
 #include <phat/representations/vector_set.h>
@@ -22,15 +20,6 @@
 #include <phat/representations/heap_pivot_column.h>
 #include <phat/representations/full_pivot_column.h>
 #include <phat/representations/bit_tree_pivot_column.h>
-
-typedef phat::sparse_pivot_column Sparse;
-typedef phat::heap_pivot_column Heap;
-typedef phat::full_pivot_column Full;
-typedef phat::bit_tree_pivot_column BitTree;
-typedef phat::vector_vector Vec_vec;
-typedef phat::vector_heap Vec_heap;
-typedef phat::vector_set Vec_set;
-typedef phat::vector_list Vec_list;
 
 // filtration_value, dimension, vertices
 typedef std::tuple<double, int, std::set<int>> filtration_tuple;
@@ -249,7 +238,7 @@ Rcpp::NumericMatrix persistence_from_cover(Rcpp::S4 cover, int max_dim, Rcpp::St
   // choose an algorithm (choice affects performance) and compute the persistence pair
   // (modifies boundary_matrix)
   if (!(represent.compare("sparse_pivot_column"))){
-    phat::boundary_matrix< Sparse > dual_boundary_matrix = boundary_matrix;
+    phat::boundary_matrix< phat::sparse_pivot_column > dual_boundary_matrix = boundary_matrix;
     phat::persistence_pairs dual_pairs;
     if (!(reduce.compare("twist"))){
       phat::compute_persistence_pairs_dualized< phat::twist_reduction >( dual_pairs, dual_boundary_matrix );
@@ -273,7 +262,7 @@ Rcpp::NumericMatrix persistence_from_cover(Rcpp::S4 cover, int max_dim, Rcpp::St
     return out;
   }
   if (!(represent.compare("heap_pivot_column"))){
-    phat::boundary_matrix< Heap > dual_boundary_matrix = boundary_matrix;
+    phat::boundary_matrix< phat::heap_pivot_column > dual_boundary_matrix = boundary_matrix;
     phat::persistence_pairs dual_pairs;
     if (!(reduce.compare("twist"))){
       phat::compute_persistence_pairs_dualized< phat::twist_reduction >( dual_pairs, dual_boundary_matrix );
@@ -297,7 +286,7 @@ Rcpp::NumericMatrix persistence_from_cover(Rcpp::S4 cover, int max_dim, Rcpp::St
     return out;
   }
   if (!(represent.compare("full_pivot_column"))){
-    phat::boundary_matrix< Full > dual_boundary_matrix = boundary_matrix;
+    phat::boundary_matrix< phat::full_pivot_column > dual_boundary_matrix = boundary_matrix;
     phat::persistence_pairs dual_pairs;
     if (!(reduce.compare("twist"))){
       phat::compute_persistence_pairs_dualized< phat::twist_reduction >( dual_pairs, dual_boundary_matrix );
@@ -321,7 +310,7 @@ Rcpp::NumericMatrix persistence_from_cover(Rcpp::S4 cover, int max_dim, Rcpp::St
     return out;
   }
   if (!(represent.compare("bit_tree_pivot_column"))){
-    phat::boundary_matrix< BitTree > dual_boundary_matrix = boundary_matrix;
+    phat::boundary_matrix< phat::bit_tree_pivot_column > dual_boundary_matrix = boundary_matrix;
     phat::persistence_pairs dual_pairs;
     if (!(reduce.compare("twist"))){
       phat::compute_persistence_pairs_dualized< phat::twist_reduction >( dual_pairs, dual_boundary_matrix );
@@ -345,7 +334,7 @@ Rcpp::NumericMatrix persistence_from_cover(Rcpp::S4 cover, int max_dim, Rcpp::St
     return out;
   }
   if (!(represent.compare("vector_vector"))){
-    phat::boundary_matrix< Vec_vec > dual_boundary_matrix = boundary_matrix;
+    phat::boundary_matrix< phat::vector_vector > dual_boundary_matrix = boundary_matrix;
     phat::persistence_pairs dual_pairs;
     if (!(reduce.compare("twist"))){
       phat::compute_persistence_pairs_dualized< phat::twist_reduction >( dual_pairs, dual_boundary_matrix );
@@ -369,7 +358,7 @@ Rcpp::NumericMatrix persistence_from_cover(Rcpp::S4 cover, int max_dim, Rcpp::St
     return out;
   }
   if (!(represent.compare("vector_heap"))){
-    phat::boundary_matrix< Vec_heap > dual_boundary_matrix = boundary_matrix;
+    phat::boundary_matrix< phat::vector_heap > dual_boundary_matrix = boundary_matrix;
     phat::persistence_pairs dual_pairs;
     if (!(reduce.compare("twist"))){
       phat::compute_persistence_pairs_dualized< phat::twist_reduction >( dual_pairs, dual_boundary_matrix );
@@ -393,7 +382,7 @@ Rcpp::NumericMatrix persistence_from_cover(Rcpp::S4 cover, int max_dim, Rcpp::St
     return out;
   }
   if (!(represent.compare("vector_set"))){
-    phat::boundary_matrix< Vec_set > dual_boundary_matrix = boundary_matrix;
+    phat::boundary_matrix< phat::vector_set > dual_boundary_matrix = boundary_matrix;
     phat::persistence_pairs dual_pairs;
     if (!(reduce.compare("twist"))){
       phat::compute_persistence_pairs_dualized< phat::twist_reduction >( dual_pairs, dual_boundary_matrix );
@@ -417,7 +406,7 @@ Rcpp::NumericMatrix persistence_from_cover(Rcpp::S4 cover, int max_dim, Rcpp::St
     return out;
   }
   if (!(represent.compare("vector_list"))){
-    phat::boundary_matrix< Vec_list > dual_boundary_matrix = boundary_matrix;
+    phat::boundary_matrix< phat::vector_list > dual_boundary_matrix = boundary_matrix;
     phat::persistence_pairs dual_pairs;
     if (!(reduce.compare("twist"))){
       phat::compute_persistence_pairs_dualized< phat::twist_reduction >( dual_pairs, dual_boundary_matrix );
