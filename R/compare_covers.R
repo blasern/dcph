@@ -64,15 +64,9 @@ cover_distance_ph <- function(cover1, cover2){
 #' @importFrom infotheo condentropy
 #' @export
 cover_distance_vi <- function(cover1, cover2){
-  # extract indices
-  x <- lapply(cover1@subsets, slot, "indices")
-  y <- lapply(cover2@subsets, slot, "indices")
-  # get number of points
-  npoints <- length(unique(unlist(x)))
-  stopifnot(npoints == length(unique(unlist(y))))
-  # define covering matrices
-  x_mat <- covering_matrix(x, npoints = npoints)
-  y_mat <- covering_matrix(y, npoints = npoints)
+  # define cover matrices
+  x_mat <- cover_matrix(cover1)
+  y_mat <- cover_matrix(cover2)
   
   cond1 <- infotheo::condentropy(x_mat, y_mat)
   cond2 <- infotheo::condentropy(y_mat, x_mat)
@@ -81,13 +75,4 @@ cover_distance_vi <- function(cover1, cover2){
   attr(vi, "H(1|2)") <- cond1
   attr(vi, "H(2|1)") <- cond2
   return(vi)
-}
-
-covering_matrix <- function(covering, npoints){
-  # calculate 
-  sapply(covering, function(x, npoints){
-    vec <- rep(0, npoints)
-    vec[x] <- 1
-    vec
-  }, npoints = npoints)
 }
