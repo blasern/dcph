@@ -1,6 +1,6 @@
-#' Compare covers using persistent homology
+#' Distance between covers
 #' 
-#' Compare two covers using persistent homology
+#' Compare two covers using persistent homology or entropy
 #' 
 #' @param cover1,cover2 covers to compare 
 #' @examples 
@@ -22,7 +22,8 @@
 #' cover1 <- subcover(dc1, 0.1, "snapshot")
 #' cover2 <- subcover(dc2, 0.5, "snapshot")
 #' 
-#' compare_covers_ph(cover1, cover2)
+#' cover_distance_ph(cover1, cover2)
+#' cover_distance_vi(cover1, cover2)
 #' 
 #' # plot covers
 #' \dontrun{
@@ -30,8 +31,9 @@
 #' plot(cover2)
 #' plot(c(cover1, cover2))
 #' }
+#' @name cover_distance
 #' @export
-compare_covers_ph <- function(cover1, cover2){
+cover_distance_ph <- function(cover1, cover2){
   # recalculate cover diameters
   adjust_diameter <- function(cover, diameter){
     adjust_subset_diam <- function(subset, id, diameter){
@@ -56,4 +58,36 @@ compare_covers_ph <- function(cover1, cover2){
   pers21 <- persistent_homology(c(contract, adjust_diameter(cover1, 1), adjust_diameter(cover2, 0)))
   pers12 <- persistent_homology(c(contract, adjust_diameter(cover2, 1), adjust_diameter(cover1, 0)))
   list(`1->2` = pers12, `2->1` = pers21)
+}
+
+#' @rdname cover_distance
+#' @importFrom infotheo condentropy
+#' @export
+cover_distance_vi <- function(cover1, cover2){
+  # extract indices
+  x <- lapply(cover1@subsets, slot, "indices")
+  y <- lapply(cover2@subsets, slot, "indices")
+  # get number of points
+  npoints <- length(unique(unlist(x)))
+  stopifnot(npoints == length(unique(unlist(y))))
+  # define covering matrices
+  x_mat <- covering_matrix(x, npoints = npoints)
+  y_mat <- covering_matrix(y, npoints = npoints)
+  
+  cond1 <- infotheo::condentropy(x_mat, y_mat)
+  cond2 <- infotheo::condentropy(y_mat, x_mat)
+  
+  vi <- cond1 + cond2
+  attr(vi, "H(1|2)") <- cond1
+  attr(vi, "H(2|1)") <- cond2
+  return(vi)
+}
+
+covering_matrix <- function(covering, npoints){
+  # calculate 
+  sapply(covering, function(x, npoints){
+    vec <- rep(0, npoints)
+    vec[x] <- 1
+    vec
+  }, npoints = npoints)
 }

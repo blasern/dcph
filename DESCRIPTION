@@ -12,7 +12,8 @@ Imports:
     igraph,
     RColorBrewer, 
     Rcpp,
-    ggplot2
+    ggplot2, 
+    infotheo
 Suggests: 
     testthat, 
     pdist
