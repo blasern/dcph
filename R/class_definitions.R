@@ -39,16 +39,18 @@ check_cover <- function(object){
 setClass(Class = "cover", 
                   representation = representation(distance_matrix = "matrix", 
                                                   data = "matrix", 
+                                                  diameter = "numeric",
                                                   subsets = "list",
                                                   parameters = "list", type = "character"), 
                   validity = check_cover)
 
 cover <- function(distance_matrix = matrix(numeric(0)), data = matrix(numeric(0)), 
-                  subsets, parameters = list(), 
+                  subsets, parameters = list(), diameter = max(distance_matrix),
                   type = c("divisive", "fast_divisive", "snapshot", "predict", "concat")){
   new("cover", 
       distance_matrix = as.matrix(distance_matrix), 
       data = as.matrix(data), 
+      diameter = diameter,
       subsets = subsets, 
       parameters = parameters, 
       type = match.arg(type))

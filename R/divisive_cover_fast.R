@@ -51,6 +51,7 @@ fast_divisive_cover <- function(data,
   basepoints <- get_basepoints_fast(data_matrix, distance_function)
   diameter <- as.numeric(as.matrix(distance_function(data_matrix[basepoints[1], , drop = FALSE], data_matrix[basepoints[2], , drop = FALSE])))
   cover <- cover(data = as.matrix(data),
+                 diameter = diameter,
                  subsets = list(patch(1:N, basepoints = basepoints, id = 1L, diameter = diameter, birth = diameter)), 
                  parameters = list(delta = delta, relative_diameter = relative_diameter, distance_function = distance_function), 
                  type = "fast_divisive")
