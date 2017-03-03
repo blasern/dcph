@@ -139,6 +139,23 @@ bottleneck_distance <- function(pers1, pers2, dim){
 
 cover_distance_intertwining <- function(cover1, cover2){
   stop("Intertwining distance not defined")
+  eps1 <- intertwining_epsilon(cover1, cover2)
+  eps2 <- intertwining_epsilon(cover2, cover1)
+  return(eps1 + eps2)
+}
+
+intertwining_epsilon <- function(cover1, cover2){
+  # maximal diameter
+  maxdiam <- cover1@diameter
+  stopifnot(isTRUE(all.equal(maxdiam, cover2@diameter)))
+  # get diameters
+  diams1 <- sapply(cover1@subsets, "slot", "diameter")
+  diams2 <- sapply(cover2@subsets, "slot", "diameter")
+  
+  # calculate epsilon 
+  epsilon <- 1
+  # subsets
+  return(epsilon)
 }
 
 cover_distance_vi <- function(cover1, cover2){
