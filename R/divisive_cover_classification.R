@@ -125,6 +125,7 @@ divide_classify <- function(cover, index, distance_matrix, relative_distance, re
 #' Classify from divisive cover
 #' 
 #' @param pred a prediction cover
+#' @export
 divisive_cover_classify <- function(pred){
   pred <- subcover(pred, 0, "snapshot")
   predicted_class <- factor(rep(NA, length = length(unique(unlist(lapply(pred@subsets, slot, "predicted"))))), 
