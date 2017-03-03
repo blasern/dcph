@@ -58,15 +58,15 @@ snapshot_persistence <- function(cover, max_dim){
   # change death 
   cover@subsets <- c(list(patch(1:length(unique(unlist(lapply(cover@subsets, slot, "indices")))), 
                                 id = 0L, 
-                                diameter = 2*max(sapply(cover@subsets, slot, "death")), 
-                                death = 2*max(sapply(cover@subsets, slot, "death")),
-                                birth = 2*max(sapply(cover@subsets, slot, "death")))), 
+                                diameter = max(cover@distance_matrix), 
+                                death = max(cover@distance_matrix),
+                                birth = max(cover@distance_matrix))),
     lapply(cover@subsets, function(x) {
     x@death <- x@diameter
     x
   }))
   
-  # calculate persistent homology
+  # calculate persistent homology  
   pers <- persistence_from_cover(cover, max_dim = max_dim, 
                                  representation =  "vector_vector", reduction = "twist")
 
