@@ -95,7 +95,8 @@ setClass(Class = "patch",
                                                   ancestor = "integer",
                                                   birth = "numeric", 
                                                   death = "numeric", 
-                                                  diameter = "numeric"), 
+                                                  diameter = "numeric", 
+                                                  response = "factor"), 
                   prototype = prototype(indices = integer(0),
                                         predicted = integer(0), 
                                         basepoints = integer(0), 
@@ -105,12 +106,13 @@ setClass(Class = "patch",
                                         ancestor = integer(0),
                                         birth = NA_real_, 
                                         death = 0, 
-                                        diameter = NA_real_),
+                                        diameter = NA_real_, 
+                                        response = factor()),
                   validity = check_patch)
 
 # patch
-patch <- function(indices, predicted = integer(0), basepoints = integer(0), id = NA_integer_, children = integer(0), parent = integer(0), ancestor = integer(0), birth = NA_real_, death = 0, diameter = NA_real_){
-  new("patch", indices = indices, predicted = predicted, basepoints = basepoints, id = id, children = children, parent = parent, ancestor = ancestor, birth = birth, death = death, diameter = diameter)
+patch <- function(indices, predicted = integer(0), basepoints = integer(0), id = NA_integer_, children = integer(0), parent = integer(0), ancestor = integer(0), birth = NA_real_, death = 0, diameter = NA_real_, response = factor()){
+  new("patch", indices = indices, predicted = predicted, basepoints = basepoints, id = id, children = children, parent = parent, ancestor = ancestor, birth = birth, death = death, diameter = diameter, response = response)
 }
 
 is.patch <- function (x){
