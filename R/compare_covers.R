@@ -58,9 +58,9 @@ snapshot_persistence <- function(cover, max_dim){
   # change death 
   cover@subsets <- c(list(patch(1:length(unique(unlist(lapply(cover@subsets, slot, "indices")))), 
                                 id = 0L, 
-                                diameter = max(cover@distance_matrix), 
-                                death = max(cover@distance_matrix),
-                                birth = max(cover@distance_matrix))),
+                                diameter = cover@diameter, 
+                                death = cover@diameter,
+                                birth = cover@diameter)),
     lapply(cover@subsets, function(x) {
     x@death <- x@diameter
     x
@@ -138,7 +138,6 @@ bottleneck_distance <- function(pers1, pers2, dim){
 }
 
 cover_distance_intertwining <- function(cover1, cover2){
-  stop("Intertwining distance not defined")
   eps1 <- intertwining_epsilon(cover1, cover2)
   eps2 <- intertwining_epsilon(cover2, cover1)
   return(eps1 + eps2)
@@ -152,10 +151,35 @@ intertwining_epsilon <- function(cover1, cover2){
   diams1 <- sapply(cover1@subsets, "slot", "diameter")
   diams2 <- sapply(cover2@subsets, "slot", "diameter")
   
+  # calculate minimal diameter of superset
+  superdiams <- diams2[superset(cover1, cover2)]
+  superdiams[is.na(superdiams)] <- maxdiam
+  
   # calculate epsilon 
-  epsilon <- 1
-  # subsets
+  epsilon <- max(superdiams - diams1)
   return(epsilon)
+}
+
+# @param x,y covers
+superset <- function(x, y){
+  # lengths of subsets
+  lx <- length(x@subsets)
+  ly <- length(y@subsets)
+  # initialize result
+  minimal_superset <- rep(NA_integer_, lx)
+  adjmat <- as.adjacency(c(x, y))[1:lx,(lx + 1):(lx+ly)]
+  dimmat <- matrix(rep(sapply(sapply(x@subsets, slot, "indices"), length), ly), nrow = lx) 
+  #
+  indices <- which(adjmat == dimmat, arr.ind = TRUE)
+  if (nrow(indices) > 0){
+    # get index with minimal diameter
+    min_indices <- sapply(split(indices[, 2], indices[, 1]), function(index){
+      index[which.min(sapply(y@subsets[index], slot, "diameter"))]
+    })
+    replace_indices <- sapply(split(indices[, 1], indices[, 1]), "[", 1)
+    minimal_superset[replace_indices] <- min_indices
+  }  
+  return(minimal_superset)
 }
 
 cover_distance_vi <- function(cover1, cover2){
