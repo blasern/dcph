@@ -13,8 +13,9 @@ Imports:
     RColorBrewer, 
     Rcpp,
     ggplot2, 
-    infotheo
-Suggests: 
+    infotheo,
+    rdist
+Suggests:
     testthat, 
     pdist
 LinkingTo: Rcpp

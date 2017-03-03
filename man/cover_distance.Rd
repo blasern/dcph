@@ -4,12 +4,15 @@
 \alias{cover_distance}
 \title{Distance between covers}
 \usage{
-cover_distance(cover1, cover2, metric = c("vi", "nerve", "intertwining"))
+cover_distance(cover1, cover2, metric = c("vi", "nerve", "intertwining"),
+  dim = 1)
 }
 \arguments{
 \item{cover1, cover2}{covers to compare}
 
 \item{metric}{which metric should be calculated}
+
+\item{dim}{dimension(s) for nerve distance}
 }
 \description{
 Compare two covers using persistent homology or entropy
