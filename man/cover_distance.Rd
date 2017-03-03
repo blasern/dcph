@@ -2,16 +2,14 @@
 % Please edit documentation in R/compare_covers.R
 \name{cover_distance}
 \alias{cover_distance}
-\alias{cover_distance_ph}
-\alias{cover_distance_vi}
 \title{Distance between covers}
 \usage{
-cover_distance_ph(cover1, cover2)
-
-cover_distance_vi(cover1, cover2)
+cover_distance(cover1, cover2, metric = c("vi", "nerve", "intertwining"))
 }
 \arguments{
 \item{cover1, cover2}{covers to compare}
+
+\item{metric}{which metric should be calculated}
 }
 \description{
 Compare two covers using persistent homology or entropy
@@ -35,8 +33,7 @@ dc2 <- divisive_cover(distance_matrix = dist(data_matrix),
 cover1 <- subcover(dc1, 0.1, "snapshot")
 cover2 <- subcover(dc2, 0.5, "snapshot")
 
-cover_distance_ph(cover1, cover2)
-cover_distance_vi(cover1, cover2)
+cover_distance(cover1, cover2, metric = "vi")
 
 # plot covers
 \dontrun{
