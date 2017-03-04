@@ -36,11 +36,10 @@ rcircle <- function(N, r, sd){
 data_matrix <- rcircle(200, 1, .1)
 # calculate fast divisive cover
 dc <- fast_divisive_cover(data = data_matrix,
-                          distance_function = pdist::pdist,
+                          distance_function = rdist::cdist,
                           delta = 0.1, 
                           relative_diameter = 0.5)
 \dontrun{
 plot(subcover(dc, .5, "snapshot"))
 }
 }
-

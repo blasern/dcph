@@ -1,4 +1,4 @@
-#' @useDynLib dcph
+#' @useDynLib dcph, .registration = TRUE 
 #' @importFrom methods setClass 
 #' @importFrom Rcpp sourceCpp
 NULL

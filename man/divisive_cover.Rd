@@ -48,4 +48,3 @@ plot(data_matrix)
 plot(ddc)
 }
 }
-

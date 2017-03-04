@@ -45,4 +45,3 @@ col <- predict_coloring(sc)
 plot(sc, coloring = col)
 }
 }
-

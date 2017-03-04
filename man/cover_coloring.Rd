@@ -17,4 +17,3 @@ predict_coloring(x)
 \description{
 Generates a coloring for cover to be used with \code{\link{plot.cover}}
 }
-

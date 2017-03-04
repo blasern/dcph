@@ -45,4 +45,3 @@ plot(cover2)
 plot(c(cover1, cover2))
 }
 }
-
