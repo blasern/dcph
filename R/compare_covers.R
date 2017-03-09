@@ -4,7 +4,7 @@
 #' 
 #' @param cover1,cover2 covers to compare 
 #' @param metric which metric should be calculated
-#' @param dim dimension(s) for nerve distance
+#' @param dim dimension(s) for bottleneck distance
 #' @examples 
 #' # generate data
 #' rcircle <- function(N, r, sd){
@@ -35,15 +35,15 @@
 #' @importFrom infotheo condentropy
 #' @importFrom rdist cdist
 #' @export
-cover_distance <- function(cover1, cover2, metric = c("vi", "nerve", "intertwining"), dim = 1){
+cover_distance <- function(cover1, cover2, metric = c("vi", "bottleneck", "interleaving"), dim = 1){
   metric <- match.arg(metric)
   switch(metric, 
          "vi" = cover_distance_vi(cover1, cover2), 
-         "nerve" = cover_distance_nerve(cover1, cover2, dim = dim), 
-         "intertwining" = cover_distance_intertwining(cover1, cover2))
+         "bottleneck" = cover_distance_bottleneck(cover1, cover2, dim = dim), 
+         "interleaving" = cover_distance_interleaving(cover1, cover2))
 }
 
-cover_distance_nerve <- function(cover1, cover2, dim){
+cover_distance_bottleneck <- function(cover1, cover2, dim){
   # compute persistence diagrams
   pers1 <- snapshot_persistence(cover1, max_dim = max(dim))
   pers2 <- snapshot_persistence(cover2, max_dim = max(dim))
@@ -137,13 +137,13 @@ bottleneck_distance <- function(pers1, pers2, dim){
   sum(dim_dist)
 }
 
-cover_distance_intertwining <- function(cover1, cover2){
-  eps1 <- intertwining_epsilon(cover1, cover2)
-  eps2 <- intertwining_epsilon(cover2, cover1)
+cover_distance_interleaving <- function(cover1, cover2){
+  eps1 <- interleaving_epsilon(cover1, cover2)
+  eps2 <- interleaving_epsilon(cover2, cover1)
   return(eps1 + eps2)
 }
 
-intertwining_epsilon <- function(cover1, cover2){
+interleaving_epsilon <- function(cover1, cover2){
   # maximal diameter
   maxdiam <- cover1@diameter
   stopifnot(isTRUE(all.equal(maxdiam, cover2@diameter)))
