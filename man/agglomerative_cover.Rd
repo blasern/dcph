@@ -34,4 +34,3 @@ sc <- subcover(dc, 0.3, "snapshot")
 # agglomerative cover from subcover
 ac <- agglomerative_cover(sc)
 }
-

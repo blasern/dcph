@@ -34,6 +34,7 @@
 #' }
 #' @importFrom infotheo condentropy
 #' @importFrom rdist cdist
+#' @importFrom utils combn
 #' @export
 cover_distance <- function(cover1, cover2, metric = c("vi", "bottleneck", "interleaving"), dim = 1){
   metric <- match.arg(metric)

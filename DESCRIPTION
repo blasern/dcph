@@ -1,7 +1,7 @@
 Package: dcph
 Title: Divisive Cover Persistent Homology
 Version: 0.1
-Date: 2017-01-11
+Date: 2017-03-04
 Authors@R: c(person("Nello", "Blaser", email = "nello.blaser@uib.no", role = c("aut", "cre")),
 	     person("Morten", "Brun", role = c("aut","ctb")))
 Description: An R package for calculating persistent homology with the divisive cover algorithm.
@@ -16,9 +16,8 @@ Imports:
     infotheo,
     rdist
 Suggests:
-    testthat, 
-    pdist
+    testthat
 LinkingTo: Rcpp
 License: GPL-3
 LazyData: true
-RoxygenNote: 5.0.1
+RoxygenNote: 6.0.1

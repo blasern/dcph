@@ -38,4 +38,3 @@ plot(data_matrix)
 plot(sc_0.7)
 }
 }
-
