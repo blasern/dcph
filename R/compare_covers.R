@@ -169,7 +169,7 @@ superset <- function(x, y){
   # initialize result
   minimal_superset <- rep(NA_integer_, lx)
   adjmat <- as.adjacency(c(x, y))[1:lx,(lx + 1):(lx+ly)]
-  dimmat <- matrix(rep(sapply(sapply(x@subsets, slot, "indices"), length), ly), nrow = lx) 
+  dimmat <- matrix(rep(sapply(lapply(x@subsets, slot, "indices"), length), ly), nrow = lx) 
   #
   indices <- which(adjmat == dimmat, arr.ind = TRUE)
   if (nrow(indices) > 0){
