@@ -15,7 +15,7 @@ simplify_cover <- function(x, method = c("none", "duplicates", "subsets")){
 }
 
 remove_duplicates <- function(x){
-  simple <- which(!duplicated(lapply(sapply(x@subsets, slot, "indices"), sort)))
+  simple <- which(!duplicated(lapply(lapply(x@subsets, slot, "indices"), sort)))
   x@subsets <- x@subsets[simple]
   attr(x, "simple") <- simple
   x
