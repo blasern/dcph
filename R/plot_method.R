@@ -95,7 +95,7 @@ cover_coloring <- function(x, color_values){
     uniqv[which.max(tabulate(match(v, uniqv)))]
   }
   node_color_value <- function(values){
-    if (is.numeric(values)) return(mean(values))
+    if (is.numeric(values)) return(mean(values, na.rm = TRUE))
     else return(as.character(getmode(values)))
   }
   
@@ -103,18 +103,22 @@ cover_coloring <- function(x, color_values){
                                function(point) node_color_value(color_values[point]))
   node_values <- sapply(lapply(x@subsets, slot, "indices"), 
                         function(point) node_color_value(resized_values[point]))
-  legend_values <- quantile(node_legend_values, c(0, .25, .5, .75, 1))
+  legend_values <- quantile(node_legend_values, c(0, .25, .5, .75, 1), na.rm = TRUE)
   
-  cols <- apply(grDevices::colorRamp(RColorBrewer::brewer.pal(9, "RdYlGn"))(node_values) / 255, 
-                1, function(col) grDevices::rgb(col[1], col[2], col[3]))
-  legend_cols <- apply(grDevices::colorRamp(RColorBrewer::brewer.pal(9, "RdYlGn"))(resize(legend_values, 0, 1)) / 255, 
-                       1, function(col) grDevices::rgb(col[1], col[2], col[3]))
+  cols <- get_color(node_values)
+  legend_cols <- get_color(resize(legend_values, 0, 1))
   
   attr(cols, "legend") <- data.frame(value = legend_values, 
                                      color = legend_cols, 
                                      stringsAsFactors = FALSE)
   
   return(cols)
+}
+
+get_color <- function(values){
+  rgb_col <- grDevices::colorRamp(RColorBrewer::brewer.pal(9, "RdYlGn"))(values) / 255
+  rgb_col[is.na(rgb_col)] <- 0
+  apply(rgb_col, 1, function(col) grDevices::rgb(col[1], col[2], col[3]))
 }
 
 #' @rdname cover_coloring
@@ -124,10 +128,8 @@ predict_coloring <- function(x){
   node_values <- resize(node_legend_values, 0, 1)
   legend_values <- quantile(node_legend_values, c(0, .25, .5, .75, 1))
   
-  cols <- apply(grDevices::colorRamp(RColorBrewer::brewer.pal(9, "RdYlGn"))(node_values) / 255, 
-                1, function(col) grDevices::rgb(col[1], col[2], col[3]))
-  legend_cols <- apply(grDevices::colorRamp(RColorBrewer::brewer.pal(9, "RdYlGn"))(resize(legend_values, 0, 1)) / 255, 
-                       1, function(col) grDevices::rgb(col[1], col[2], col[3]))
+  cols <- get_color(node_values)
+  legend_cols <- get_color(resize(legend_values, 0, 1))
   
   attr(cols, "legend") <- data.frame(value = legend_values, 
                                      color = legend_cols, 
@@ -141,7 +143,8 @@ predict_coloring <- function(x){
 resize <- function(x, min, max){
   if (length(x) == 0) return(NULL)
   if (length(x) == 1) return((max + min)/2)
-  if (stats::var(x) == 0) return((max + min)/2)
+  if (all(is.na(x))) return(x)
+  if (stats::var(x, na.rm = TRUE) == 0) return((max + min)/2)
   lambda <- (max - min)/ diff(range(x, na.rm = TRUE))
-  min + (x - min(x)) * lambda
+  min + (x - min(x, na.rm = TRUE)) * lambda
 }
