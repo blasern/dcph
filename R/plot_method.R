@@ -116,7 +116,7 @@ cover_coloring <- function(x, color_values){
 }
 
 get_color <- function(values){
-  rgb_col <- grDevices::colorRamp(RColorBrewer::brewer.pal(9, "RdYlGn"))(values) / 255
+  rgb_col <- grDevices::colorRamp(rev(RColorBrewer::brewer.pal(9, "RdYlGn")))(values) / 255
   rgb_col[is.na(rgb_col)] <- 1
   apply(rgb_col, 1, function(col) grDevices::rgb(col[1], col[2], col[3]))
 }
