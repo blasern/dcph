@@ -145,16 +145,15 @@ cover_distance_interleaving <- function(cover1, cover2){
 }
 
 interleaving_epsilon <- function(cover1, cover2){
-  # maximal diameter
-  maxdiam <- cover1@diameter
-  stopifnot(isTRUE(all.equal(maxdiam, cover2@diameter)))
   # get diameters
   diams1 <- sapply(cover1@subsets, "slot", "diameter")
   diams2 <- sapply(cover2@subsets, "slot", "diameter")
   
   # calculate minimal diameter of superset
   superdiams <- diams2[superset(cover1, cover2)]
-  superdiams[is.na(superdiams)] <- maxdiam
+  
+  # maximal diameter
+  superdiams[is.na(superdiams)] <- cover2@diameter
   
   # calculate epsilon 
   epsilon <- max(superdiams - diams1)
