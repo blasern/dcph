@@ -18,9 +18,9 @@
 #' }
 #' data_matrix <- rcircle(200, 1, .1)
 #' # get divisive cover
-#' dc <- divisive_cover(distance_matrix = dist(data_matrix), 
-#'                      delta = 0.1, 
-#'                      stop_fct = stop_relative_diameter(relative_diameter = 0.5))
+#' dc <- divisive_cover(data = data_matrix, 
+#'                      division_fct = relative_gap_division(0.1), 
+#'                      stop_fct = stop_relative_filter(relative_filter = 0.5))
 #' # calculate persistent homology
 #' pers <- persistent_homology(dc)
 #' \dontrun{
@@ -43,9 +43,9 @@ persistent_homology <- function(cover, max_dim = 1,
   pers <- as.data.frame(pers)
   colnames(pers) <- c("Dimension", "Birth", "Death")
   # minimum diameter
-  max_diameter <- cover@subsets[[1]]@diameter
+  max_diameter <- cover@subsets[[1]]@filter_value
   # min_diameter <- cover@parameters$relative_diameter * max_diameter
-  min_diameter <- min(sapply(cover@subsets, slot, "birth"))
+  min_diameter <- min(sapply(cover@subsets[cover@internal_nodes], slot, "filter_value"))
   # add survivor
   pers <- rbind(pers, data.frame(Dimension = 0, 
                                  Birth = min_diameter, 

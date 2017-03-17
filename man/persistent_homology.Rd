@@ -34,9 +34,9 @@ rcircle <- function(N, r, sd){
 }
 data_matrix <- rcircle(200, 1, .1)
 # get divisive cover
-dc <- divisive_cover(distance_matrix = dist(data_matrix), 
-                     delta = 0.1, 
-                     stop_fct = stop_relative_diameter(relative_diameter = 0.5))
+dc <- divisive_cover(data = data_matrix, 
+                     division_fct = relative_gap_division(0.1), 
+                     stop_fct = stop_relative_filter(relative_filter = 0.5))
 # calculate persistent homology
 pers <- persistent_homology(dc)
 \dontrun{

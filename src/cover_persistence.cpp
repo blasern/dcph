@@ -125,14 +125,14 @@ Rcpp::NumericMatrix persistence_from_cover(Rcpp::S4 cover, int max_dim, Rcpp::St
       ind_set.insert(indices_i[j]);
     }
     indices.push_back(ind_set);
-    death_diameters.push_back(subset.slot("death"));
+    death_diameters.push_back(subset.slot("filter_value"));
   }
   Rcpp::checkUserInterrupt();
   
   // reindex
   // Rcpp::Rcout << "reindexing..." << std::endl;
-  Rcpp::NumericMatrix distance_matrix = cover.slot("distance_matrix");
-  int n = distance_matrix.nrow();
+  Rcpp::NumericMatrix data_matrix = cover.slot("data");
+  int n = data_matrix.nrow();
   std::vector<std::vector<int>> contained_in_vec(n);
   
   for (unsigned int j = 0; j < indices.size(); ++j){

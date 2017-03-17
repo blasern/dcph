@@ -67,8 +67,8 @@ test_that("persistent homology works", {
                     min_diameter = 1.43361784347283, 
                     max_dimension = 1)
   
-  dc <- divisive_cover(distance_matrix = dist(df),
-                       delta = 0.01, 
+  dc <- divisive_cover(data = df,
+                       division_fct = relative_gap_division(0.01),
                        stop_fct = stop_max_nodes(13))
   
   expect_equal(persistent_homology(dc), pers)
