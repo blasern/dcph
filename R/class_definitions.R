@@ -35,20 +35,29 @@ check_cover <- function(object){
 #'
 #' @slot data A data.frame
 #' @slot subsets A list of patches
-#' @param object A cover
+#' @slot internal_nodes internal nodes
+#' @slot external_nodes external nodes
+#' @slot parameter list of parameters
+#' @slot type type of cover
 setClass(Class = "cover", 
                   representation = representation(data = "matrix", 
                                                   subsets = "list",
+                                                  internal_nodes = "integer", 
+                                                  external_nodes = "integer",
                                                   parameters = "list", 
                                                   type = "character"), 
                   validity = check_cover)
 
 cover <- function(data, subsets, 
+                  internal_nodes = integer(0), 
+                  external_nodes = integer(0), 
                   parameters = list(), 
                   type = c("divisive", "fast_divisive", "snapshot", "predict", "concat")){
   new("cover", 
       data = as.matrix(data), 
       subsets = subsets, 
+      internal_nodes = internal_nodes, 
+      external_nodes = external_nodes,
       parameters = parameters, 
       type = match.arg(type))
 }

@@ -31,8 +31,8 @@
 #'                       stop_fct = stop_max_nodes(20))
 #' 
 #' # get one snapshot for plotting
-#' ddc1 <- subcover(dc1, relative_diameter = 0, method = "snapshot")
-#' ddc2 <- subcover(dc2, relative_diameter = 0, method = "snapshot")
+#' ddc1 <- subcover(dc1, relative_filter = 0, method = "snapshot")
+#' ddc2 <- subcover(dc2, relative_filter = 0, method = "snapshot")
 #' 
 #' \dontrun{
 #' plot(data_matrix)
@@ -50,12 +50,14 @@ divisive_cover <- function(cover = NULL,
                            ){
   # generate initial cover
   if (is.null(cover)){
-    initial_patch <- patch(id = 0L, 
+    initial_patch <- patch(id = 1L, 
                            indices = 1:nrow(data))
     initial_patch@anchor_points <- anchor_fct(points = 1:nrow(data), data = data, distance_fct = distance_fct)
     initial_patch@filter_value <- filter_fct(patches = list(initial_patch), data = data, distance_fct = distance_fct)
+    initial_patch@parent_filter <- initial_patch@filter_value
     cover <- cover(data = data, 
                    subsets = list(initial_patch), 
+                   external_nodes = 1L,
                    parameters = list(distance_fct = distance_fct, 
                                      stop_fct = stop_fct, 
                                      anchor_fct = anchor_fct, 
@@ -64,11 +66,11 @@ divisive_cover <- function(cover = NULL,
                                      stop_fct = stop_fct), 
                    type = "divisive")
     filter_values <- initial_patch@filter_value
-    next_division <- 1
+    next_division <- 1L
   }
   else {
-    filter_values <- sapply(cover@subsets, slot, "filter_values")
-    filter_values[!sapply(cover@subsets, slot, "id") %in% sapply(subcover(cover, 0, "snapshot")@subsets, slot, "id")] <- -Inf
+    filter_values <- filter_fct(patches = cover@subsets, data = data, distance_fct = distance_fct)
+    filter_values[cover@internal_nodes] <- -Inf
     next_division <- which.max(filter_values)
   }
   
@@ -82,11 +84,14 @@ divisive_cover <- function(cover = NULL,
     new_patches <- lapply(new_patches, function(patch) {
       patch@anchor_points <- anchor_fct(points = patch@indices, data = data, distance_fct = distance_fct)
       patch@filter_value <- filter_fct(patches = list(patch), data = data, distance_fct = distance_fct)
+      patch@parent_filter <- cover@subsets[[next_division]]@filter_value
       patch
     })
     new_patches[[1]]@id <- length(cover@subsets) + 1L
     new_patches[[2]]@id <- length(cover@subsets) + 2L
     # update cover
+    cover@internal_nodes <- c(cover@internal_nodes, next_division)
+    cover@external_nodes <- c(setdiff(cover@external_nodes, next_division), length(cover@subsets) + 1:2)
     cover@subsets <- c(cover@subsets, new_patches)
     # update filter values
     new_filters <- sapply(tail(cover@subsets, 2), slot, "filter_value")
