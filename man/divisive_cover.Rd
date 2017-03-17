@@ -11,16 +11,25 @@ divisive_cover(cover = NULL, data,
   division_fct = relative_gap_division(relative_gap = 0.1))
 }
 \arguments{
-\item{cover}{a divisive cover used to update}
+\item{cover}{an optional divisive cover used to update}
+
+\item{data}{a data matrix}
+
+\item{distance_fct}{the distance function used (see details below)}
 
 \item{stop_fct}{function that determines when to stop dividing (see details below)}
 
-\item{distance_matrix}{an n x n matrix of pairwise dissimilarities}
+\item{anchor_fct}{function that determined how anchor points are found (see details below)}
+
+\item{filter_fct}{function that filters the cover (see details below)}
+
+\item{division_fct}{function that divides the patches (see details below)}
 }
 \description{
 This function divides the data into a cover using the distance matrix.
 }
 \details{
+TODO...
 The function \code{stop_fct} is a function of ... that returns \code{TRUE} if the division should
 be stoped and \code{FALSE} otherwise. Examples are \code{\link{stop_relative_filter}} and 
 \code{\link{stop_max_nodes}}.
@@ -36,17 +45,17 @@ rcircle <- function(N, r, sd){
 data_matrix <- rcircle(200, 1, .1)
 
 # calculate and update divisive cover
-dc1 <- divisive_cover(distance_matrix = dist(data_matrix),
-                      delta = 0.05, 
+dc1 <- divisive_cover(data = data_matrix,
+                      division_fct = relative_gap_division(0.05), 
                       stop_fct = stop_relative_filter(0.5))
 dc2 <- divisive_cover(cover = dc1, 
-                      distance_matrix = dist(data_matrix),
-                      delta = 0.05, 
+                      data = data_matrix,
+                      division_fct = relative_gap_division(0.05),
                       stop_fct = stop_max_nodes(20))
 
 # get one snapshot for plotting
-ddc1 <- subcover(dc1, relative_diameter = 0, method = "snapshot")
-ddc2 <- subcover(dc2, relative_diameter = 0, method = "snapshot")
+ddc1 <- subcover(dc1, relative_filter = 0, method = "snapshot")
+ddc2 <- subcover(dc2, relative_filter = 0, method = "snapshot")
 
 \dontrun{
 plot(data_matrix)

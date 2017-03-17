@@ -10,6 +10,13 @@ anchor_extremal(points, data, distance_fct)
 
 anchor_heuristic_extremal(points, data, distance_fct)
 }
+\arguments{
+\item{points}{indices of points in patch}
+
+\item{data}{data}
+
+\item{distance_fct}{distance function}
+}
 \description{
 Anchor functions for divisive cover
 }

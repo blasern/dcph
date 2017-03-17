@@ -4,19 +4,18 @@
 \alias{subcover}
 \title{Subcover}
 \usage{
-subcover(cover, relative_diameter, method = c("divisive", "snapshot",
-  "range"))
+subcover(cover, relative_filter, method = c("divisive", "snapshot", "range"))
 }
 \arguments{
 \item{cover}{A divisive cover}
 
-\item{relative_diameter}{The diameter to extract}
+\item{relative_filter}{The filter to extract}
 
 \item{method}{Either "divisive" to get a divisive cover or "snapshot" 
 to get only the lowest level}
 }
 \description{
-Find the (divisive) cover that corresponds to a certain diameter
+Find the (divisive) cover that corresponds to a certain filter
 }
 \examples{
 rcircle <- function(N, r, sd){
@@ -29,9 +28,9 @@ data_matrix <- rcircle(200, 1, .1)
 
 dc <- divisive_cover(distance_matrix = dist(data_matrix), 
                      delta = 0.1, 
-                     stop_fct = stop_relative_diameter(relative_diameter = 0.5))
-dc_0.7 <- subcover(dc, relative_diameter = 0.7, method = "divisive")
-sc_0.7 <- subcover(dc, relative_diameter = 0.7, method = "snapshot")
+                     stop_fct = stop_relative_filter(relative_filter = 0.5))
+dc_0.7 <- subcover(dc, relative_filter = 0.7, method = "divisive")
+sc_0.7 <- subcover(dc, relative_filter = 0.7, method = "snapshot")
 
 \dontrun{
 plot(data_matrix)

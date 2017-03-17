@@ -2,6 +2,8 @@
 #' 
 #' @param relative_gap delta-parameter for delta-filtered cover (0 < delta <= 1/2)
 #' @param relative_factor corresponds to (1-2 * delta)/(1+2 * delta)
+#' @name division_fct
+#' @export
 relative_factor_division <- function(relative_factor){
   function(data, patch, distance_fct){
   
@@ -21,6 +23,8 @@ relative_factor_division <- function(relative_factor){
   }
 }
 
+#' @rdname division_fct
+#' @export
 relative_gap_division <- function(relative_gap){
   relative_factor_division((1-2 * relative_gap)/(1+2 * relative_gap))
 }

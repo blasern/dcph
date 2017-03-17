@@ -37,6 +37,7 @@ check_cover <- function(object){
 #' @slot subsets A list of patches
 #' @slot internal_nodes internal nodes
 #' @slot external_nodes external nodes
+#' @slot data_filter_values the filter value of the entire data set
 #' @slot parameter list of parameters
 #' @slot type type of cover
 setClass(Class = "cover", 
@@ -44,6 +45,7 @@ setClass(Class = "cover",
                                                   subsets = "list",
                                                   internal_nodes = "integer", 
                                                   external_nodes = "integer",
+                                                  data_filter_value = "numeric", 
                                                   parameters = "list", 
                                                   type = "character"), 
                   validity = check_cover)
@@ -51,6 +53,7 @@ setClass(Class = "cover",
 cover <- function(data, subsets, 
                   internal_nodes = integer(0), 
                   external_nodes = integer(0), 
+                  data_filter_value = numeric(0),
                   parameters = list(), 
                   type = c("divisive", "fast_divisive", "snapshot", "predict", "concat")){
   new("cover", 
@@ -58,6 +61,7 @@ cover <- function(data, subsets,
       subsets = subsets, 
       internal_nodes = internal_nodes, 
       external_nodes = external_nodes,
+      data_filter_value = data_filter_value,
       parameters = parameters, 
       type = match.arg(type))
 }

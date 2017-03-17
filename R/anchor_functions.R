@@ -1,8 +1,8 @@
 #' Anchor functions for divisive cover
 #' 
-#' @param points
-#' @param data
-#' @param distance_fct
+#' @param points indices of points in patch 
+#' @param data data
+#' @param distance_fct distance function
 #' @name anchor_fct
 #' @export
 anchor_extremal <- function(points, data, distance_fct){

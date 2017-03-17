@@ -11,9 +11,6 @@
 
 \S4method{show}{patch}(object)
 }
-\arguments{
-\item{object}{A cover}
-}
 \description{
 An S4 class to represent a cover.
 }
@@ -23,5 +20,15 @@ An S4 class to represent a cover.
 \item{\code{data}}{A data.frame}
 
 \item{\code{subsets}}{A list of patches}
+
+\item{\code{internal_nodes}}{internal nodes}
+
+\item{\code{external_nodes}}{external nodes}
+
+\item{\code{data_filter_values}}{the filter value of the entire data set}
+
+\item{\code{parameter}}{list of parameters}
+
+\item{\code{type}}{type of cover}
 }}
 

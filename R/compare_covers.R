@@ -15,12 +15,10 @@
 #' }
 #' data_matrix <- rcircle(200, 1, .1)
 #' # calculate covers
-#' dc1 <- divisive_cover(distance_matrix = dist(data_matrix), 
-#'                       delta = 0.1,
-#'                       stop_fct = stop_relative_diameter(relative_diameter = 0.1))
-#' dc2 <- divisive_cover(distance_matrix = dist(data_matrix), 
-#'                       delta = 0.05,
-#'                       stop_fct = stop_relative_diameter(relative_diameter = 0.3))
+#' dc1 <- divisive_cover(data = data_matrix,
+#'                       stop_fct = stop_relative_filter(relative_filter = 0.1))
+#' dc2 <- divisive_cover(data = data_matrix, 
+#'                       stop_fct = stop_relative_filter(relative_filter = 0.3))
 #' cover1 <- subcover(dc1, 0.1, "snapshot")
 #' cover2 <- subcover(dc2, 0.5, "snapshot")
 #' 
@@ -62,14 +60,9 @@ snapshot_persistence <- function(cover, max_dim){
   # change death 
   cover@subsets <- c(list(patch(1:length(unique(unlist(lapply(cover@subsets, slot, "indices")))), 
                                 id = 0L, 
-                                diameter = cover@diameter, 
-                                death = cover@diameter,
-                                birth = cover@diameter)),
-    lapply(cover@subsets, function(x) {
-    x@death <- x@diameter
-    x
-  }))
-  
+                                filter_value = cover@data_filter_value)),
+                     cover@subsets)
+                     
   # calculate persistent homology  
   pers <- persistence_from_cover(cover, max_dim = max_dim, 
                                  representation =  "vector_vector", reduction = "twist")
@@ -148,15 +141,15 @@ cover_distance_interleaving <- function(cover1, cover2){
 }
 
 interleaving_epsilon <- function(cover1, cover2){
-  # get diameters
-  diams1 <- sapply(cover1@subsets, "slot", "diameter")
-  diams2 <- sapply(cover2@subsets, "slot", "diameter")
+  # get filter values
+  diams1 <- sapply(cover1@subsets, "slot", "filter_value")
+  diams2 <- sapply(cover2@subsets, "slot", "filter_value")
   
-  # calculate minimal diameter of superset
+  # calculate minimal filter value of superset
   superdiams <- diams2[superset(cover1, cover2)]
   
-  # maximal diameter
-  superdiams[is.na(superdiams)] <- cover2@diameter
+  # maximal filter value
+  superdiams[is.na(superdiams)] <- cover2@data_filter_value
   
   # calculate epsilon 
   epsilon <- max(superdiams - diams1)
@@ -175,9 +168,9 @@ superset <- function(x, y){
   #
   indices <- which(adjmat == dimmat, arr.ind = TRUE)
   if (nrow(indices) > 0){
-    # get index with minimal diameter
+    # get index with minimal filter value
     min_indices <- sapply(split(indices[, 2], indices[, 1]), function(index){
-      index[which.min(sapply(y@subsets[index], slot, "diameter"))]
+      index[which.min(sapply(y@subsets[index], slot, "filter_value"))]
     })
     replace_indices <- sapply(split(indices[, 1], indices[, 1]), "[", 1)
     minimal_superset[replace_indices] <- min_indices
@@ -197,31 +190,4 @@ cover_distance_vi <- function(cover1, cover2){
 #   attr(vi, "H(1|2)") <- cond1
 #   attr(vi, "H(2|1)") <- cond2
   return(vi)
-}
-
-cover_distance_ph <- function(cover1, cover2){
-  # recalculate cover diameters
-  adjust_diameter <- function(cover, diameter){
-    adjust_subset_diam <- function(subset, id, diameter){
-      subset@diameter <- diameter
-      subset@birth <- diameter
-      subset@death <- diameter
-      subset
-    }
-    cover@subsets <- mapply(adjust_subset_diam, 
-                            subset = cover@subsets, 
-                            diameter = diameter)
-    cover
-  }
-  
-  contract <- cover(
-    distance_matrix = cover1@distance_matrix,
-    subsets = list(patch(indices = unique(unlist(lapply(cover1@subsets, slot, "indices"))), 
-                         death = 2, 
-                         birth = 2, 
-                         diameter = 2)))
-  
-  pers21 <- persistent_homology(c(contract, adjust_diameter(cover1, 1), adjust_diameter(cover2, 0)))
-  pers12 <- persistent_homology(c(contract, adjust_diameter(cover2, 1), adjust_diameter(cover1, 0)))
-  list(`1->2` = pers12, `2->1` = pers21)
 }

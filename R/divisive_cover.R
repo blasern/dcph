@@ -2,11 +2,15 @@
 #'
 #' This function divides the data into a cover using the distance matrix. 
 #'
-#' @param distance_matrix an n x n matrix of pairwise dissimilarities
-
+#' @param cover an optional divisive cover used to update
+#' @param data a data matrix
+#' @param distance_fct the distance function used (see details below) 
 #' @param stop_fct function that determines when to stop dividing (see details below) 
-#' @param cover a divisive cover used to update
+#' @param anchor_fct function that determined how anchor points are found (see details below)
+#' @param filter_fct function that filters the cover (see details below)
+#' @param division_fct function that divides the patches (see details below)
 #' @details 
+#' TODO...
 #' The function \code{stop_fct} is a function of ... that returns \code{TRUE} if the division should
 #' be stoped and \code{FALSE} otherwise. Examples are \code{\link{stop_relative_filter}} and 
 #' \code{\link{stop_max_nodes}}.
@@ -22,12 +26,12 @@
 #' data_matrix <- rcircle(200, 1, .1)
 #' 
 #' # calculate and update divisive cover
-#' dc1 <- divisive_cover(distance_matrix = dist(data_matrix),
-#'                       delta = 0.05, 
+#' dc1 <- divisive_cover(data = data_matrix,
+#'                       division_fct = relative_gap_division(0.05), 
 #'                       stop_fct = stop_relative_filter(0.5))
 #' dc2 <- divisive_cover(cover = dc1, 
-#'                       distance_matrix = dist(data_matrix),
-#'                       delta = 0.05, 
+#'                       data = data_matrix,
+#'                       division_fct = relative_gap_division(0.05),
 #'                       stop_fct = stop_max_nodes(20))
 #' 
 #' # get one snapshot for plotting
@@ -58,6 +62,7 @@ divisive_cover <- function(cover = NULL,
     cover <- cover(data = data, 
                    subsets = list(initial_patch), 
                    external_nodes = 1L,
+                   data_filter_value = initial_patch@filter_value,
                    parameters = list(distance_fct = distance_fct, 
                                      stop_fct = stop_fct, 
                                      anchor_fct = anchor_fct, 
