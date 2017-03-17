@@ -3,6 +3,7 @@
 \docType{class}
 \name{cover-class}
 \alias{cover-class}
+\alias{patch-class}
 \alias{show,cover-method}
 \alias{show,patch-method}
 \title{An S4 class to represent a cover.}
@@ -11,8 +12,13 @@
 
 \S4method{show}{patch}(object)
 }
+\arguments{
+\item{object}{A cover}
+}
 \description{
 An S4 class to represent a cover.
+
+An S4 class to represent a patch.
 }
 \section{Slots}{
 
@@ -30,5 +36,17 @@ An S4 class to represent a cover.
 \item{\code{parameter}}{list of parameters}
 
 \item{\code{type}}{type of cover}
+
+\item{\code{id}}{Patch id}
+
+\item{\code{indices}}{Indices of data points in patch}
+
+\item{\code{predicted}}{Indices of predicted points}
+
+\item{\code{anchor_points}}{Anchor points}
+
+\item{\code{filter_value}}{Filter value}
+
+\item{\code{parent_filter}}{Filter value of parent}
 }}
 

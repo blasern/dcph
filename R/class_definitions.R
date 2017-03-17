@@ -40,6 +40,8 @@ check_cover <- function(object){
 #' @slot data_filter_values the filter value of the entire data set
 #' @slot parameter list of parameters
 #' @slot type type of cover
+#' @param object A cover
+#' @name cover-class
 setClass(Class = "cover", 
                   representation = representation(data = "matrix", 
                                                   subsets = "list",
@@ -76,7 +78,7 @@ is.cover <- function (x){
 #' @slot anchor_points Anchor points
 #' @slot filter_value Filter value
 #' @slot parent_filter Filter value of parent
-#' @rdname cover
+#' @rdname cover-class
 setClass(Class = "patch", 
                   representation = representation(id = "integer", 
                                                   indices = "integer",
