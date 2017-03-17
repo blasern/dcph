@@ -28,10 +28,11 @@
 \description{
 \code{plot.cover} generates R plots of covers
 }
-\seealso{
-\code{\link{cover-class}}, \code{\link{subcover}}
-}
 \author{
 Nello Blaser
 }
+\seealso{
+\code{\link{cover-class}}, \code{\link{subcover}}
+}
 \keyword{plotting}
+

@@ -43,3 +43,4 @@ dc <- fast_divisive_cover(data = data_matrix,
 plot(subcover(dc, .5, "snapshot"))
 }
 }
+

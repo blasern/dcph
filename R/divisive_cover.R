@@ -4,40 +4,47 @@
 #'
 #' @param distance_matrix an n x n matrix of pairwise dissimilarities
 #' @param delta delta-parameter for delta-filtered cover (0 < delta <= 1/2)
-#' @param relative_diameter maximal diameter of the final cover
-#' @param max_nodes maximum number of nodes the algorithm should generate
+#' @param stop_fct function that determines when to stop dividing (see details below) 
 #' @param cover a divisive cover used to update
+#' @details 
+#' The function \code{stop_fct} is a function of ... that returns \code{TRUE} if the division should
+#' be stoped and \code{FALSE} otherwise. Examples are \code{\link{stop_relative_diameter}} and 
+#' \code{\link{stop_max_nodes}}.
+#' 
 #' @examples
+#' # generate sample data
 #' rcircle <- function(N, r, sd){
-#'    radius <- rnorm(N, r, sd)
-#'    angle <- runif(N, 0, 2 * pi)
-#'    data.frame(x = radius * cos(angle), 
-#'               y = radius * sin(angle))
+#'   radius <- rnorm(N, r, sd)
+#'   angle <- runif(N, 0, 2 * pi)
+#'   data.frame(x = radius * cos(angle), 
+#'              y = radius * sin(angle))
 #' }
 #' data_matrix <- rcircle(200, 1, .1)
 #' 
 #' # calculate and update divisive cover
 #' dc1 <- divisive_cover(distance_matrix = dist(data_matrix),
-#'                       delta = 0.1, 
-#'                       relative_diameter = 0.7)
-#' dc2 <- update_divisive_cover(dc1, relative_diameter = 0.5)
+#'                       delta = 0.05, 
+#'                       stop_fct = stop_relative_diameter(0.5))
+#' dc2 <- divisive_cover(cover = dc1, 
+#'                       distance_matrix = dist(data_matrix),
+#'                       delta = 0.05, 
+#'                       stop_fct = stop_max_nodes(20))
 #' 
 #' # get one snapshot for plotting
-#' ddc <- subcover(dc2, relative_diameter = 0.7, method = "snapshot")
+#' ddc1 <- subcover(dc1, relative_diameter = 0, method = "snapshot")
+#' ddc2 <- subcover(dc2, relative_diameter = 0, method = "snapshot")
 #' 
 #' \dontrun{
 #' plot(data_matrix)
-#' plot(ddc)
+#' plot(ddc1)
+#' plot(ddc2)
 #' }
 #' @export
-divisive_cover <- function(distance_matrix, 
+divisive_cover <- function(cover = NULL,
+                           distance_matrix, 
                            delta, 
-                           relative_diameter = 0, 
-                           max_nodes = Inf){
+                           stop_fct = stop_relative_diameter(.5)){
   # check input
-  if (relative_diameter == 0 && max_nodes == Inf){
-    stop("Either relative diameter or max_nodes has to be specified.")
-  }
   stopifnot(0 <= delta && delta < 0.5)
 
   # find factor
@@ -48,58 +55,33 @@ divisive_cover <- function(distance_matrix,
   N <- nrow(distance_matrix)
   
   # generate initial cover
-  basepoints <- as.integer(arrayInd(which.max(distance_matrix), dim(distance_matrix)))
-  diameter <- distance_matrix[basepoints[1], basepoints[2]]
-  cover <- cover(distance_matrix = distance_matrix, 
-                 subsets = list(patch(1:N, basepoints = basepoints, id = 1L, diameter = diameter, birth = diameter)), 
-                 parameters = list(delta = delta, relative_diameter = relative_diameter), 
-                 type = "divisive")
+  if (is.null(cover)){
+    basepoints <- as.integer(arrayInd(which.max(distance_matrix), dim(distance_matrix)))
+    diameter <- distance_matrix[basepoints[1], basepoints[2]]
+    cover <- cover(distance_matrix = distance_matrix, 
+                   subsets = list(patch(1:N, basepoints = basepoints, id = 1L, diameter = diameter, birth = diameter)), 
+                   parameters = list(delta = delta, stop_fct = stop_fct), 
+                   type = "divisive")
+    # minimal radius
+    diams <- diameter
+    next_division <- 1
+  }
+  else {
+    diams <- sapply(cover@subsets, slot, "diameter")
+    diams[!sapply(cover@subsets, slot, "id") %in% sapply(subcover(cover, 0, "snapshot")@subsets, slot, "id")] <- -Inf
+    next_division <- which.max(diams)
+  }
   
-  # minimal radius
-  min_diam <- diameter * relative_diameter
-  diams <- diameter
   # divide into pieces
-  while (any(diams > min_diam) && sum(diams > -Inf) < max_nodes){
-    index <- which.max(diams)
+  while (!stop_fct(cover, next_division)){
     cover <- divide(cover = cover, 
-                    index = index, 
+                    index = next_division, 
                     distance_matrix = distance_matrix,                     
                     relative_distance = relative_distance)
     new_diams <- sapply(tail(cover@subsets, 2), slot, "diameter")
-    diams[index] <- -Inf
+    diams[next_division] <- -Inf
     diams <- c(diams, new_diams)
-  }
-  cover
-}
-
-#' @rdname divisive_cover
-#' @export
-update_divisive_cover <- function(cover, 
-                         delta = cover@parameters[["delta"]], 
-                         relative_diameter = 0.1, 
-                         max_nodes = Inf){
-  if (cover@type != "divisive"){
-    stop("can only update divisive covers")
-  }
-  # find factor
-  relative_distance <- (1-2 * delta)/(1+2 * delta)
-  # extract diameters
-  diameter <- cover@subsets[[1]]@diameter
-  min_diam <- diameter * relative_diameter
-  survivors <- sapply(cover@subsets, slot, "death") == 0
-  diams <- sapply(cover@subsets, slot, "diameter")
-  diams[!survivors] <- -Inf
-  # update division
-  # divide into pieces
-  while (any(diams > min_diam) && sum(diams > -Inf) < max_nodes){
-    index <- which.max(diams)
-    cover <- divide(cover = cover, 
-                    index = index, 
-                    distance_matrix = cover@distance_matrix,                     
-                    relative_distance = relative_distance)
-    new_diams <- sapply(tail(cover@subsets, 2), slot, "diameter")
-    diams[index] <- -Inf
-    diams <- c(diams, new_diams)
+    next_division <- which.max(diams)
   }
   cover
 }

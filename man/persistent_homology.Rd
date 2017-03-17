@@ -36,7 +36,7 @@ data_matrix <- rcircle(200, 1, .1)
 # get divisive cover
 dc <- divisive_cover(distance_matrix = dist(data_matrix), 
                      delta = 0.1, 
-                     relative_diameter = 0.5)
+                     stop_fct = stop_relative_diameter(relative_diameter = 0.5))
 # calculate persistent homology
 pers <- persistent_homology(dc)
 \dontrun{
@@ -50,3 +50,4 @@ Bauer U., Kerber M., Reininghaus J., Wagner H. (2014) PHAT - Persistent Homology
 
 https://bitbucket.org/phat-code/phat
 }
+

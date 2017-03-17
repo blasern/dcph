@@ -2,49 +2,55 @@
 % Please edit documentation in R/divisive_cover.R
 \name{divisive_cover}
 \alias{divisive_cover}
-\alias{update_divisive_cover}
 \title{divisive cover}
 \usage{
-divisive_cover(distance_matrix, delta, relative_diameter = 0,
-  max_nodes = Inf)
-
-update_divisive_cover(cover, delta = cover@parameters[["delta"]],
-  relative_diameter = 0.1, max_nodes = Inf)
+divisive_cover(cover = NULL, distance_matrix, delta,
+  stop_fct = stop_relative_diameter(0.5))
 }
 \arguments{
+\item{cover}{a divisive cover used to update}
+
 \item{distance_matrix}{an n x n matrix of pairwise dissimilarities}
 
 \item{delta}{delta-parameter for delta-filtered cover (0 < delta <= 1/2)}
 
-\item{relative_diameter}{maximal diameter of the final cover}
-
-\item{max_nodes}{maximum number of nodes the algorithm should generate}
-
-\item{cover}{a divisive cover used to update}
+\item{stop_fct}{function that determines when to stop dividing (see details below)}
 }
 \description{
 This function divides the data into a cover using the distance matrix.
 }
+\details{
+The function \code{stop_fct} is a function of ... that returns \code{TRUE} if the division should
+be stoped and \code{FALSE} otherwise. Examples are \code{\link{stop_relative_diameter}} and 
+\code{\link{stop_max_nodes}}.
+}
 \examples{
+# generate sample data
 rcircle <- function(N, r, sd){
-   radius <- rnorm(N, r, sd)
-   angle <- runif(N, 0, 2 * pi)
-   data.frame(x = radius * cos(angle), 
-              y = radius * sin(angle))
+  radius <- rnorm(N, r, sd)
+  angle <- runif(N, 0, 2 * pi)
+  data.frame(x = radius * cos(angle), 
+             y = radius * sin(angle))
 }
 data_matrix <- rcircle(200, 1, .1)
 
 # calculate and update divisive cover
 dc1 <- divisive_cover(distance_matrix = dist(data_matrix),
-                      delta = 0.1, 
-                      relative_diameter = 0.7)
-dc2 <- update_divisive_cover(dc1, relative_diameter = 0.5)
+                      delta = 0.05, 
+                      stop_fct = stop_relative_diameter(0.5))
+dc2 <- divisive_cover(cover = dc1, 
+                      distance_matrix = dist(data_matrix),
+                      delta = 0.05, 
+                      stop_fct = stop_max_nodes(20))
 
 # get one snapshot for plotting
-ddc <- subcover(dc2, relative_diameter = 0.7, method = "snapshot")
+ddc1 <- subcover(dc1, relative_diameter = 0, method = "snapshot")
+ddc2 <- subcover(dc2, relative_diameter = 0, method = "snapshot")
 
 \dontrun{
 plot(data_matrix)
-plot(ddc)
+plot(ddc1)
+plot(ddc2)
 }
 }
+

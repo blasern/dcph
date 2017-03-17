@@ -14,3 +14,4 @@ simplify_cover(x, method = c("none", "duplicates", "subsets"))
 \description{
 Simplify cover by removing duplicates or subsets
 }
+

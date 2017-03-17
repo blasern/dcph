@@ -4,15 +4,16 @@ Version: 0.1
 Date: 2017-03-04
 Authors@R: c(person("Nello", "Blaser", email = "nello.blaser@uib.no", role = c("aut", "cre")),
 	     person("Morten", "Brun", role = c("aut","ctb")))
-Description: An R package for calculating persistent homology with the divisive cover algorithm.
+Description: An R package for calculating persistent homology with the divisive
+    cover algorithm.
 Depends:
     R (>= 3.1.2)
 Imports:
-    methods, 
+    methods,
     igraph,
-    RColorBrewer, 
+    RColorBrewer,
     Rcpp,
-    ggplot2, 
+    ggplot2,
     infotheo,
     rdist
 Suggests:
@@ -20,4 +21,4 @@ Suggests:
 LinkingTo: Rcpp
 License: GPL-3
 LazyData: true
-RoxygenNote: 6.0.1
+RoxygenNote: 5.0.1

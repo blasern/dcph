@@ -29,7 +29,7 @@ data_matrix <- rcircle(200, 1, .1)
 
 dc <- divisive_cover(distance_matrix = dist(data_matrix), 
                      delta = 0.1, 
-                     relative_diameter = 0.5)
+                     stop_fct = stop_relative_diameter(relative_diameter = 0.5))
 dc_0.7 <- subcover(dc, relative_diameter = 0.7, method = "divisive")
 sc_0.7 <- subcover(dc, relative_diameter = 0.7, method = "snapshot")
 
@@ -38,3 +38,4 @@ plot(data_matrix)
 plot(sc_0.7)
 }
 }
+

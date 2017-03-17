@@ -17,3 +17,4 @@ Calculate the n * m matrix C, where n is the number of data points and m is the
 number of nodes, where \deqn{C_{ij}} is 1 if the the i-th data point is in the j-th 
 subset and 0 otherwise.
 }
+

@@ -17,3 +17,4 @@ barcodes}
 \description{
 Plot persistence diagram or barcode
 }
+

@@ -18,3 +18,4 @@ persistence_from_cover(cover, max_dim, representation, reduction)
 \description{
 Calculate the persistence from the cover
 }
+

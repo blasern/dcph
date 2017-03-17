@@ -20,7 +20,7 @@
 #' # run divisive cover
 #' dc <- divisive_cover(distance_matrix = dist(data_matrix), 
 #'                      delta = 0.1, 
-#'                      relative_diameter = 0.2)
+#'                      stop_fct = stop_relative_diameter(relative_diameter = 0.2))
 #'                      
 #' # predict
 #' pred <- predict(dc, newdists = as.matrix(dist(data_matrix))[, 1:10])
