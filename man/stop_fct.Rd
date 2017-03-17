@@ -3,20 +3,20 @@
 \name{stop_fct}
 \alias{stop_fct}
 \alias{stop_max_nodes}
-\alias{stop_relative_diameter}
+\alias{stop_relative_filter}
 \title{Stop Functions}
 \usage{
-stop_relative_diameter(relative_diameter)
+stop_relative_filter(relative_filter)
 
 stop_max_nodes(max_nodes)
 }
 \arguments{
-\item{relative_diameter}{maximal diameter of the final cover}
+\item{relative_filter}{maximal relative filter value of final cover}
 
 \item{max_nodes}{maximum number of nodes the algorithm should generate}
 }
 \description{
-Possible stop criteria are based on the relative diameter 
+Possible stop criteria are based on the relative filter value 
 or the maximum number of nodes.
 }
 

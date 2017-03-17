@@ -4,24 +4,25 @@
 \alias{divisive_cover}
 \title{divisive cover}
 \usage{
-divisive_cover(cover = NULL, distance_matrix, delta,
-  stop_fct = stop_relative_diameter(0.5))
+divisive_cover(cover = NULL, data,
+  distance_fct = distance_cdist("euclidean"),
+  stop_fct = stop_relative_filter(relative_filter = 0.5),
+  anchor_fct = anchor_extremal, filter_fct = diameter_filter,
+  division_fct = relative_gap_division(relative_gap = 0.1))
 }
 \arguments{
 \item{cover}{a divisive cover used to update}
 
-\item{distance_matrix}{an n x n matrix of pairwise dissimilarities}
-
-\item{delta}{delta-parameter for delta-filtered cover (0 < delta <= 1/2)}
-
 \item{stop_fct}{function that determines when to stop dividing (see details below)}
+
+\item{distance_matrix}{an n x n matrix of pairwise dissimilarities}
 }
 \description{
 This function divides the data into a cover using the distance matrix.
 }
 \details{
 The function \code{stop_fct} is a function of ... that returns \code{TRUE} if the division should
-be stoped and \code{FALSE} otherwise. Examples are \code{\link{stop_relative_diameter}} and 
+be stoped and \code{FALSE} otherwise. Examples are \code{\link{stop_relative_filter}} and 
 \code{\link{stop_max_nodes}}.
 }
 \examples{
@@ -37,7 +38,7 @@ data_matrix <- rcircle(200, 1, .1)
 # calculate and update divisive cover
 dc1 <- divisive_cover(distance_matrix = dist(data_matrix),
                       delta = 0.05, 
-                      stop_fct = stop_relative_diameter(0.5))
+                      stop_fct = stop_relative_filter(0.5))
 dc2 <- divisive_cover(cover = dc1, 
                       distance_matrix = dist(data_matrix),
                       delta = 0.05, 

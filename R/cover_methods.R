@@ -33,7 +33,7 @@ print.patch <- function(x, ...){
 }
 
 patch_df <- function(x){
-  data.frame(id = x@id, size = length(x@indices), birth = x@birth, death = x@death)
+  data.frame(id = x@id, size = length(x@indices), filter_value = x@filter_value, parent_filter = x@parent_filter)
 }
 
 #' @export

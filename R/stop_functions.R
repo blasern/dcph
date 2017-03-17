@@ -1,21 +1,21 @@
 #' Stop Functions
 #' 
-#' Possible stop criteria are based on the relative diameter 
+#' Possible stop criteria are based on the relative filter value 
 #' or the maximum number of nodes. 
 #' 
-#' @param relative_diameter maximal diameter of the final cover
+#' @param relative_filter maximal relative filter value of final cover
 #' @param max_nodes maximum number of nodes the algorithm should generate
 #' 
 #' @name stop_fct
 #' @export
-stop_relative_diameter <- function(relative_diameter){
-  stopifnot(relative_diameter >= 0)
+stop_relative_filter <- function(relative_filter){
+  stopifnot(relative_filter >= 0)
   function(cover, next_division){
     if (length(cover@subsets[[next_division]]@indices) == 1) {
       return(TRUE)
     }
     else {
-      return(cover@subsets[[next_division]]@diameter < cover@diameter * relative_diameter)
+      return(cover@subsets[[next_division]]@filter_value < cover@subsets[[1]]@filter_value * relative_filter)
     }
   }
 }
