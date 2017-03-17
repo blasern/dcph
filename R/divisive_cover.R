@@ -10,7 +10,7 @@
 #' @param filter_fct function that filters the cover (see details below)
 #' @param division_fct function that divides the patches (see details below)
 #' @details 
-#' TODO...
+#' TODO... write detailed documentation
 #' The function \code{stop_fct} is a function of ... that returns \code{TRUE} if the division should
 #' be stoped and \code{FALSE} otherwise. Examples are \code{\link{stop_relative_filter}} and 
 #' \code{\link{stop_max_nodes}}.
@@ -89,6 +89,7 @@ divisive_cover <- function(cover = NULL,
     new_patches <- lapply(new_patches, function(patch) {
       patch@anchor_points <- anchor_fct(points = patch@indices, data = data, distance_fct = distance_fct)
       patch@filter_value <- filter_fct(patches = list(patch), data = data, distance_fct = distance_fct)
+      patch@parent <- next_division
       patch@parent_filter <- cover@subsets[[next_division]]@filter_value
       patch
     })

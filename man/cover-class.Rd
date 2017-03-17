@@ -47,6 +47,8 @@ An S4 class to represent a patch.
 
 \item{\code{filter_value}}{Filter value}
 
+\item{\code{parent}}{Index of parent}
+
 \item{\code{parent_filter}}{Filter value of parent}
 }}
 

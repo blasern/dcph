@@ -4,15 +4,14 @@
 \alias{predict.cover}
 \title{Predict}
 \usage{
-\method{predict}{cover}(object, newdists = NULL, newdata = NULL, ...)
+\method{predict}{cover}(object, newdata, predict_fct, ...)
 }
 \arguments{
 \item{object}{a divisive cover}
 
-\item{newdists}{a matrix of distances between the new points and the 
-points used to train the divisive cover}
+\item{newdata}{new data}
 
-\item{newdata}{new data in case of fast divisive cover}
+\item{predict_fct}{predict function (see below)}
 
 \item{...}{further arguments passed from other methods}
 }
@@ -31,12 +30,13 @@ rcircle <- function(N, r, sd){
 data_matrix <- rcircle(200, 1, .1)
 
 # run divisive cover
-dc <- divisive_cover(distance_matrix = dist(data_matrix), 
-                     delta = 0.1, 
-                     stop_fct = stop_relative_diameter(relative_diameter = 0.2))
+dc <- divisive_cover(data = data_matrix, 
+                     division_fct = relative_gap_division(0.1), 
+                     stop_fct = stop_relative_filter(relative_filter = 0.2))
                      
 # predict
-pred <- predict(dc, newdists = as.matrix(dist(data_matrix))[, 1:10])
+pred <- predict(dc, newdata = rcircle(10, 1, .1), 
+                predict_fct = relative_gap_prediction(0.1))
 
 # plot
 sc <- subcover(pred, 0.6, "snapshot")

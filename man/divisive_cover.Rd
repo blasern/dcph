@@ -29,7 +29,7 @@ divisive_cover(cover = NULL, data,
 This function divides the data into a cover using the distance matrix.
 }
 \details{
-TODO...
+TODO... write detailed documentation
 The function \code{stop_fct} is a function of ... that returns \code{TRUE} if the division should
 be stoped and \code{FALSE} otherwise. Examples are \code{\link{stop_relative_filter}} and 
 \code{\link{stop_max_nodes}}.

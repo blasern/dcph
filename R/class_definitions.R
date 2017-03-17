@@ -57,7 +57,7 @@ cover <- function(data, subsets,
                   external_nodes = integer(0), 
                   data_filter_value = numeric(0),
                   parameters = list(), 
-                  type = c("divisive", "fast_divisive", "snapshot", "predict", "concat")){
+                  type = c("divisive", "snapshot", "predict", "concat")){
   new("cover", 
       data = as.matrix(data), 
       subsets = subsets, 
@@ -77,6 +77,7 @@ is.cover <- function (x){
 #' @slot predicted Indices of predicted points
 #' @slot anchor_points Anchor points
 #' @slot filter_value Filter value
+#' @slot parent Index of parent 
 #' @slot parent_filter Filter value of parent
 #' @rdname cover-class
 setClass(Class = "patch", 
@@ -85,12 +86,14 @@ setClass(Class = "patch",
                                                   predicted = "integer",
                                                   anchor_points = "integer", 
                                                   filter_value = "numeric", 
+                                                  parent = "integer",
                                                   parent_filter = "numeric"), 
                   prototype = prototype(id = NA_integer_,
                                         indices = integer(0),
                                         predicted = integer(0), 
                                         anchor_points = integer(0), 
                                         filter_value = NA_real_, 
+                                        parent = NA_integer_,
                                         parent_filter = NA_real_))
 
 # patch
@@ -99,9 +102,10 @@ patch <- function(id = NA_integer_,
                   predicted = integer(0), 
                   anchor_points = integer(0), 
                   filter_value = NA_real_, 
+                  parent = NA_integer_,
                   parent_filter = NA_real_){
   new("patch", id = id, indices = indices, predicted = predicted, anchor_points = anchor_points, 
-      filter_value = filter_value, parent_filter = parent_filter)
+      filter_value = filter_value, parent = parent, parent_filter = parent_filter)
 }
 
 is.patch <- function (x){
