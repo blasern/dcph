@@ -65,7 +65,7 @@ snapshot_persistence <- function(cover, max_dim){
   cover <- simplify_cover(cover, method = "duplicates")
   
   # change death 
-  cover@subsets <- c(list(patch(1:length(unique(unlist(lapply(cover@subsets, slot, "indices")))), 
+  cover@subsets <- c(list(patch(indices = 1:length(unique(unlist(lapply(cover@subsets, slot, "indices")))), 
                                 id = 0L, 
                                 filter_value = cover@data_filter_value)),
                      cover@subsets)
