@@ -50,4 +50,3 @@ Bauer U., Kerber M., Reininghaus J., Wagner H. (2014) PHAT - Persistent Homology
 
 https://bitbucket.org/phat-code/phat
 }
-

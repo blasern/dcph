@@ -2,7 +2,7 @@
 #' 
 #' Compare two covers using persistent homology or entropy
 #' 
-#' @param cover1,cover2 covers to compare 
+#' @param ... covers to compare 
 #' @param metric which metric should be calculated
 #' @param dim dimension(s) for bottleneck distance
 #' @examples 
@@ -37,20 +37,27 @@
 #' @importFrom rdist cdist
 #' @importFrom utils combn
 #' @export
-cover_distance <- function(cover1, cover2, metric = c("vi", "bottleneck", "interleaving"), dim = 1){
+cover_distance <- function(..., metric = c("vi", "bottleneck", "interleaving"), dim = 1){
   metric <- match.arg(metric)
+  covers <- unlist(list(...))
   switch(metric, 
-         "vi" = cover_distance_vi(cover1, cover2), 
-         "bottleneck" = cover_distance_bottleneck(cover1, cover2, dim = dim), 
-         "interleaving" = cover_distance_interleaving(cover1, cover2))
+         "vi" = cover_distance_vi(covers), 
+         "bottleneck" = cover_distance_bottleneck(covers, dim = dim), 
+         "interleaving" = cover_distance_interleaving(covers))
 }
 
-cover_distance_bottleneck <- function(cover1, cover2, dim){
+cover_distance_bottleneck <- function(covers, dim){
   # compute persistence diagrams
-  pers1 <- snapshot_persistence(cover1, max_dim = max(dim))
-  pers2 <- snapshot_persistence(cover2, max_dim = max(dim))
+  pers <- lapply(covers, snapshot_persistence, max_dim = max(dim))
   # compute bottleneck distance
-  bottleneck_distance(pers1, pers2, dim = dim)
+  dist_obj <- apply(combn(1:length(covers), 2), 2, 
+                    function(index){
+                      bottleneck_distance(pers[[index[1]]], pers[[index[2]]], dim = dim)
+                    })
+  # matrix output
+  class(dist_obj) <- "dist"
+  attr(dist_obj, "Size") <- length(covers)
+  as.matrix(dist_obj)
 }
 
 snapshot_persistence <- function(cover, max_dim){
@@ -134,10 +141,17 @@ bottleneck_distance <- function(pers1, pers2, dim){
   sum(dim_dist)
 }
 
-cover_distance_interleaving <- function(cover1, cover2){
-  eps1 <- interleaving_epsilon(cover1, cover2)
-  eps2 <- interleaving_epsilon(cover2, cover1)
-  return(eps1 + eps2)
+cover_distance_interleaving <- function(covers){
+  # compute interleaving distance
+  dist_obj <- apply(combn(1:length(covers), 2), 2, 
+                    function(index){
+                      interleaving_epsilon(covers[[index[1]]], covers[[index[2]]]) + 
+                      interleaving_epsilon(covers[[index[2]]], covers[[index[1]]])
+                    })
+  # matrix output
+  class(dist_obj) <- "dist"
+  attr(dist_obj, "Size") <- length(covers)
+  as.matrix(dist_obj)
 }
 
 interleaving_epsilon <- function(cover1, cover2){
@@ -178,16 +192,18 @@ superset <- function(x, y){
   return(minimal_superset)
 }
 
-cover_distance_vi <- function(cover1, cover2){
+cover_distance_vi <- function(covers){
   # define cover matrices
-  x_mat <- cover_matrix(cover1)
-  y_mat <- cover_matrix(cover2)
+  cover_mats <- lapply(covers, cover_matrix)
   
-  cond1 <- infotheo::condentropy(x_mat, y_mat)
-  cond2 <- infotheo::condentropy(y_mat, x_mat)
-  
-  vi <- cond1 + cond2
-#   attr(vi, "H(1|2)") <- cond1
-#   attr(vi, "H(2|1)") <- cond2
-  return(vi)
+  # compute interleaving distance
+  dist_obj <- apply(combn(1:length(covers), 2), 2, 
+                    function(index){
+                      infotheo::condentropy(cover_mats[[index[1]]], cover_mats[[index[2]]]) + 
+                        infotheo::condentropy(cover_mats[[index[2]]], cover_mats[[index[1]]])
+                    })
+  # matrix output
+  class(dist_obj) <- "dist"
+  attr(dist_obj, "Size") <- length(covers)
+  as.matrix(dist_obj)
 }

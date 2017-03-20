@@ -4,11 +4,10 @@
 \alias{cover_distance}
 \title{Distance between covers}
 \usage{
-cover_distance(cover1, cover2, metric = c("vi", "bottleneck", "interleaving"),
-  dim = 1)
+cover_distance(..., metric = c("vi", "bottleneck", "interleaving"), dim = 1)
 }
 \arguments{
-\item{cover1, cover2}{covers to compare}
+\item{...}{covers to compare}
 
 \item{metric}{which metric should be calculated}
 
@@ -46,4 +45,3 @@ plot(cover2)
 plot(c(cover1, cover2))
 }
 }
-

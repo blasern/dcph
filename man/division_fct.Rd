@@ -18,4 +18,3 @@ relative_gap_division(relative_gap)
 \description{
 Division functions
 }
-

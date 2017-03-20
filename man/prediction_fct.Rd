@@ -18,4 +18,3 @@ relative_gap_prediction(relative_gap)
 \description{
 Prediction functions
 }
-

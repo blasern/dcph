@@ -2,8 +2,8 @@
 % Please edit documentation in R/stop_functions.R
 \name{stop_fct}
 \alias{stop_fct}
-\alias{stop_max_nodes}
 \alias{stop_relative_filter}
+\alias{stop_max_nodes}
 \title{Stop Functions}
 \usage{
 stop_relative_filter(relative_filter)
@@ -19,4 +19,3 @@ stop_max_nodes(max_nodes)
 Possible stop criteria are based on the relative filter value 
 or the maximum number of nodes.
 }
-
