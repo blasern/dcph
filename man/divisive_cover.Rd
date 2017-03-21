@@ -8,7 +8,7 @@ divisive_cover(cover = NULL, data,
   distance_fct = distance_cdist("euclidean"),
   stop_fct = stop_relative_filter(relative_filter = 0.5),
   anchor_fct = anchor_extremal, filter_fct = diameter_filter,
-  division_fct = relative_gap_division(relative_gap = 0.1))
+  division_fct = relative_gap_division(relative_gap = 0.1), group = NULL)
 }
 \arguments{
 \item{cover}{an optional divisive cover used to update}
@@ -24,6 +24,8 @@ divisive_cover(cover = NULL, data,
 \item{filter_fct}{function that filters the cover (see details below)}
 
 \item{division_fct}{function that divides the patches (see details below)}
+
+\item{group}{group for classification}
 }
 \description{
 This function divides the data into a cover using the distance matrix.

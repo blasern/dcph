@@ -17,7 +17,8 @@ Imports:
     infotheo,
     rdist
 Suggests:
-    testthat
+    testthat, 
+    datasets
 LinkingTo: Rcpp
 License: GPL-3
 LazyData: true

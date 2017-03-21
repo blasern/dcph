@@ -3,9 +3,15 @@
 \name{filter_fct}
 \alias{filter_fct}
 \alias{diameter_filter}
+\alias{cardinality_filter}
+\alias{classification_filter}
 \title{Filter functions}
 \usage{
-diameter_filter(patches, data, distance_fct)
+diameter_filter(patches, data, distance_fct, ...)
+
+cardinality_filter(patches, ...)
+
+classification_filter(patches, group, ...)
 }
 \arguments{
 \item{patches}{Patch to apply filter}
@@ -13,6 +19,10 @@ diameter_filter(patches, data, distance_fct)
 \item{data}{Data used in distance function}
 
 \item{distance_fct}{The used distance function}
+
+\item{...}{ignored arguments}
+
+\item{group}{the group for classification}
 }
 \description{
 Filter after diameter or cardinality

@@ -9,6 +9,7 @@
 #' @param anchor_fct function that determined how anchor points are found (see details below)
 #' @param filter_fct function that filters the cover (see details below)
 #' @param division_fct function that divides the patches (see details below)
+#' @param group group for classification
 #' @details 
 #' TODO... write detailed documentation
 #' The function \code{stop_fct} is a function of ... that returns \code{TRUE} if the division should
@@ -50,14 +51,15 @@ divisive_cover <- function(cover = NULL,
                            stop_fct = stop_relative_filter(relative_filter = .5), 
                            anchor_fct = anchor_extremal, 
                            filter_fct = diameter_filter,
-                           division_fct = relative_gap_division(relative_gap = 0.1)
+                           division_fct = relative_gap_division(relative_gap = 0.1), 
+                           group = NULL
                            ){
   # generate initial cover
   if (is.null(cover)){
     initial_patch <- patch(id = 1L, 
                            indices = 1:nrow(data))
-    initial_patch@anchor_points <- anchor_fct(points = 1:nrow(data), data = data, distance_fct = distance_fct)
-    initial_patch@filter_value <- filter_fct(patches = list(initial_patch), data = data, distance_fct = distance_fct)
+    initial_patch@anchor_points <- anchor_fct(points = 1:nrow(data), data = data, distance_fct = distance_fct, group = group)
+    initial_patch@filter_value <- filter_fct(patches = list(initial_patch), data = data, distance_fct = distance_fct, group = group)
     initial_patch@parent_filter <- initial_patch@filter_value
     cover <- cover(data = data, 
                    subsets = list(initial_patch), 
@@ -74,7 +76,7 @@ divisive_cover <- function(cover = NULL,
     next_division <- 1L
   }
   else {
-    filter_values <- filter_fct(patches = cover@subsets, data = data, distance_fct = distance_fct)
+    filter_values <- filter_fct(patches = cover@subsets, data = data, distance_fct = distance_fct, group = group)
     filter_values[cover@internal_nodes] <- -Inf
     next_division <- which.max(filter_values)
   }
@@ -85,10 +87,12 @@ divisive_cover <- function(cover = NULL,
     new_patches <- division_fct(data = data, 
                                 patch = cover@subsets[[next_division]], 
                                 distance_fct = distance_fct)
+    if (any(is.na(new_patches[[1]]@indices))) browser()
+    if (any(is.na(new_patches[[2]]@indices))) browser()
     # update information in new patches
     new_patches <- lapply(new_patches, function(patch) {
-      patch@anchor_points <- anchor_fct(points = patch@indices, data = data, distance_fct = distance_fct)
-      patch@filter_value <- filter_fct(patches = list(patch), data = data, distance_fct = distance_fct)
+      patch@anchor_points <- anchor_fct(points = patch@indices, data = data, distance_fct = distance_fct, group = group)
+      patch@filter_value <- filter_fct(patches = list(patch), data = data, distance_fct = distance_fct, group = group)
       patch@parent <- next_division
       patch@parent_filter <- cover@subsets[[next_division]]@filter_value
       patch

@@ -4,11 +4,14 @@
 \alias{anchor_fct}
 \alias{anchor_extremal}
 \alias{anchor_heuristic_extremal}
+\alias{anchor_classify}
 \title{Anchor functions for divisive cover}
 \usage{
-anchor_extremal(points, data, distance_fct)
+anchor_extremal(points, data, distance_fct, ...)
 
-anchor_heuristic_extremal(points, data, distance_fct)
+anchor_heuristic_extremal(points, data, distance_fct, ...)
+
+anchor_classify(points, data, distance_fct, group, ...)
 }
 \arguments{
 \item{points}{indices of points in patch}
@@ -16,6 +19,10 @@ anchor_heuristic_extremal(points, data, distance_fct)
 \item{data}{data}
 
 \item{distance_fct}{distance function}
+
+\item{...}{ignored arguments}
+
+\item{group}{the group for classification}
 }
 \description{
 Anchor functions for divisive cover
