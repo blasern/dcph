@@ -87,8 +87,7 @@ divisive_cover <- function(cover = NULL,
     new_patches <- division_fct(data = data, 
                                 patch = cover@subsets[[next_division]], 
                                 distance_fct = distance_fct)
-    if (any(is.na(new_patches[[1]]@indices))) browser()
-    if (any(is.na(new_patches[[2]]@indices))) browser()
+    if (any(is.na(c(new_patches[[1]]@indices, new_patches[[2]]@indices)))) stop("Sometinng went wrong... check if anchor points are the same")
     # update information in new patches
     new_patches <- lapply(new_patches, function(patch) {
       patch@anchor_points <- anchor_fct(points = patch@indices, data = data, distance_fct = distance_fct, group = group)
