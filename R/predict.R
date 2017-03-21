@@ -48,7 +48,9 @@ divide_pred <- function(cover, index, newdata, predict_fct){
 #' Extract group from predict cover
 #' 
 #' @param pc prediction cover
+#' @param group specify the group of the training set (not necessary if used in divisive_cover)
 #' @export
+#' @importFrom dplyr group_by_ select_ do right_join ungroup
 #' @examples
 #' iris <- datasets::iris
 #' 
@@ -79,18 +81,32 @@ divide_pred <- function(cover, index, newdata, predict_fct){
 #' 
 #' table(observed, predicted)
 #' @rdname predict_cover
-group_from_predict_cover <- function(pc){
+group_from_predict_cover <- function(pc, group = NULL){
+  `%>%` <- dplyr::`%>%`
+  . <- NULL
   # use lowest level
   sc <- subcover(pc, 0, "snapshot")
-  group <- pc@parameters$group
+  # check group
+  if (is.null(group)){
+    group <- pc@parameters$group
+  }
   # cover matrix
   cpm <- cover_predict_matrix(sc)
-  # find group
-  apply(cpm, 1, function(subsets){
-    possible_groups <- group[unlist(lapply(sc@subsets[which(subsets == 1)], slot, "indices"))]
-    uniqv <- unique(possible_groups)
-    uniqv[which.max(tabulate(match(possible_groups, uniqv)))]
-  })
+  # find groups
+  cpm_df <- as.data.frame(cpm)
+  cpm_df %>% 
+    dplyr::group_by_(.dots = colnames(cpm_df)) %>% 
+    dplyr::do({
+      subsets <- unlist(.[1, ])
+      possible_groups <- group[unlist(lapply(sc@subsets[which(subsets == 1)], slot, "indices"))]
+      uniqv <- unique(possible_groups)
+      data.frame(group = uniqv[which.max(tabulate(match(possible_groups, uniqv)))])
+    }) %>% 
+    dplyr::right_join(cpm_df) %>%
+    dplyr::ungroup() %>% 
+    dplyr::select_("group") %>%
+    unlist %>%
+    unname
 }
 
 cover_predict_matrix <- function (cover) 

@@ -8,7 +8,7 @@
 \usage{
 \method{predict}{cover}(object, newdata, predict_fct, ...)
 
-group_from_predict_cover(pc)
+group_from_predict_cover(pc, group = NULL)
 }
 \arguments{
 \item{object}{a divisive cover}
@@ -20,6 +20,8 @@ group_from_predict_cover(pc)
 \item{...}{further arguments passed from other methods}
 
 \item{pc}{prediction cover}
+
+\item{group}{specify the group of the training set (not necessary if used in divisive_cover)}
 }
 \description{
 Predict in which subsets new data come to lie when given a previous

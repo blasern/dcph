@@ -15,7 +15,8 @@ Imports:
     Rcpp,
     ggplot2,
     infotheo,
-    rdist
+    rdist,
+    dplyr
 Suggests:
     testthat, 
     datasets
