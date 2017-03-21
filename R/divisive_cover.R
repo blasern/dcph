@@ -70,7 +70,8 @@ divisive_cover <- function(cover = NULL,
                                      anchor_fct = anchor_fct, 
                                      filter_fct = filter_fct,
                                      division_fct = division_fct, 
-                                     stop_fct = stop_fct), 
+                                     stop_fct = stop_fct, 
+                                     group = group), 
                    type = "divisive")
     filter_values <- initial_patch@filter_value
     next_division <- 1L
@@ -87,7 +88,7 @@ divisive_cover <- function(cover = NULL,
     new_patches <- division_fct(data = data, 
                                 patch = cover@subsets[[next_division]], 
                                 distance_fct = distance_fct)
-    if (any(is.na(c(new_patches[[1]]@indices, new_patches[[2]]@indices)))) stop("Sometinng went wrong... check if anchor points are the same")
+    if (any(is.na(c(new_patches[[1]]@indices, new_patches[[2]]@indices)))) stop("Sometinng went wrong... check input")
     # update information in new patches
     new_patches <- lapply(new_patches, function(patch) {
       patch@anchor_points <- anchor_fct(points = patch@indices, data = data, distance_fct = distance_fct, group = group)
