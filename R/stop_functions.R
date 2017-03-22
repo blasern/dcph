@@ -15,7 +15,7 @@ stop_relative_filter <- function(relative_filter){
       return(TRUE)
     }
     else {
-      return(cover@subsets[[next_division]]@filter_value < cover@subsets[[1]]@filter_value * relative_filter)
+      return(cover@subsets[[next_division]]@filter_value <= cover@subsets[[1]]@filter_value * relative_filter)
     }
   }
 }
