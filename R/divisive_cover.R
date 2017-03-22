@@ -83,7 +83,9 @@ divisive_cover <- function(cover = NULL,
   }
   
   # divide into pieces
-  while (!stop_fct(cover, next_division)){
+  while (!stop_fct(cover, next_division) && distance_fct(data, 
+                                                         cover@subsets[[next_division]]@anchor_points[1], 
+                                                         cover@subsets[[next_division]]@anchor_points[2]) != 0){
     # divide original patch into new ones
     new_patches <- division_fct(data = data, 
                                 patch = cover@subsets[[next_division]], 

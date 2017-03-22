@@ -81,7 +81,7 @@ divide_pred <- function(cover, index, newdata, predict_fct){
 #' 
 #' table(observed, predicted)
 #' @rdname predict_cover
-group_from_predict_cover <- function(pc, group = NULL){
+group_from_predict_cover <- function(pc, group = NULL, probs = TRUE){
   `%>%` <- dplyr::`%>%`
   . <- NULL
   # use lowest level
@@ -94,19 +94,26 @@ group_from_predict_cover <- function(pc, group = NULL){
   cpm <- cover_predict_matrix(sc)
   # find groups
   cpm_df <- as.data.frame(cpm)
-  cpm_df %>% 
+  unique_groups <- unique(group)
+  group_prob <- cpm_df %>% 
     dplyr::group_by_(.dots = colnames(cpm_df)) %>% 
     dplyr::do({
       subsets <- unlist(.[1, ])
       possible_groups <- group[unlist(lapply(sc@subsets[which(subsets == 1)], slot, "indices"))]
-      uniqv <- unique(possible_groups)
-      data.frame(group = uniqv[which.max(tabulate(match(possible_groups, uniqv)))])
+      tab <- tabulate(match(possible_groups, unique_groups), nbins = length(unique_groups))
+      # probabilities
+      probabilities <- matrix(tab/sum(tab), nrow = 1)
+      colnames(probabilities) <- unique_groups
+      # add predicted group
+      data.frame(predicted_group = unique_groups[which.max(tab)], probabilities)
     }) %>% 
-    dplyr::right_join(cpm_df) %>%
+    dplyr::right_join(cpm_df, by = colnames(cpm_df)) %>%
     dplyr::ungroup() %>% 
-    dplyr::select_("group") %>%
-    unlist %>%
-    unname
+    dplyr::select_("predicted_group", .dots = as.character(unique_groups))
+  
+  group <- group_prob[["predicted_group"]]
+  if (probs) attr(group, "probs") <- group_prob[, as.character(unique_groups)]
+  group
 }
 
 cover_predict_matrix <- function (cover) 

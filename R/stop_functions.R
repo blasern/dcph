@@ -33,3 +33,16 @@ stop_max_nodes <- function(max_nodes){
     }
   }
 }
+
+#' @rdname stop_fct
+#' @export
+stop_relative_filter_max_nodes <- function(relative_filter, max_nodes){
+  function(cover, next_division){
+    if (length(cover@subsets[[next_division]]@indices) == 1) {
+      return(TRUE)
+    }
+    else {
+      return(length(cover@subsets) >= max_nodes || cover@subsets[[next_division]]@filter_value <= cover@subsets[[1]]@filter_value * relative_filter)
+    }
+  }
+}
