@@ -127,8 +127,9 @@ bottleneck_distance <- function(pers1, pers2, dim){
                               adjusted_point_distances[x[paste0("second_", index)], x[paste0("first_", index)]]
                             }, x = x))
       
-      non_point_d <- max(c(diag1_distances[-x[grepl("second", names(x))]], 
-                           diag2_distances[-x[grepl("first", names(x))]]))
+      non_point_d <- suppressWarnings(
+        max(c(diag1_distances[-x[grepl("second", names(x))]], 
+              diag2_distances[-x[grepl("first", names(x))]])))
       
       max(point_d, non_point_d)
     })
