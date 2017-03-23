@@ -122,15 +122,15 @@ bottleneck_distance <- function(pers1, pers2, dim){
     
     # combination distance
     comb_distances <- apply(all_combinations, 1, function(x){
-      point_d <- sum(sapply(seq(length(x)/2), 
+      point_d <- max(sapply(seq(length(x)/2), 
                             function(index, x){
                               adjusted_point_distances[x[paste0("second_", index)], x[paste0("first_", index)]]
                             }, x = x))
       
-      non_point_d <- sum(diag1_distances[-x[grepl("second", names(x))]]) + 
-        sum(diag2_distances[-x[grepl("first", names(x))]])
+      non_point_d <- max(c(diag1_distances[-x[grepl("second", names(x))]], 
+                           diag2_distances[-x[grepl("first", names(x))]]))
       
-      point_d + non_point_d
+      max(point_d, non_point_d)
     })
     
     # minimum combination
