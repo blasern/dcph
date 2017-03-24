@@ -81,7 +81,7 @@ divide_pred <- function(cover, index, newdata, predict_fct){
 #' 
 #' table(observed, predicted)
 #' @rdname predict_cover
-group_from_predict_cover <- function(pc, group = NULL, probs = TRUE){
+group_from_predict_cover <- function(pc, group = NULL){
   `%>%` <- dplyr::`%>%`
   . <- NULL
   # use lowest level
@@ -112,7 +112,7 @@ group_from_predict_cover <- function(pc, group = NULL, probs = TRUE){
     dplyr::select_("predicted_group", .dots = as.character(unique_groups))
   
   group <- group_prob[["predicted_group"]]
-  if (probs) attr(group, "probs") <- group_prob[, as.character(unique_groups)]
+  attr(group, "probs") <- group_prob[, as.character(unique_groups)]
   group
 }
 

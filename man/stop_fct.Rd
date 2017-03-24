@@ -4,11 +4,14 @@
 \alias{stop_fct}
 \alias{stop_relative_filter}
 \alias{stop_max_nodes}
+\alias{stop_relative_filter_max_nodes}
 \title{Stop Functions}
 \usage{
 stop_relative_filter(relative_filter)
 
 stop_max_nodes(max_nodes)
+
+stop_relative_filter_max_nodes(relative_filter, max_nodes)
 }
 \arguments{
 \item{relative_filter}{maximal relative filter value of final cover}

@@ -14,7 +14,7 @@ test_that("cover distances work", {
   cover3 <- subcover(dc, 0.5, "snapshot")
   
   expect_equal(cover_distance(cover1, cover2, metric = "vi"), as.matrix(dist(c(0, 0.333044760052531))))
-  expect_equal(cover_distance(cover1, cover2, metric = "bottleneck", dim = 0), as.matrix(dist(c(0, 5.25019588636283))))
+  expect_equal(cover_distance(cover1, cover2, metric = "bottleneck", dim = 0), as.matrix(dist(c(0, 1.32208396155896))))
   expect_equal(cover_distance(cover1, cover2, metric = "bottleneck", dim = 1), as.matrix(dist(c(0, 2.07656484777033))))
   expect_equal(cover_distance(cover1, cover2, metric = "interleaving"), as.matrix(dist(c(0, 2.76307092273138))))
   
