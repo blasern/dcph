@@ -95,25 +95,20 @@ group_from_predict_cover <- function(pc, group = NULL){
   # find groups
   cpm_df <- as.data.frame(cpm)
   unique_groups <- unique(group)
-  group_prob <- cpm_df %>% 
+  cpm_df %>% 
     dplyr::group_by_(.dots = colnames(cpm_df)) %>% 
     dplyr::do({
       subsets <- unlist(.[1, ])
       possible_groups <- group[unlist(lapply(sc@subsets[which(subsets == 1)], slot, "indices"))]
       tab <- tabulate(match(possible_groups, unique_groups), nbins = length(unique_groups))
-      # probabilities
-      probabilities <- matrix(tab/sum(tab), nrow = 1)
-      colnames(probabilities) <- unique_groups
       # add predicted group
-      data.frame(predicted_group = unique_groups[which.max(tab)], probabilities)
+      data.frame(predicted_group = unique_groups[which.max(tab)])
     }) %>% 
     dplyr::right_join(cpm_df, by = colnames(cpm_df)) %>%
     dplyr::ungroup() %>% 
-    dplyr::select_("predicted_group", .dots = as.character(unique_groups))
-  
-  group <- group_prob[["predicted_group"]]
-  attr(group, "probs") <- group_prob[, as.character(unique_groups)]
-  group
+    dplyr::select_("predicted_group") %>%
+    unlist %>%
+    unname
 }
 
 cover_predict_matrix <- function (cover) 
