@@ -11,7 +11,11 @@
 #' @param division_fct function that divides the patches (see details below)
 #' @param group group for classification
 #' @details 
-#' TODO... write detailed documentation
+#' The function \code{distance_function} is a function of \code{data}, \code{X} and \code{Y}, where
+#' \code{data} is the data matrix and \code{X} and \code{Y} are indices. Examples of distance functions
+#' are \code{\link{distance_euclidean}}, \code{\link{distance_matrix}}, and the function returned from 
+#' \code{\link{distance_cdist}}. 
+#' 
 #' The function \code{stop_fct} is a function of ... that returns \code{TRUE} if the division should
 #' be stoped and \code{FALSE} otherwise. Examples are \code{\link{stop_relative_filter}} and 
 #' \code{\link{stop_max_nodes}}.
