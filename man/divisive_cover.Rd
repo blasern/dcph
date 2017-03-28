@@ -36,9 +36,12 @@ The function \code{distance_function} is a function of \code{data}, \code{X} and
 are \code{\link{distance_euclidean}}, \code{\link{distance_matrix}}, and the function returned from 
 \code{\link{distance_cdist}}. 
 
-The function \code{stop_fct} is a function of ... that returns \code{TRUE} if the division should
-be stoped and \code{FALSE} otherwise. Examples are \code{\link{stop_relative_filter}} and 
-\code{\link{stop_max_nodes}}.
+The function \code{stop_fct} is a function of \code{cover} and \code{next_division}, where \code{next_division} 
+is the index of the next subset that should be divided. The function returns
+\code{TRUE} if the division should be stoped and \code{FALSE} otherwise. Examples are returned from
+\code{\link{stop_relative_filter}}, \code{\link{stop_max_nodes}}, and \code{\link{stop_relative_filter_max_nodes}}.
+
+TODO: Document anchor_fct, filter_fct, division_fct
 }
 \examples{
 # generate sample data
