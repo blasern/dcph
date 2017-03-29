@@ -43,9 +43,14 @@ is the index of the next subset that should be divided. The function returns
 
 The function \code{anchor_fct} is a function of \code{points}, the indices of points in patch, 
 \code{data}, \code{distance_fct}, and \code{group}. Examples are \code{\link{anchor_extremal}}, 
-\code{\link{anchor_heuristic_extremal}}, \code{\link{anchor_classify}}, and \code{\link{anchor_heuristic_classify}}
+\code{\link{anchor_heuristic_extremal}}, \code{\link{anchor_classify}}, and 
+\code{\link{anchor_heuristic_classify}}
 
-TODO: Document filter_fct, division_fct
+The function \code{filter_fct} is a function of \code{patches}, \code{data}, \code{distance_fct}, 
+and \code{group} that returns a filter value for each patch. Examples of filter functions are
+\code{\link{diameter_filter}}, \code{\link{cardinality_filter}}, and \code{\link{classification_filter}}
+
+TODO: Document division_fct
 }
 \examples{
 # generate sample data

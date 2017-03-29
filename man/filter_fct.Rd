@@ -25,5 +25,17 @@ classification_filter(patches, group, ...)
 \item{group}{the group for classification}
 }
 \description{
-Filter after diameter or cardinality
+Filter the divisive cover. The filter is used to decide which subset 
+to divide next and may be used to decide when to stop dividing. It is 
+also used for calculating persistent homology.
+}
+\details{
+The function \code{diameter_filter} returns the distance between the
+two anchor points. 
+
+The function \code{cardinality_filter} returns the cardinality of the
+subset. 
+
+The function \code{classification_filter} returns the proportion of 
+elements in a subset that do not belong to the largest group.
 }
