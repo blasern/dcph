@@ -16,5 +16,14 @@ relative_gap_division(relative_gap)
 \item{relative_gap}{delta-parameter for delta-filtered cover (0 < delta <= 1/2)}
 }
 \description{
-Division functions
+This function does the actual division in divisive cover.
+}
+\details{
+The function \code{relative_factor_division} returns a function that divides
+a patch into subpatches. All points with distance from one anchor point 
+larger than \code{relative_factor} times the distance from the other anchor 
+point come in one subpatch and vice versa. 
+
+The function \code{relative_gap_division} uses the \code{relative_factor_division}
+with \code{relative_factor = (1-2 * relative_gap)/(1+2 * relative_gap)}
 }

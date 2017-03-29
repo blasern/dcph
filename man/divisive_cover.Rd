@@ -50,7 +50,9 @@ The function \code{filter_fct} is a function of \code{patches}, \code{data}, \co
 and \code{group} that returns a filter value for each patch. Examples of filter functions are
 \code{\link{diameter_filter}}, \code{\link{cardinality_filter}}, and \code{\link{classification_filter}}
 
-TODO: Document division_fct
+The function \code{division_fct} takes arguments \code{data}, \code{patch}, and \code{distance_fct} and
+returns two new patches that are subpatches of the original patch. The functions 
+\code{\link{relative_factor_division}} and \code{\link{relative_gap_division}} return division functions.
 }
 \examples{
 # generate sample data
