@@ -41,7 +41,11 @@ is the index of the next subset that should be divided. The function returns
 \code{TRUE} if the division should be stoped and \code{FALSE} otherwise. Examples are returned from
 \code{\link{stop_relative_filter}}, \code{\link{stop_max_nodes}}, and \code{\link{stop_relative_filter_max_nodes}}.
 
-TODO: Document anchor_fct, filter_fct, division_fct
+The function \code{anchor_fct} is a function of \code{points}, the indices of points in patch, 
+\code{data}, \code{distance_fct}, and \code{group}. Examples are \code{\link{anchor_extremal}}, 
+\code{\link{anchor_heuristic_extremal}}, \code{\link{anchor_classify}}, and \code{\link{anchor_heuristic_classify}}
+
+TODO: Document filter_fct, division_fct
 }
 \examples{
 # generate sample data

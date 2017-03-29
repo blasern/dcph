@@ -1,5 +1,20 @@
 #' Anchor functions for divisive cover
 #' 
+#' Find the anchor points used to divide a subset. 
+#' 
+#' @details
+#' The function \code{anchor_extremal} returns the two points that are 
+#' furthest apart. Use this function together with \code{\link{distance_matrix}}
+#' as distance function. 
+#' 
+#' The function \code{anchor_heuristic_extremal} returns two points that 
+#' approximate extremal points. Use this function together with
+#' \code{\link{distance_cdist}} or \code{\link{distance_euclidean}}. 
+#' 
+#' The functions \code{anchor_classify} and \code{anchor_heuristic_classify} return 
+#' one point from each of the two largest groups such that the two points are
+#' extremal (or approximately extremal). 
+#' 
 #' @param points indices of points in patch 
 #' @param data data
 #' @param distance_fct distance function
