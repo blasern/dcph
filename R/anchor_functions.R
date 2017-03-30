@@ -18,6 +18,9 @@
 #' one point from each of the two largest groups such that the two points are
 #' extremal (or approximately extremal). 
 #' 
+#' The function \code{anchor_random_classify} picks one random point first and then
+#' picks another random point from a different group.
+#' 
 #' @param points indices of points in patch 
 #' @param data data
 #' @param distance_fct distance function
@@ -81,5 +84,16 @@ anchor_heuristic_classify <- function(points, data, distance_fct, group, ...){
   # approximate largest distance between biggest groups
   p1 <- points1[which.max(distance_fct(data, points2[1], points1))]
   p2 <- points2[which.max(distance_fct(data, p1, points2))]
+  c(p1, p2)
+}
+
+#' @rdname anchor_fct
+#' @export
+anchor_random_classify <- function(points, data, distance_fct, group, ...){
+  p1_index <- sample(length(points), 1)
+  p1 <- points[p1_index]
+  other_points <- points[!(group[points] %in% group[p1_index])]
+  p2_index <- sample(length(other_points), 1)
+  p2 <- other_points[p2_index]
   c(p1, p2)
 }

@@ -6,7 +6,7 @@
 \title{Divisive classification ensemble}
 \usage{
 divisive_classification_ensemble(train, group, ntree = 100, depth = 1000,
-  delta_range = c(0, 0.2), anchor_fct = anchor_random_extremal)
+  delta_range = c(0, 0.2), anchor_fct = anchor_random_classify)
 
 predict_divisive_classification_ensemble(dc_ensemble, test)
 }

@@ -32,7 +32,7 @@
 #' misclassification_error
 #' @export
 divisive_classification_ensemble <- function(train, group, ntree = 100, depth = 1000, delta_range = c(0, 0.2), 
-                                         anchor_fct = anchor_random_extremal){
+                                             anchor_fct = anchor_random_classify){
   replicate(ntree, random_division_classification(train, group, depth, delta_range), simplify = FALSE)
 }
 
@@ -49,7 +49,7 @@ random_division_classification <- function(train, group, depth, delta_range){
                        anchor_fct = anchor_classify, 
                        filter_fct = classification_filter, 
                        division_fct = relative_gap_division(relative_gap = relative_gap))
-
+  
   return(list(features = features, rows = rows, relative_gap = relative_gap, dc = dc))
 }
 

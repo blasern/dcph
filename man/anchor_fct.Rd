@@ -7,6 +7,7 @@
 \alias{anchor_random_extremal}
 \alias{anchor_classify}
 \alias{anchor_heuristic_classify}
+\alias{anchor_random_classify}
 \title{Anchor functions for divisive cover}
 \usage{
 anchor_extremal(points, data, distance_fct, ...)
@@ -18,6 +19,8 @@ anchor_random_extremal(points, data, distance_fct, ...)
 anchor_classify(points, data, distance_fct, group, ...)
 
 anchor_heuristic_classify(points, data, distance_fct, group, ...)
+
+anchor_random_classify(points, data, distance_fct, group, ...)
 }
 \arguments{
 \item{points}{indices of points in patch}
@@ -47,5 +50,8 @@ that is furthest away from the randomly chosen point.
 
 The functions \code{anchor_classify} and \code{anchor_heuristic_classify} return 
 one point from each of the two largest groups such that the two points are
-extremal (or approximately extremal).
+extremal (or approximately extremal). 
+
+The function \code{anchor_random_classify} picks one random point first and then
+picks another random point from a different group.
 }
