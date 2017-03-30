@@ -4,6 +4,7 @@
 \alias{anchor_fct}
 \alias{anchor_extremal}
 \alias{anchor_heuristic_extremal}
+\alias{anchor_random_extremal}
 \alias{anchor_classify}
 \alias{anchor_heuristic_classify}
 \title{Anchor functions for divisive cover}
@@ -11,6 +12,8 @@
 anchor_extremal(points, data, distance_fct, ...)
 
 anchor_heuristic_extremal(points, data, distance_fct, ...)
+
+anchor_random_extremal(points, data, distance_fct, ...)
 
 anchor_classify(points, data, distance_fct, group, ...)
 
@@ -38,6 +41,9 @@ as distance function.
 The function \code{anchor_heuristic_extremal} returns two points that 
 approximate extremal points. Use this function together with
 \code{\link{distance_cdist}} or \code{\link{distance_euclidean}}. 
+
+The function \code{random_extremal} returns one random point and the point
+that is furthest away from the randomly chosen point. 
 
 The functions \code{anchor_classify} and \code{anchor_heuristic_classify} return 
 one point from each of the two largest groups such that the two points are

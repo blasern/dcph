@@ -11,6 +11,9 @@
 #' approximate extremal points. Use this function together with
 #' \code{\link{distance_cdist}} or \code{\link{distance_euclidean}}. 
 #' 
+#' The function \code{random_extremal} returns one random point and the point
+#' that is furthest away from the randomly chosen point. 
+#' 
 #' The functions \code{anchor_classify} and \code{anchor_heuristic_classify} return 
 #' one point from each of the two largest groups such that the two points are
 #' extremal (or approximately extremal). 
@@ -31,6 +34,14 @@ anchor_extremal <- function(points, data, distance_fct, ...){
 #' @export
 anchor_heuristic_extremal <- function(points, data, distance_fct, ...){
   p1 <- points[which.max(distance_fct(data, points[1], points))]
+  p2 <- points[which.max(distance_fct(data, p1, points))]
+  c(p1, p2)
+}
+
+#' @rdname anchor_fct
+#' @export
+anchor_random_extremal <- function(points, data, distance_fct, ...){
+  p1 <- points[sample(length(points), 1)]
   p2 <- points[which.max(distance_fct(data, p1, points))]
   c(p1, p2)
 }

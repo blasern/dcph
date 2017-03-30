@@ -1,6 +1,6 @@
-#' Divisive prediction ensemble
+#' Divisive classification ensemble
 #' 
-#' A divisive prediction ensemble is an algorithm similar to random forests with
+#' A divisive classification ensemble is an algorithm similar to random forests with
 #' divisive covers instead of decission trees. 
 #' 
 #' @param train Training data
@@ -8,7 +8,8 @@
 #' @param ntree Number of trees to grow
 #' @param depth Maximal depth of trees
 #' @param delta_range Range of delta parameters to consider
-#' @param dc_ensemble Output of \code{divisive_prediction_ensemble}
+#' @param anchor_fct Which anchor function should be used (see \code{\link{anchor_fct}})
+#' @param dc_ensemble Output of \code{divisive_classification_ensemble}
 #' @param test Test data
 #' 
 #' @examples
@@ -19,10 +20,10 @@
 #' test <- iris[sampled_index[101:150], 1:4]
 #' observed <- iris[sampled_index[101:150], 5]
 #' 
-#' # fit divisive prediction ensemble
-#' fit <- divisive_prediction_ensemble(train, group, ntree = 10, depth = 10, delta_range = c(0, 0))
+#' # fit divisive classification ensemble
+#' fit <- divisive_classification_ensemble(train, group, ntree = 10, depth = 10, delta_range = c(0, 0))
 #' # get predictions
-#' predictions <- predict_divisive_prediction_ensemble(fit, test)
+#' predictions <- predict_divisive_classification_ensemble(fit, test)
 #' 
 #' # calculate misclassification error
 #' table(observed, predictions)
@@ -30,11 +31,12 @@
 #' misclassification_error <- 1 - sum(diag(tab)) / sum(tab)
 #' misclassification_error
 #' @export
-divisive_prediction_ensemble <- function(train, group, ntree = 100, depth = 1000, delta_range = c(0, 0.2)){
-  replicate(ntree, random_division_prediction(train, group, depth, delta_range), simplify = FALSE)
+divisive_classification_ensemble <- function(train, group, ntree = 100, depth = 1000, delta_range = c(0, 0.2), 
+                                         anchor_fct = anchor_random_extremal){
+  replicate(ntree, random_division_classification(train, group, depth, delta_range), simplify = FALSE)
 }
 
-random_division_prediction <- function(train, group, depth, delta_range){
+random_division_classification <- function(train, group, depth, delta_range){
   # sample data, features and relative gap
   rows <- sample(nrow(train), replace = TRUE)
   features <- sample(1:ncol(train), sqrt(ncol(train)))
@@ -51,9 +53,9 @@ random_division_prediction <- function(train, group, depth, delta_range){
   return(list(features = features, rows = rows, relative_gap = relative_gap, dc = dc))
 }
 
-#' @rdname divisive_prediction_ensemble
+#' @rdname divisive_classification_ensemble
 #' @export
-predict_divisive_prediction_ensemble <- function(dc_ensemble, test){
+predict_divisive_classification_ensemble <- function(dc_ensemble, test){
   individual_predictions <- lapply(dc_ensemble, predict_dc_probabilities, test = test)
   # predictions
   predictions <- sapply(individual_predictions, identity)
