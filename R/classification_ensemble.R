@@ -42,7 +42,7 @@ random_division_classification <- function(train, group, depth, delta_range, anc
   features <- sample(1:ncol(train), sqrt(ncol(train)))
   relative_gap <- runif(1, delta_range[1], delta_range[2])
   
-  dc <- divisive_cover(data = train[rows, features], 
+  dc <- divisive_cover(data = train[rows, features, drop = FALSE], 
                        group = group[rows], 
                        distance_fct = distance_cdist("euclidean"), 
                        stop_fct = stop_relative_filter_max_nodes(relative_filter = 0, max_nodes = depth), 
