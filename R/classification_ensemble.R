@@ -33,10 +33,10 @@
 #' @export
 divisive_classification_ensemble <- function(train, group, ntree = 100, depth = 1000, delta_range = c(0, 0.2), 
                                              anchor_fct = anchor_random_classify){
-  replicate(ntree, random_division_classification(train, group, depth, delta_range), simplify = FALSE)
+  replicate(ntree, random_division_classification(train, group, depth, delta_range, anchor_fct), simplify = FALSE)
 }
 
-random_division_classification <- function(train, group, depth, delta_range){
+random_division_classification <- function(train, group, depth, delta_range, anchor_fct){
   # sample data, features and relative gap
   rows <- sample(nrow(train), replace = TRUE)
   features <- sample(1:ncol(train), sqrt(ncol(train)))
@@ -46,7 +46,7 @@ random_division_classification <- function(train, group, depth, delta_range){
                        group = group[rows], 
                        distance_fct = distance_cdist("euclidean"), 
                        stop_fct = stop_relative_filter_max_nodes(relative_filter = 0, max_nodes = depth), 
-                       anchor_fct = anchor_classify, 
+                       anchor_fct = anchor_fct, 
                        filter_fct = classification_filter, 
                        division_fct = relative_gap_division(relative_gap = relative_gap))
   
