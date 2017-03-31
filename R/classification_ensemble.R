@@ -74,7 +74,7 @@ predict_dc_probabilities <- function(dc_list, test){
   features <- dc_list$features
   relative_gap <- dc_list$relative_gap
   dc <- dc_list$dc
-  pc <- predict(object = dc, newdata = test[, features], 
+  pc <- predict(object = dc, newdata = test[, features, drop = FALSE], 
                 predict_fct = relative_gap_prediction(relative_gap = dc_list$relative_gap))
   dc_pred <- group_from_predict_cover(pc)
 }
