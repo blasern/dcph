@@ -83,35 +83,24 @@ plot_core <- function(cover, adjacency, label = NA, coloring = NULL, legend = TR
 #' 
 #' @param x cover
 #' @param color_values value for each row
+#' @param FUN summary function 
+#' @param ... other orguments passed to FUN
 #' @importFrom RColorBrewer brewer.pal
 #' @importFrom grDevices colorRamp rgb
 #' @importFrom stats quantile var
 #' @export
-cover_coloring <- function(x, color_values){
-  resized_values <- resize(color_values, 0, 1)
-  
-  getmode <- function(v) {
-    uniqv <- unique(v)
-    uniqv[which.max(tabulate(match(v, uniqv)))]
-  }
-  node_color_value <- function(values){
-    if (is.numeric(values)) return(mean(values, na.rm = TRUE))
-    else return(as.character(getmode(values)))
-  }
-  
-  node_legend_values <- sapply(lapply(x@subsets, slot, "indices"), 
-                               function(point) node_color_value(color_values[point]))
+cover_coloring <- function(x, color_values, FUN = mean, ...){
   node_values <- sapply(lapply(x@subsets, slot, "indices"), 
-                        function(point) node_color_value(resized_values[point]))
-  legend_values <- quantile(node_legend_values, c(0, .25, .5, .75, 1), na.rm = TRUE)
+                        function(point) FUN(color_values[point], ...))
+  resized_node_values <- resize(node_values, 0, 1)
+  legend_values <- seq(min(node_values, na.rm = TRUE), max(node_values, na.rm = TRUE), length = 5)
   
-  cols <- get_color(node_values)
+  cols <- get_color(resized_node_values)
   legend_cols <- get_color(resize(legend_values, 0, 1))
   
   attr(cols, "legend") <- data.frame(value = legend_values, 
                                      color = legend_cols, 
                                      stringsAsFactors = FALSE)
-  
   return(cols)
 }
 
@@ -126,7 +115,7 @@ get_color <- function(values){
 predict_coloring <- function(x){
   node_legend_values <- sapply(lapply(x@subsets, slot, "predicted"), length)
   node_values <- resize(node_legend_values, 0, 1)
-  legend_values <- quantile(node_legend_values, c(0, .25, .5, .75, 1))
+  legend_values <- seq(min(node_legend_values), max(node_legend_values), length = 5)
   
   cols <- get_color(node_values)
   legend_cols <- get_color(resize(legend_values, 0, 1))

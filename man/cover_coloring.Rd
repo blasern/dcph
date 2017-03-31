@@ -5,7 +5,7 @@
 \alias{predict_coloring}
 \title{Generate coloring for cover}
 \usage{
-cover_coloring(x, color_values)
+cover_coloring(x, color_values, FUN = mean, ...)
 
 predict_coloring(x)
 }
@@ -13,6 +13,10 @@ predict_coloring(x)
 \item{x}{cover}
 
 \item{color_values}{value for each row}
+
+\item{FUN}{summary function}
+
+\item{...}{other orguments passed to FUN}
 }
 \description{
 Generates a coloring for cover to be used with \code{\link{plot.cover}}
