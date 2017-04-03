@@ -35,9 +35,9 @@ subcover <- function(cover, relative_filter, method = c("divisive", "snapshot", 
   death[cover@external_nodes] <- 0
   # survivors
   surv <- switch(method, 
-         "divisive" = filter < birth, 
-         "snapshot" = filter >= death & filter < birth, 
-         "range" = filter[1] < birth & filter[2] >= death) 
+         "divisive" = filter <= birth, 
+         "snapshot" = filter >= death & filter <= birth, 
+         "range" = filter[1] <= birth & filter[2] >= death) 
   # new cover
   cv <- cover
   cv@parameters$relative_filter <- relative_filter
