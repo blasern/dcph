@@ -18,7 +18,8 @@ predict.cover <- function(object, newdata, predict_fct, ...){
   newcover@subsets[[1]]@predicted <- 1:nrow(newdata)
   
   # divide
-  for (ix in 2:length(newcover@subsets)){
+  for (ix in 1:length(newcover@subsets)){
+    if (ix == 1) next
     newcover <- divide_pred(cover = newcover, 
                             index = ix, 
                             newdata = newdata, 
