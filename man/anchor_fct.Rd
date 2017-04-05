@@ -20,7 +20,7 @@ anchor_classify(points, data, distance_fct, group, ...)
 
 anchor_heuristic_classify(points, data, distance_fct, group, ...)
 
-anchor_random_classify(points, data, distance_fct, group, ...)
+anchor_random_classify(points, group, ...)
 }
 \arguments{
 \item{points}{indices of points in patch}

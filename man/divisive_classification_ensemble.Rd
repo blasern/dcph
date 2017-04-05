@@ -6,7 +6,8 @@
 \title{Divisive classification ensemble}
 \usage{
 divisive_classification_ensemble(train, group, ntree = 100, depth = 1000,
-  delta_range = c(0, 0.2), anchor_fct = anchor_random_classify)
+  delta_range = c(0, 0.2), anchor_fct = anchor_random_classify,
+  method = c("features", "weights"))
 
 predict_divisive_classification_ensemble(dc_ensemble, test)
 }
@@ -22,6 +23,8 @@ predict_divisive_classification_ensemble(dc_ensemble, test)
 \item{delta_range}{Range of delta parameters to consider}
 
 \item{anchor_fct}{Which anchor function should be used (see \code{\link{anchor_fct}})}
+
+\item{method}{Method for randomly changing the data}
 
 \item{dc_ensemble}{Output of \code{divisive_classification_ensemble}}
 
