@@ -9,7 +9,9 @@
 #' @param depth Maximal depth of trees
 #' @param delta_range Range of delta parameters to consider
 #' @param anchor_fct Which anchor function should be used (see \code{\link{anchor_fct}})
-#' @param method Method for randomly changing the data
+#' @param method Method for randomly changing the data. The \code{"weights"} method (default) 
+#' randomly assigns weights to the columns and the \code{"features"} method randomly selects 
+#' columns (cf. \code{\link[randomForest]{randomForest}}). 
 #' @param dc_ensemble Output of \code{divisive_classification_ensemble}
 #' @param test Test data
 #' 
@@ -34,7 +36,7 @@
 #' @export
 divisive_classification_ensemble <- function(train, group, ntree = 100, depth = 1000, delta_range = c(0, 0.2), 
                                              anchor_fct = anchor_random_classify, 
-                                             method = c("features", "weights")){
+                                             method = c("weights", "features")){
   method <- match.arg(method)
   if (method == "features"){
     res <- replicate(ntree, random_division_classification(train, group, depth, delta_range, anchor_fct), simplify = FALSE)

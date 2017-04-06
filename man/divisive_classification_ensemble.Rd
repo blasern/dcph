@@ -7,7 +7,7 @@
 \usage{
 divisive_classification_ensemble(train, group, ntree = 100, depth = 1000,
   delta_range = c(0, 0.2), anchor_fct = anchor_random_classify,
-  method = c("features", "weights"))
+  method = c("weights", "features"))
 
 predict_divisive_classification_ensemble(dc_ensemble, test)
 }
@@ -24,7 +24,9 @@ predict_divisive_classification_ensemble(dc_ensemble, test)
 
 \item{anchor_fct}{Which anchor function should be used (see \code{\link{anchor_fct}})}
 
-\item{method}{Method for randomly changing the data}
+\item{method}{Method for randomly changing the data. The \code{"weights"} method (default) 
+randomly assigns weights to the columns and the \code{"features"} method randomly selects 
+columns (cf. \code{\link[randomForest]{randomForest}}).}
 
 \item{dc_ensemble}{Output of \code{divisive_classification_ensemble}}
 
