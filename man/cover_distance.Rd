@@ -30,8 +30,8 @@ dc1 <- divisive_cover(data = data_matrix,
                       stop_fct = stop_relative_filter(relative_filter = 0.1))
 dc2 <- divisive_cover(data = data_matrix, 
                       stop_fct = stop_relative_filter(relative_filter = 0.3))
-cover1 <- subcover(dc1, 0.1, "snapshot")
-cover2 <- subcover(dc2, 0.5, "snapshot")
+cover1 <- subcover(dc1, relative_filter = 0.1, method = "snapshot")
+cover2 <- subcover(dc2, relative_filter = 0.5, method = "snapshot")
 
 cover_distance(cover1, cover2, metric = "vi")
 cover_distance(cover1, cover2, metric = "bottleneck", dim = 0)

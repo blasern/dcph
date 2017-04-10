@@ -11,9 +11,7 @@ test_that("classification works", {
                        division_fct = relative_gap_division(relative_gap = 0.01)
                        )
   
-  sc <- subcover(dc, 0, "snapshot")
-  # col <- cover_coloring(sc, as.numeric(iris[, 5]))
-  # plot(sc, coloring = col)
+  sc <- subcover(dc, method = "external")
   
   expect_true(all(sapply(sc@subsets, function(x){
     length(unique(iris[x@indices, 5]))
@@ -31,9 +29,7 @@ test_that("classification heuristic works", {
                        division_fct = relative_gap_division(relative_gap = 0.01)
   )
   
-  sc <- subcover(dc, 0, "snapshot")
-  # col <- cover_coloring(sc, as.numeric(iris[, 5]))
-  # plot(sc, coloring = col)
+  sc <- subcover(dc, method = "external")
   
   expect_true(all(sapply(sc@subsets, function(x){
     length(unique(iris[x@indices, 5]))

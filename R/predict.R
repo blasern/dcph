@@ -71,7 +71,7 @@ divide_pred <- function(cover, index, newdata, predict_fct){
 #' pc <- predict(object = dc, newdata = test[, 1:4], 
 #'               predict_fct = relative_gap_prediction(relative_gap = 0.01))
 #' # plot
-#' sc <- subcover(pc, 0.6, "snapshot")
+#' sc <- subcover(pc, method = "snapshot", relative_filter = 0.6)
 #' col <- predict_coloring(sc)
 #' \dontrun{
 #' plot(sc, coloring = col)
@@ -85,8 +85,8 @@ divide_pred <- function(cover, index, newdata, predict_fct){
 group_from_predict_cover <- function(pc, group = NULL){
   `%>%` <- dplyr::`%>%`
   . <- NULL
-  # use lowest level
-  sc <- subcover(pc, 0, "snapshot")
+  # use external nodes
+  sc <- subcover(pc, method = "external")
   # check group
   if (is.null(group)){
     group <- pc@parameters$group

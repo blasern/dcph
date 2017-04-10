@@ -4,15 +4,19 @@
 \alias{subcover}
 \title{Subcover}
 \usage{
-subcover(cover, relative_filter, method = c("divisive", "snapshot", "range"))
+subcover(cover, method = c("external", "divisive", "snapshot", "range"),
+  relative_filter)
 }
 \arguments{
 \item{cover}{A divisive cover}
 
-\item{relative_filter}{The filter to extract}
+\item{method}{Either \code{"external"} to get only external nodes or 
+\code{"divisive"} to get a divisive cover or \code{"snapshot"}
+to get only the the nodes that were external nodes at filter
+value \code{relative_filter}, or \code{"range"} for all subsets 
+within a range of filter values.}
 
-\item{method}{Either "divisive" to get a divisive cover or "snapshot" 
-to get only the lowest level}
+\item{relative_filter}{The filter to extract}
 }
 \description{
 Find the (divisive) cover that corresponds to a certain filter
@@ -29,11 +33,13 @@ data_matrix <- rcircle(200, 1, .1)
 dc <- divisive_cover(data = data_matrix, 
                      division_fct = relative_gap_division(0.1), 
                      stop_fct = stop_relative_filter(relative_filter = 0.5))
-dc_0.7 <- subcover(dc, relative_filter = 0.7, method = "divisive")
-sc_0.7 <- subcover(dc, relative_filter = 0.7, method = "snapshot")
+dc_0.7 <- subcover(dc, method = "divisive", relative_filter = 0.7)
+sc_0.7 <- subcover(dc, method = "snapshot", relative_filter = 0.7)
+sc_ext <- subcover(dc, method = "external")
 
 \dontrun{
 plot(data_matrix)
 plot(sc_0.7)
+plot(sc_ext)
 }
 }
