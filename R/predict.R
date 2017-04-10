@@ -122,3 +122,15 @@ cover_predict_matrix <- function (cover)
     vec
   }, npoints = npoints)
 }
+
+cover_prediction_table <- function(cov){
+  # groups
+  group <- cov@parameters$group
+  unique_groups <- unique(group)
+  # cover prediction matrix
+  mat <- do.call(rbind, lapply(cov@subsets, function(subset, group, unique_groups){
+    tabulate(match(group[subset@indices], unique_groups), nbins = length(unique_groups))
+  }, group = group, unique_groups = unique_groups))
+  colnames(mat) <- unique_groups
+  return(mat)
+}
