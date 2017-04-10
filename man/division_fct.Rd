@@ -8,12 +8,15 @@
 \usage{
 relative_factor_division(relative_factor)
 
-relative_gap_division(relative_gap)
+relative_gap_division(relative_gap, euclidean = FALSE)
 }
 \arguments{
 \item{relative_factor}{corresponds to (1-2 * delta)/(1+2 * delta)}
 
 \item{relative_gap}{delta-parameter for delta-filtered cover (0 < delta <= 1/2)}
+
+\item{euclidean}{logical, if TRUE then (1-delta)/(1+delta) is used instead of 
+(1-2 * delta)/(1+2 * delta)}
 }
 \description{
 This function does the actual division in divisive cover.
@@ -26,4 +29,8 @@ point come in one subpatch and vice versa.
 
 The function \code{relative_gap_division} uses the \code{relative_factor_division}
 with \code{relative_factor = (1-2 * relative_gap)/(1+2 * relative_gap)}
+
+Note that all division functions should return a list of two patches, where
+the first patch contains the parent anchor point 1 and the second patch 
+contains parent anchor point 2.
 }
