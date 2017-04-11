@@ -1,8 +1,13 @@
 #' Prediction functions
 #' 
-#' @param relative_gap delta-parameter for delta-filtered cover (0 < delta <= 1/2)
+#' The prediction function should usually take the same arguments as
+#' the division function. 
+#' 
 #' @param relative_factor corresponds to (1-2 * delta)/(1+2 * delta)
-#' @name prediction_fct
+#' @param relative_gap delta-parameter for delta-filtered cover (0 < delta <= 1/2)
+#' @param euclidean logical, if TRUE then (1-delta)/(1+delta) is used instead of 
+#' (1-2 * delta)/(1+2 * delta)
+#' 
 #' @export
 relative_factor_prediction <- function(relative_factor){
   function(data, newdata, patch, anchor, distance_fct){
@@ -24,6 +29,11 @@ relative_factor_prediction <- function(relative_factor){
 
 #' @rdname prediction_fct
 #' @export
-relative_gap_prediction <- function(relative_gap){
-  relative_factor_prediction((1-2 * relative_gap)/(1+2 * relative_gap))
+relative_gap_prediction <- function(relative_gap, euclidean = FALSE){
+  if (euclidean){
+    return(relative_factor_prediction((1-relative_gap)/(1+relative_gap)))
+  }
+  else {
+    return(relative_factor_prediction((1-2 * relative_gap)/(1+2 * relative_gap)))
+  }
 }
