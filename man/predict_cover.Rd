@@ -48,7 +48,7 @@ dc <- divisive_cover(data = train[, 1:4],
 pc <- predict(object = dc, newdata = test[, 1:4], 
               predict_fct = relative_gap_prediction(relative_gap = 0.01))
 # plot
-sc <- subcover(pc, 0.6, "snapshot")
+sc <- subcover(pc, method = "snapshot", relative_filter = 0.6)
 col <- predict_coloring(sc)
 \dontrun{
 plot(sc, coloring = col)

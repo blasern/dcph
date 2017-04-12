@@ -6,7 +6,8 @@
 \title{Divisive classification ensemble}
 \usage{
 divisive_classification_ensemble(train, group, ntree = 100, depth = 1000,
-  delta_range = c(0, 0.2), anchor_fct = anchor_random_classify)
+  delta_range = c(0, 0.2), anchor_fct = anchor_random_classify,
+  method = c("weights", "features"))
 
 predict_divisive_classification_ensemble(dc_ensemble, test)
 }
@@ -22,6 +23,10 @@ predict_divisive_classification_ensemble(dc_ensemble, test)
 \item{delta_range}{Range of delta parameters to consider}
 
 \item{anchor_fct}{Which anchor function should be used (see \code{\link{anchor_fct}})}
+
+\item{method}{Method for randomly changing the data. The \code{"weights"} method (default) 
+randomly assigns weights to the columns and the \code{"features"} method randomly selects 
+columns (cf. \code{\link[randomForest]{randomForest}}).}
 
 \item{dc_ensemble}{Output of \code{divisive_classification_ensemble}}
 
@@ -40,7 +45,11 @@ test <- iris[sampled_index[101:150], 1:4]
 observed <- iris[sampled_index[101:150], 5]
 
 # fit divisive classification ensemble
-fit <- divisive_classification_ensemble(train, group, ntree = 10, depth = 10, delta_range = c(0, 0))
+fit <- divisive_classification_ensemble(train = train, 
+                                        group = group, 
+                                        ntree = 2, 
+                                        depth = 10, 
+                                        delta_range = c(0, 0.1))
 # get predictions
 predictions <- predict_divisive_classification_ensemble(fit, test)
 

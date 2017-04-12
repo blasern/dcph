@@ -45,6 +45,8 @@ An S4 class to represent a patch.
 
 \item{\code{anchor_points}}{Anchor points}
 
+\item{\code{children}}{Indices of children}
+
 \item{\code{filter_value}}{Filter value}
 
 \item{\code{parent}}{Index of parent}

@@ -9,8 +9,8 @@
 #' @export
 #' @name predict_cover
 predict.cover <- function(object, newdata, predict_fct, ...){
-  if (object@type != "divisive"){
-    stop("can only predict from divisive cover")
+  if (!(object@type %in% c("divisive", "skeleton"))){
+    stop("can only predict from divisive or skeleton cover")
   }
   # initialize new cover
   newcover <- object
@@ -18,7 +18,7 @@ predict.cover <- function(object, newdata, predict_fct, ...){
   newcover@subsets[[1]]@predicted <- 1:nrow(newdata)
   
   # divide
-  for (ix in 2:length(newcover@subsets)){
+  for (ix in 1:length(newcover@subsets)){
     newcover <- divide_pred(cover = newcover, 
                             index = ix, 
                             newdata = newdata, 
@@ -29,18 +29,28 @@ predict.cover <- function(object, newdata, predict_fct, ...){
 }
 
 divide_pred <- function(cover, index, newdata, predict_fct){
-  parent_patch <- cover@subsets[[cover@subsets[[index]]@parent]]
+  # current patch
+  parent_patch <- cover@subsets[[index]]
+  
+  # children 
+  children <- cover@subsets[[index]]@children
   
   # anchor points
   anchor_points <- parent_patch@anchor_points
-  bp <- anchor_points %in% cover@subsets[[index]]@indices
   
-  # predict
-  cover@subsets[[index]]@predicted <- 
-    predict_fct(data = cover@data, newdata = newdata, patch = parent_patch, 
-                anchor = anchor_points[bp], 
-                distance_fct = cover@parameters[["distance_fct"]])
-  
+  if (length(children == 2)){
+    # predict
+    cover@subsets[[children[1]]]@predicted <- 
+      predict_fct(data = cover@data, newdata = newdata, patch = parent_patch, 
+                  anchor = anchor_points[1], 
+                  distance_fct = cover@parameters[["distance_fct"]])
+    
+    cover@subsets[[children[2]]]@predicted <- 
+      predict_fct(data = cover@data, newdata = newdata, patch = parent_patch, 
+                  anchor = anchor_points[2], 
+                  distance_fct = cover@parameters[["distance_fct"]])
+  }
+
   # return cover
   return(cover)
 }
@@ -70,7 +80,7 @@ divide_pred <- function(cover, index, newdata, predict_fct){
 #' pc <- predict(object = dc, newdata = test[, 1:4], 
 #'               predict_fct = relative_gap_prediction(relative_gap = 0.01))
 #' # plot
-#' sc <- subcover(pc, 0.6, "snapshot")
+#' sc <- subcover(pc, method = "snapshot", relative_filter = 0.6)
 #' col <- predict_coloring(sc)
 #' \dontrun{
 #' plot(sc, coloring = col)
@@ -84,14 +94,14 @@ divide_pred <- function(cover, index, newdata, predict_fct){
 group_from_predict_cover <- function(pc, group = NULL){
   `%>%` <- dplyr::`%>%`
   . <- NULL
-  # use lowest level
-  sc <- subcover(pc, 0, "snapshot")
+  # use external nodes
+  sc <- subcover(pc, method = "external")
   # check group
   if (is.null(group)){
     group <- pc@parameters$group
   }
   # cover matrix
-  cpm <- cover_predict_matrix(sc)
+  cpm <- cover_predicted_matrix(sc)
   # find groups
   cpm_df <- as.data.frame(cpm)
   unique_groups <- unique(group)
@@ -111,7 +121,33 @@ group_from_predict_cover <- function(pc, group = NULL){
     unname
 }
 
-cover_predict_matrix <- function (cover) 
+group_from_predict_cover_pred <- function(pc, pred){
+  `%>%` <- dplyr::`%>%`
+  . <- NULL
+  # subcover 
+  psc <- subcover(pc)
+  # cover matrix
+  cpm <- cover_predicted_matrix(psc)
+  # find groups
+  cpm_df <- as.data.frame(cpm)
+  # find class
+  predicted_class <- cpm_df %>% 
+    dplyr::group_by_(.dots = colnames(cpm_df)) %>% 
+    dplyr::do({
+      subsets <- unlist(.[1, ])
+      tab <- colSums(pred[subsets == 1, , drop = FALSE])
+      # add predicted group
+      data.frame(predicted_group = which.max(tab))
+    }) %>% 
+    dplyr::right_join(cpm_df, by = colnames(cpm_df)) %>%
+    dplyr::ungroup() %>% 
+    dplyr::select_("predicted_group") %>%
+    unlist %>%
+    unname
+  colnames(pred)[predicted_class]
+}
+
+cover_predicted_matrix <- function (cover) 
 {
   npoints <- length(unique(unlist(lapply(cover@subsets, slot, 
                                          "predicted"))))
@@ -120,4 +156,16 @@ cover_predict_matrix <- function (cover)
     vec[x@predicted] <- 1
     vec
   }, npoints = npoints)
+}
+
+cover_prediction_matrix <- function(cov){
+  # groups
+  group <- cov@parameters$group
+  unique_groups <- unique(group)
+  # cover prediction matrix
+  mat <- do.call(rbind, lapply(cov@subsets, function(subset, group, unique_groups){
+    tabulate(match(group[subset@indices], unique_groups), nbins = length(unique_groups))
+  }, group = group, unique_groups = unique_groups))
+  colnames(mat) <- unique_groups
+  return(mat)
 }

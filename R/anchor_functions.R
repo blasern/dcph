@@ -89,11 +89,13 @@ anchor_heuristic_classify <- function(points, data, distance_fct, group, ...){
 
 #' @rdname anchor_fct
 #' @export
-anchor_random_classify <- function(points, data, distance_fct, group, ...){
+anchor_random_classify <- function(points, group, ...){
   p1_index <- sample(length(points), 1)
   p1 <- points[p1_index]
   other_points <- points[!(group[points] %in% group[p1_index])]
   p2_index <- sample(length(other_points), 1)
   p2 <- other_points[p2_index]
-  c(p1, p2)
+  res <- c(p1, p2)
+  if (length(res) == 1) res <- rep(res, 2)
+  return(res)
 }

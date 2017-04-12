@@ -27,7 +27,7 @@ remove_subsets <- function(x){
   # which are the subsets
   is_subset <- rep(FALSE, length(x@subsets))
   adjmat <- as.adjacency(x)
-  dimmat <- matrix(rep(sapply(sapply(x@subsets, slot, "indices"), length), length(x@subsets)), nrow = length(x@subsets)) 
+  dimmat <- matrix(rep(sapply(lapply(x@subsets, slot, "indices"), length), length(x@subsets)), nrow = length(x@subsets)) 
   #
   is_subset[which(adjmat == dimmat, arr.ind = TRUE)[, 1]] <- TRUE
   x@subsets <- x@subsets[!is_subset]

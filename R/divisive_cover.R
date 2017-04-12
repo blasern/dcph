@@ -119,6 +119,8 @@ divisive_cover <- function(cover = NULL,
     })
     new_patches[[1]]@id <- length(cover@subsets) + 1L
     new_patches[[2]]@id <- length(cover@subsets) + 2L
+    # update parent information
+    cover@subsets[[next_division]]@children <- c(new_patches[[1]]@id , new_patches[[2]]@id)
     # update cover
     cover@internal_nodes <- c(cover@internal_nodes, next_division)
     cover@external_nodes <- c(setdiff(cover@external_nodes, next_division), length(cover@subsets) + 1:2)

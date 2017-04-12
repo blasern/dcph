@@ -9,9 +9,9 @@ test_that("cover distances work", {
                            .Dim = c(20L,2L), 
                            .Dimnames = list(NULL, c("x", "y")))
   dc <- divisive_cover(data = data_matrix, stop_fct = stop_relative_filter(relative_filter = 0.1))
-  cover1 <- subcover(dc, 0.3, "snapshot")
-  cover2 <- subcover(dc, 0.8, "snapshot")
-  cover3 <- subcover(dc, 0.5, "snapshot")
+  cover1 <- subcover(dc, relative_filter = 0.3, method = "snapshot")
+  cover2 <- subcover(dc, relative_filter = 0.8, method = "snapshot")
+  cover3 <- subcover(dc, relative_filter = 0.5, method = "snapshot")
   
   expect_equal(cover_distance(cover1, cover2, metric = "vi"), as.matrix(dist(c(0, 0.333044760052531))))
   expect_equal(cover_distance(cover1, cover2, metric = "bottleneck", dim = 0), as.matrix(dist(c(0, 1.32208396155896))))
