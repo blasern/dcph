@@ -16,7 +16,8 @@ Imports:
     ggplot2,
     infotheo,
     rdist,
-    dplyr
+    dplyr, 
+    combinat
 Suggests:
     testthat, 
     datasets
