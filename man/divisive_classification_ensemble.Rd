@@ -45,7 +45,11 @@ test <- iris[sampled_index[101:150], 1:4]
 observed <- iris[sampled_index[101:150], 5]
 
 # fit divisive classification ensemble
-fit <- divisive_classification_ensemble(train, group, ntree = 10, depth = 10, delta_range = c(0, 0))
+fit <- divisive_classification_ensemble(train = train, 
+                                        group = group, 
+                                        ntree = 2, 
+                                        depth = 10, 
+                                        delta_range = c(0, 0.1))
 # get predictions
 predictions <- predict_divisive_classification_ensemble(fit, test)
 

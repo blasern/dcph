@@ -9,10 +9,15 @@ cover_skeleton <- function(dc){
   dc@data <- anchor_data
   dc@type <- "skeleton"
   # what to do with the parameters?
-  dc@parameters <- NULL
+  dc@parameters <- list(distance_fct = dc@parameters$distance_fct)
   # fix subsets
-  dc@subsets <- apply(anchor_data_index, 1, 
-                      function(x) patch(anchor_points = x, indices = unique(x)))
+  anchor_data_index
+  dc@subsets <- mapply(function(subset, anchor_point){
+    subset@anchor_points <- anchor_point
+    subset@indices <- unique(anchor_point)
+    subset@predicted <- integer(0)    
+    subset
+  }, subset = dc@subsets, anchor_point = as.list(as.data.frame(t(anchor_data_index))))
   # return skeleton
   return(dc)
 }

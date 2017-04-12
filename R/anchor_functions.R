@@ -95,5 +95,7 @@ anchor_random_classify <- function(points, group, ...){
   other_points <- points[!(group[points] %in% group[p1_index])]
   p2_index <- sample(length(other_points), 1)
   p2 <- other_points[p2_index]
-  c(p1, p2)
+  res <- c(p1, p2)
+  if (length(res) == 1) res <- rep(res, 2)
+  return(res)
 }

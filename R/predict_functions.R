@@ -9,12 +9,15 @@
 #' (1-2 * delta)/(1+2 * delta)
 #' 
 #' @export
+#' @rdname prediction_fct
 relative_factor_prediction <- function(relative_factor){
   function(data, newdata, patch, anchor, distance_fct){
     
     # base points
     a <- anchor
     b <- patch@anchor_points[patch@anchor_points != anchor]
+    
+    stopifnot(length(a) == 1, length(b) == 1)
     
     # distances to base points
     dist_a <- distance_fct(rbind(data[a, ], newdata), 1, 1 + patch@predicted)

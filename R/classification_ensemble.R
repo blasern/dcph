@@ -24,7 +24,11 @@
 #' observed <- iris[sampled_index[101:150], 5]
 #' 
 #' # fit divisive classification ensemble
-#' fit <- divisive_classification_ensemble(train, group, ntree = 10, depth = 10, delta_range = c(0, 0))
+#' fit <- divisive_classification_ensemble(train = train, 
+#'                                         group = group, 
+#'                                         ntree = 2, 
+#'                                         depth = 10, 
+#'                                         delta_range = c(0, 0.1))
 #' # get predictions
 #' predictions <- predict_divisive_classification_ensemble(fit, test)
 #' 
@@ -59,7 +63,7 @@ random_division_classification <- function(train, group, depth, delta_range, anc
                        stop_fct = stop_relative_filter_max_nodes(relative_filter = 0, max_nodes = depth), 
                        anchor_fct = anchor_fct, 
                        filter_fct = classification_filter, 
-                       division_fct = relative_gap_division(relative_gap = relative_gap))
+                       division_fct = relative_gap_division(relative_gap = relative_gap, euclidean = TRUE))
   
   return(list(features = features, rows = rows, relative_gap = relative_gap, dc = dc))
 }
@@ -77,9 +81,13 @@ weighted_random_division_classification <- function(train, group, depth, delta_r
                        stop_fct = stop_relative_filter_max_nodes(relative_filter = 0, max_nodes = depth), 
                        anchor_fct = anchor_fct, 
                        filter_fct = classification_filter, 
-                       division_fct = relative_gap_division(relative_gap = relative_gap))
+                       division_fct = relative_gap_division(relative_gap = relative_gap, euclidean = TRUE))
   
-  return(list(weights = weights, rows = rows, relative_gap = relative_gap, dc = dc))
+  skelet <- cover_skeleton(dc)
+  sc <- subcover(dc)
+  pred_mat <- cover_prediction_matrix(sc)
+  
+  return(list(weights = weights, rows = rows, relative_gap = relative_gap, skelet = skelet, pred_mat = pred_mat))
 }
 
 #' @rdname divisive_classification_ensemble
@@ -110,8 +118,8 @@ predict_dc_probabilities <- function(dc_list, test){
     used_test <- used_test[, features, drop = FALSE]
   }
   relative_gap <- dc_list$relative_gap
-  dc <- dc_list$dc
-  pc <- predict(object = dc, newdata = used_test, 
-                predict_fct = relative_gap_prediction(relative_gap = dc_list$relative_gap))
-  dc_pred <- group_from_predict_cover(pc)
+  skelet <- dc_list$skelet
+  pc <- predict(object = skelet, newdata = used_test, 
+                predict_fct = relative_gap_prediction(relative_gap = dc_list$relative_gap, euclidean = TRUE))
+  group_from_predict_cover_pred(pc, dc_list$pred_mat)
 }
