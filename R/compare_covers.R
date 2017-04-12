@@ -91,8 +91,8 @@ bottleneck_distance <- function(pers1, pers2, dim){
     # get dimension right
     diag1 <- pers1[pers1[, "Dimension"] == loc_dim, c("Birth", "Death"), drop = FALSE]
     diag2 <- pers2[pers2[, "Dimension"] == loc_dim, c("Birth", "Death"), drop = FALSE]
-    diag1 <- rbind(data.frame(Birth = 0, Death = 0), diag1)
-    diag2 <- rbind(data.frame(Birth = 0, Death = 0), diag2)
+    # diag1 <- rbind(data.frame(Birth = 0, Death = 0), diag1)
+    # diag2 <- rbind(data.frame(Birth = 0, Death = 0), diag2)
     # make diag2 smaller than diag1
     if (nrow(diag1) < nrow(diag2)){
       temp <- diag1
@@ -104,21 +104,23 @@ bottleneck_distance <- function(pers1, pers2, dim){
     point_distances <- rdist::cdist(diag1, diag2, "maximum")
     
     # diagonal distances
-    diag1_distances <- (diag1[, "Birth"] + diag1[, "Death"]) / 2
-    diag2_distances <- (diag2[, "Birth"] + diag2[, "Death"]) / 2
+    diag1_distances <- (diag1[, "Death"] - diag1[, "Birth"]) / 2
+    diag2_distances <- (diag2[, "Death"] - diag2[, "Birth"]) / 2
     
     # adjust point differences by diagonal 
-    point_diag_distances <- matrix(rowSums(expand.grid(diag1_distances, diag2_distances)), 
+    point_diag_distances <- matrix(apply(expand.grid(diag1_distances, diag2_distances), 1, max), 
                                    nrow = nrow(diag1), 
                                    ncol = nrow(diag2))
     adjusted_point_distances <- pmin(point_distances, point_diag_distances)
     
     # possible combinations
-    df1 <- data.frame(t(c(1:nrow(diag2))))
-    colnames(df1) <- paste0("first_", 1:ncol(df1))
+    df1 <- do.call(rbind.data.frame, combinat::permn(1:nrow(diag2))) 
+    # colnames(df1) <- paste0("first_", 1:ncol(df1))
     df2 <- data.frame(t(combn(1:nrow(diag1), nrow(diag2))))
-    colnames(df2) <- paste0("second_", 1:ncol(df2))
-    all_combinations <- cbind(df1, df2)
+    # colnames(df2) <- paste0("second_", 1:ncol(df2))
+    all_combinations <- do.call(rbind, apply(df1, 1, function(x) cbind(t(x), df2)))
+    colnames(all_combinations) <- c(paste0("first_", 1:ncol(df1)), paste0("second_", 1:ncol(df2)))
+    # 
     
     # combination distance
     comb_distances <- apply(all_combinations, 1, function(x){
@@ -130,6 +132,7 @@ bottleneck_distance <- function(pers1, pers2, dim){
       non_point_d <- suppressWarnings(
         max(c(diag1_distances[-x[grepl("second", names(x))]], 
               diag2_distances[-x[grepl("first", names(x))]])))
+      c(point_d, non_point_d)
       
       max(point_d, non_point_d)
     })
