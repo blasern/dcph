@@ -7,7 +7,10 @@
 \usage{
 divisive_classification_ensemble(train, group, ntree = 100, depth = 1000,
   delta_range = c(0, 0.2), anchor_fct = anchor_random_classify,
-  method = c("weights", "features"))
+  distance_fct = distance_cdist("euclidean"),
+  stop_fct = stop_relative_filter_max_nodes(relative_filter = 0, max_nodes =
+  depth), filter_fct = classification_filter, method = c("weights",
+  "features"))
 
 predict_divisive_classification_ensemble(dc_ensemble, test)
 }
@@ -24,6 +27,12 @@ predict_divisive_classification_ensemble(dc_ensemble, test)
 
 \item{anchor_fct}{Which anchor function should be used (see \code{\link{anchor_fct}})}
 
+\item{distance_fct}{Which distance function should be used (see \code{\link{distance_fct}})}
+
+\item{stop_fct}{Which stop function should be used (see \code{\link{stop_fct}})}
+
+\item{filter_fct}{Which filter function should be used (see \code{\link{filter_fct}})}
+
 \item{method}{Method for randomly changing the data. The \code{"weights"} method (default) 
 randomly assigns weights to the columns and the \code{"features"} method randomly selects 
 columns (cf. \code{\link[randomForest]{randomForest}}).}
@@ -33,8 +42,10 @@ columns (cf. \code{\link[randomForest]{randomForest}}).}
 \item{test}{Test data}
 }
 \description{
-A divisive classification ensemble is an algorithm similar to random forests with
-divisive covers instead of decission trees.
+A divisive classification ensemble is an algorithm similar to random 
+forests with divisive covers instead of decission trees. Currently uses
+\code{\link{relative_gap_division}} with random gap as a division 
+function.
 }
 \examples{
 # data

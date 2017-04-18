@@ -1,7 +1,9 @@
 #' Divisive classification ensemble
 #' 
-#' A divisive classification ensemble is an algorithm similar to random forests with
-#' divisive covers instead of decission trees. 
+#' A divisive classification ensemble is an algorithm similar to random 
+#' forests with divisive covers instead of decission trees. Currently uses
+#' \code{\link{relative_gap_division}} with random gap as a division 
+#' function. 
 #' 
 #' @param train Training data
 #' @param group Class of training data
@@ -9,6 +11,9 @@
 #' @param depth Maximal depth of trees
 #' @param delta_range Range of delta parameters to consider
 #' @param anchor_fct Which anchor function should be used (see \code{\link{anchor_fct}})
+#' @param distance_fct Which distance function should be used (see \code{\link{distance_fct}})
+#' @param stop_fct Which stop function should be used (see \code{\link{stop_fct}})
+#' @param filter_fct Which filter function should be used (see \code{\link{filter_fct}})
 #' @param method Method for randomly changing the data. The \code{"weights"} method (default) 
 #' randomly assigns weights to the columns and the \code{"features"} method randomly selects 
 #' columns (cf. \code{\link[randomForest]{randomForest}}). 
@@ -40,18 +45,32 @@
 #' @export
 divisive_classification_ensemble <- function(train, group, ntree = 100, depth = 1000, delta_range = c(0, 0.2), 
                                              anchor_fct = anchor_random_classify, 
+                                             distance_fct = distance_cdist("euclidean"), 
+                                             stop_fct = stop_relative_filter_max_nodes(relative_filter = 0, max_nodes = depth), 
+                                             filter_fct = classification_filter, 
                                              method = c("weights", "features")){
   method <- match.arg(method)
   if (method == "features"){
-    res <- replicate(ntree, random_division_classification(train, group, depth, delta_range, anchor_fct), simplify = FALSE)
+    res <- replicate(ntree, 
+                     random_division_classification(train = train, group = group, depth = depth, 
+                                                    delta_range = delta_range, anchor_fct = anchor_fct, 
+                                                    distance_fct = distance_fct, stop_fct = stop_fct, 
+                                                    filter_fct = filter_fct), 
+                     simplify = FALSE)
   } 
   if (method == "weights"){
-    res <- replicate(ntree, weighted_random_division_classification(train, group, depth, delta_range, anchor_fct), simplify = FALSE)
+    res <- replicate(ntree, 
+                     weighted_random_division_classification(train = train, group = group, depth = depth, 
+                                                             delta_range = delta_range, anchor_fct = anchor_fct, 
+                                                             distance_fct = distance_fct, stop_fct = stop_fct, 
+                                                             filter_fct = filter_fct), 
+                     simplify = FALSE)
   } 
   return(res)
 }
 
-random_division_classification <- function(train, group, depth, delta_range, anchor_fct){
+random_division_classification <- function(train, group, depth, delta_range, anchor_fct, 
+                                           distance_fct, stop_fct, filter_fct, division_fct){
   # sample data, features and relative gap
   rows <- sample(nrow(train), replace = TRUE)
   features <- sample(1:ncol(train), sqrt(ncol(train)))
@@ -59,15 +78,21 @@ random_division_classification <- function(train, group, depth, delta_range, anc
   
   dc <- divisive_cover(data = train[rows, features, drop = FALSE], 
                        group = group[rows], 
-                       distance_fct = distance_cdist("euclidean"), 
-                       stop_fct = stop_relative_filter_max_nodes(relative_filter = 0, max_nodes = depth), 
+                       distance_fct = distance_fct, 
+                       stop_fct = stop_fct, 
                        anchor_fct = anchor_fct, 
-                       filter_fct = classification_filter, 
-                       division_fct = relative_gap_division(relative_gap = relative_gap, euclidean = TRUE))
+                       filter_fct = filter_fct, 
+                       division_fct = relative_gap_division(relative_gap, euclidean = TRUE))
   
-  return(list(features = features, rows = rows, relative_gap = relative_gap, dc = dc))
+  skelet <- cover_skeleton(dc)
+  sc <- subcover(dc)
+  pred_mat <- cover_prediction_matrix(sc)
+  
+  return(list(weights = weights, rows = rows, relative_gap = relative_gap, skelet = skelet, pred_mat = pred_mat))
 }
-weighted_random_division_classification <- function(train, group, depth, delta_range, anchor_fct){
+
+weighted_random_division_classification <- function(train, group, depth, delta_range, anchor_fct, 
+                                                    distance_fct, stop_fct, filter_fct){
   # sample data, features and relative gap
   rows <- sample(nrow(train), replace = TRUE)
   weights <- runif(ncol(train))
@@ -77,12 +102,12 @@ weighted_random_division_classification <- function(train, group, depth, delta_r
   
   dc <- divisive_cover(data = weighted_train, 
                        group = group[rows], 
-                       distance_fct = distance_cdist("euclidean"), 
-                       stop_fct = stop_relative_filter_max_nodes(relative_filter = 0, max_nodes = depth), 
+                       distance_fct = distance_fct, 
+                       stop_fct = stop_fct, 
                        anchor_fct = anchor_fct, 
-                       filter_fct = classification_filter, 
-                       division_fct = relative_gap_division(relative_gap = relative_gap, euclidean = TRUE))
-  
+                       filter_fct = filter_fct, 
+                       division_fct = relative_gap_division(relative_gap, euclidean = TRUE))
+                       
   skelet <- cover_skeleton(dc)
   sc <- subcover(dc)
   pred_mat <- cover_prediction_matrix(sc)
