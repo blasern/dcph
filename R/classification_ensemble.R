@@ -156,6 +156,11 @@ predict_dc_probabilities <- function(dc_list, test){
   group_from_pred(pc, dc_list$pred_mat)
 }
 
+#' Print divisive ensemble
+#' 
+#' @param x divisive ensemble
+#' @param ... ignored
+#' @export
 print.divisive_ensemble <- function(x, ...){
   # call
   cat("\nCall:\n")
