@@ -121,13 +121,17 @@ group_from_predict_cover <- function(pc, group = NULL){
     unname
 }
 
-group_from_predict_cover_pred <- function(pc, pred){
+group_from_pred <- function(pc, pred, mode = c("predict", "OOB")){
   `%>%` <- dplyr::`%>%`
   . <- NULL
+  # match mode
+  mode <- match.arg(mode)
   # subcover 
   psc <- subcover(pc)
   # cover matrix
-  cpm <- cover_predicted_matrix(psc)
+  cpm <- switch(mode, 
+                predict = cover_predicted_matrix(psc), 
+                OOB = cover_matrix(psc))
   # find groups
   cpm_df <- as.data.frame(cpm)
   # find class

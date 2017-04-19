@@ -66,6 +66,10 @@ divisive_classification_ensemble <- function(train, group, ntree = 100, depth = 
                                                              filter_fct = filter_fct), 
                      simplify = FALSE)
   } 
+  
+  # class and attributes
+  class(res) <- "divisive_ensemble"
+  attr(res, "call") <- match.call()
   return(res)
 }
 
@@ -122,14 +126,17 @@ predict_divisive_classification_ensemble <- function(dc_ensemble, test){
   # predictions
   predictions <- sapply(individual_predictions, identity)
   # voting
-  majority_voting <- apply(predictions, 1, function(x){
+  majority_voting <- majority_voting(predictions)  
+  # return
+  majority_voting
+}
+
+majority_voting <- function(predictions){
+  apply(predictions, 1, function(x){
     uniqv <- unique(x)
     tab <- tabulate(match(x, uniqv))
     uniqv[which.max(tab)]
   })
-  
-  # return
-  majority_voting
 }
 
 predict_dc_probabilities <- function(dc_list, test){
@@ -146,5 +153,20 @@ predict_dc_probabilities <- function(dc_list, test){
   skelet <- dc_list$skelet
   pc <- predict(object = skelet, newdata = used_test, 
                 predict_fct = relative_gap_prediction(relative_gap = dc_list$relative_gap, euclidean = TRUE))
-  group_from_predict_cover_pred(pc, dc_list$pred_mat)
+  group_from_pred(pc, dc_list$pred_mat)
+}
+
+print.divisive_ensemble <- function(x, ...){
+  # call
+  cat("\nCall:\n")
+  print(attr(x, "call"))
+  cat("\n")
+  # number of covers
+  cat("Number of covers: ", length(x), "\n", sep = "")
+  # mean cover size
+  sizes <- sapply(x, function(y) length(y$skelet@subsets))
+  cat("Mean cover size: ", round(mean(sizes), 2), "; Range: ", min(sizes), "-", max(sizes), "\n", sep = "")
+  # mean subset size
+  subset_sizes <- unlist(lapply(x, function(y) rowSums(y$pred_mat)))
+  cat("Mean subset size: ", round(mean(subset_sizes), 2), "; Range: ", min(subset_sizes), "-", max(subset_sizes), "\n", sep = "")
 }
