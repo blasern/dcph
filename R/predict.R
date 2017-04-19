@@ -153,8 +153,7 @@ group_from_pred <- function(pc, pred, mode = c("predict", "OOB")){
 
 cover_predicted_matrix <- function (cover) 
 {
-  npoints <- length(unique(unlist(lapply(cover@subsets, slot, 
-                                         "predicted"))))
+  npoints <- length(unique(unlist(lapply(cover@subsets, slot, "predicted"))))
   sapply(cover@subsets, function(x, npoints) {
     vec <- rep(0, npoints)
     vec[x@predicted] <- 1

@@ -24,7 +24,11 @@ relative_factor_prediction <- function(relative_factor){
     dist_b <- distance_fct(rbind(data[b, ], newdata), 1, 1 + patch@predicted)
     
     # indices 
-    A <- patch@predicted[dist_b / dist_a >= relative_factor]
+    A <- patch@predicted[dist_b >= dist_a * relative_factor]
+    
+    if (any(is.na(A))){
+      browser()
+    }
     
     return(A)
   }
