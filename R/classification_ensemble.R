@@ -47,25 +47,13 @@ divisive_classification_ensemble <- function(train, group, ntree = 100, depth = 
                                              anchor_fct = anchor_random_classify, 
                                              distance_fct = distance_cdist("euclidean"), 
                                              stop_fct = stop_relative_filter_max_nodes(relative_filter = 0, max_nodes = depth), 
-                                             filter_fct = classification_filter, 
-                                             method = c("weights", "features")){
-  method <- match.arg(method)
-  if (method == "features"){
-    res <- replicate(ntree, 
-                     random_division_classification(train = train, group = group, depth = depth, 
-                                                    delta_range = delta_range, anchor_fct = anchor_fct, 
-                                                    distance_fct = distance_fct, stop_fct = stop_fct, 
-                                                    filter_fct = filter_fct), 
-                     simplify = FALSE)
-  } 
-  if (method == "weights"){
-    res <- replicate(ntree, 
-                     weighted_random_division_classification(train = train, group = group, depth = depth, 
-                                                             delta_range = delta_range, anchor_fct = anchor_fct, 
-                                                             distance_fct = distance_fct, stop_fct = stop_fct, 
-                                                             filter_fct = filter_fct), 
-                     simplify = FALSE)
-  } 
+                                             filter_fct = classification_filter){
+  res <- replicate(ntree, 
+                   random_division_classification(train = train, group = group, depth = depth, 
+                                                  delta_range = delta_range, anchor_fct = anchor_fct, 
+                                                  distance_fct = distance_fct, stop_fct = stop_fct, 
+                                                  filter_fct = filter_fct), 
+                   simplify = FALSE)
   
   # class and attributes
   class(res) <- "divisive_ensemble"
@@ -74,35 +62,16 @@ divisive_classification_ensemble <- function(train, group, ntree = 100, depth = 
 }
 
 random_division_classification <- function(train, group, depth, delta_range, anchor_fct, 
-                                           distance_fct, stop_fct, filter_fct, division_fct){
-  # sample data, features and relative gap
-  rows <- sample(nrow(train), replace = TRUE)
-  features <- sample(1:ncol(train), sqrt(ncol(train)))
-  relative_gap <- runif(1, delta_range[1], delta_range[2])
-  
-  dc <- divisive_cover(data = train[rows, features, drop = FALSE], 
-                       group = group[rows], 
-                       distance_fct = distance_fct, 
-                       stop_fct = stop_fct, 
-                       anchor_fct = anchor_fct, 
-                       filter_fct = filter_fct, 
-                       division_fct = relative_gap_division(relative_gap, euclidean = TRUE))
-  
-  skelet <- cover_skeleton(dc)
-  sc <- subcover(dc)
-  pred_mat <- cover_prediction_matrix(sc)
-  
-  return(list(weights = weights, rows = rows, relative_gap = relative_gap, skelet = skelet, pred_mat = pred_mat))
-}
-
-weighted_random_division_classification <- function(train, group, depth, delta_range, anchor_fct, 
-                                                    distance_fct, stop_fct, filter_fct){
+                                           distance_fct, stop_fct, filter_fct){
   # sample data, features and relative gap
   rows <- sample(nrow(train), replace = TRUE)
   weights <- runif(ncol(train))
   relative_gap <- runif(1, delta_range[1], delta_range[2])
   
-  weighted_train <- t(t(train[rows, ]) * weights)
+  rotation <- random_rotation_matrix(ncol(train))
+
+  rotated_train <-  as.matrix(train[rows, ]) %*% rotation
+  weighted_train <- t(t(rotated_train) * weights)
   
   dc <- divisive_cover(data = weighted_train, 
                        group = group[rows], 
@@ -116,7 +85,7 @@ weighted_random_division_classification <- function(train, group, depth, delta_r
   sc <- subcover(dc)
   pred_mat <- cover_prediction_matrix(sc)
   
-  return(list(weights = weights, rows = rows, relative_gap = relative_gap, skelet = skelet, pred_mat = pred_mat))
+  return(list(rotation = rotation, weights = weights, rows = rows, relative_gap = relative_gap, skelet = skelet, pred_mat = pred_mat))
 }
 
 #' @rdname divisive_classification_ensemble
@@ -140,18 +109,12 @@ majority_voting <- function(predictions){
 }
 
 predict_dc_probabilities <- function(dc_list, test){
-  features <- dc_list$features
-  weights <- dc_list$weights
-  used_test <- test
-  if (!is.null(weights)) {
-    used_test <- t(t(used_test) * weights)
-  }
-  if (!is.null(features)) {
-    used_test <- used_test[, features, drop = FALSE]
-  }
-  relative_gap <- dc_list$relative_gap
-  skelet <- dc_list$skelet
-  pc <- predict(object = skelet, newdata = used_test, 
+  # rotate and weigh  
+  rotated_test <- as.matrix(test) %*% dc_list$rotation
+  used_test <- t(t(rotated_test) * dc_list$weights)
+  
+  # predict
+  pc <- predict(object = dc_list$skelet, newdata = used_test, 
                 predict_fct = relative_gap_prediction(relative_gap = dc_list$relative_gap, euclidean = TRUE))
   group_from_pred(pc, dc_list$pred_mat)
 }
@@ -174,4 +137,16 @@ print.divisive_ensemble <- function(x, ...){
   # mean subset size
   subset_sizes <- unlist(lapply(x, function(y) rowSums(y$pred_mat)))
   cat("Mean subset size: ", round(mean(subset_sizes), 2), "; Range: ", min(subset_sizes), "-", max(subset_sizes), "\n", sep = "")
+}
+
+# random rotation matrix (source: Blaser & Fryzlewicz. Random Rotation Ensembles. 2016.)
+random_On <- function(d){
+  QR <- qr(matrix(rnorm(d^2), ncol = d))
+  M <- qr.Q(QR) %*% diag(sign(diag(qr.R(QR))))
+  return(M)
+}
+random_rotation_matrix <- function(d){
+  M <- random_On(d)
+  if (det(M) < 0) M[, 1] <- -M[, 1]
+  return(M)
 }
