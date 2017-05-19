@@ -9,8 +9,7 @@ divisive_classification_ensemble(train, group, ntree = 100, depth = 1000,
   delta_range = c(0, 0.2), anchor_fct = anchor_random_classify,
   distance_fct = distance_cdist("euclidean"),
   stop_fct = stop_relative_filter_max_nodes(relative_filter = 0, max_nodes =
-  depth), filter_fct = classification_filter, method = c("weights",
-  "features"))
+  depth), filter_fct = entropy_filter)
 
 predict_divisive_classification_ensemble(dc_ensemble, test)
 }
@@ -33,13 +32,13 @@ predict_divisive_classification_ensemble(dc_ensemble, test)
 
 \item{filter_fct}{Which filter function should be used (see \code{\link{filter_fct}})}
 
-\item{method}{Method for randomly changing the data. The \code{"weights"} method (default) 
-randomly assigns weights to the columns and the \code{"features"} method randomly selects 
-columns (cf. \code{\link[randomForest]{randomForest}}).}
-
 \item{dc_ensemble}{Output of \code{divisive_classification_ensemble}}
 
 \item{test}{Test data}
+
+\item{method}{Method for randomly changing the data. The \code{"weights"} method (default) 
+randomly assigns weights to the columns and the \code{"features"} method randomly selects 
+columns (cf. \code{\link[randomForest]{randomForest}}).}
 }
 \description{
 A divisive classification ensemble is an algorithm similar to random 

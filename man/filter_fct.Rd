@@ -5,6 +5,7 @@
 \alias{diameter_filter}
 \alias{cardinality_filter}
 \alias{classification_filter}
+\alias{entropy_filter}
 \title{Filter functions}
 \usage{
 diameter_filter(patches, data, distance_fct, ...)
@@ -12,6 +13,8 @@ diameter_filter(patches, data, distance_fct, ...)
 cardinality_filter(patches, ...)
 
 classification_filter(patches, group, ...)
+
+entropy_filter(patches, group, ...)
 }
 \arguments{
 \item{patches}{Patch to apply filter}
