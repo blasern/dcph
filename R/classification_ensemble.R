@@ -47,7 +47,7 @@ divisive_classification_ensemble <- function(train, group, ntree = 100, depth = 
                                              anchor_fct = anchor_random_classify, 
                                              distance_fct = distance_cdist("euclidean"), 
                                              stop_fct = stop_relative_filter_max_nodes(relative_filter = 0, max_nodes = depth), 
-                                             filter_fct = classification_filter){
+                                             filter_fct = entropy_filter){
   res <- replicate(ntree, 
                    random_division_classification(train = train, group = group, depth = depth, 
                                                   delta_range = delta_range, anchor_fct = anchor_fct, 

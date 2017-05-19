@@ -45,3 +45,14 @@ classification_filter <- function(patches, group, ...){
 missclassification_rate <- function(group){
   sum(head(sort(table(group)/length(group)), -1))
 }
+
+#' @rdname filter_fct
+#' @export
+entropy_filter <- function(patches, group, ...){
+  sapply(patches, function(x) entropy(group[x@indices]))
+}
+
+entropy <- function(group){
+  p <- table(group)/length(group)
+  -sum(p*log(p))
+}
