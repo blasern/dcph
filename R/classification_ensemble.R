@@ -14,9 +14,6 @@
 #' @param distance_fct Which distance function should be used (see \code{\link{distance_fct}})
 #' @param stop_fct Which stop function should be used (see \code{\link{stop_fct}})
 #' @param filter_fct Which filter function should be used (see \code{\link{filter_fct}})
-#' @param method Method for randomly changing the data. The \code{"weights"} method (default) 
-#' randomly assigns weights to the columns and the \code{"features"} method randomly selects 
-#' columns (cf. \code{\link[randomForest]{randomForest}}). 
 #' @param dc_ensemble Output of \code{divisive_classification_ensemble}
 #' @param test Test data
 #' 

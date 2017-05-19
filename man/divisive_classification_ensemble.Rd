@@ -35,10 +35,6 @@ predict_divisive_classification_ensemble(dc_ensemble, test)
 \item{dc_ensemble}{Output of \code{divisive_classification_ensemble}}
 
 \item{test}{Test data}
-
-\item{method}{Method for randomly changing the data. The \code{"weights"} method (default) 
-randomly assigns weights to the columns and the \code{"features"} method randomly selects 
-columns (cf. \code{\link[randomForest]{randomForest}}).}
 }
 \description{
 A divisive classification ensemble is an algorithm similar to random 
