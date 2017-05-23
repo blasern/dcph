@@ -72,8 +72,8 @@ divide_pred <- function(cover, index, newdata, predict_fct){
 #'                      group = train[, 5], 
 #'                      distance_fct = distance_cdist("euclidean"), 
 #'                      stop_fct = stop_relative_filter(relative_filter = 0), 
-#'                      anchor_fct = anchor_classify, 
-#'                      filter_fct = classification_filter, 
+#'                      anchor_fct = anchor_extremal, 
+#'                      filter_fct = entropy_filter, 
 #'                      division_fct = relative_gap_division(relative_gap = 0.01)
 #' )
 #' 
@@ -81,10 +81,6 @@ divide_pred <- function(cover, index, newdata, predict_fct){
 #'               predict_fct = relative_gap_prediction(relative_gap = 0.01))
 #' # plot
 #' sc <- subcover(pc, method = "snapshot", relative_filter = 0.6)
-#' col <- predict_coloring(sc)
-#' \dontrun{
-#' plot(sc, coloring = col)
-#' }
 #' 
 #' predicted <- group_from_predict_cover(pc)
 #' observed <- test[, 5]

@@ -49,7 +49,6 @@ misclassification_rate <- function(group){
 #' @rdname filter_fct
 #' @export
 entropy_filter <- function(patches, group, ...){
-  browser()
   sapply(patches, function(x) entropy(group[x@indices]))
 }
 
