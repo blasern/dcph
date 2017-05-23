@@ -39,20 +39,22 @@ cardinality_filter <- function(patches, ...){
 #' @rdname filter_fct
 #' @export
 classification_filter <- function(patches, group, ...){
-  sapply(patches, function(x) missclassification_rate(group[x@indices]))
+  sapply(patches, function(x) misclassification_rate(group[x@indices]))
 }
 
-missclassification_rate <- function(group){
+misclassification_rate <- function(group){
   sum(head(sort(table(group)/length(group)), -1))
 }
 
 #' @rdname filter_fct
 #' @export
 entropy_filter <- function(patches, group, ...){
+  browser()
   sapply(patches, function(x) entropy(group[x@indices]))
 }
 
 entropy <- function(group){
   p <- table(group)/length(group)
+  p <- p[p > 0]
   -sum(p*log(p))
 }
