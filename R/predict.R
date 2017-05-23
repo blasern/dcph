@@ -121,7 +121,7 @@ group_from_predict_cover <- function(pc, group = NULL){
     unname
 }
 
-group_from_pred <- function(pc, pred, mode = c("predict", "OOB")){
+group_from_predict_matrix <- function(pc, pred, mode = c("predict", "OOB")){
   `%>%` <- dplyr::`%>%`
   . <- NULL
   # match mode

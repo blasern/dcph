@@ -113,7 +113,7 @@ predict_dc_probabilities <- function(dc_list, test){
   # predict
   pc <- predict(object = dc_list$skelet, newdata = used_test, 
                 predict_fct = relative_gap_prediction(relative_gap = dc_list$relative_gap, euclidean = TRUE))
-  group_from_pred(pc, dc_list$pred_mat)
+  group_from_predict_matrix(pc, dc_list$pred_mat)
 }
 
 #' Print divisive ensemble
