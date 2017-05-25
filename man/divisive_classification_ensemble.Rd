@@ -6,7 +6,7 @@
 \title{Divisive classification ensemble}
 \usage{
 divisive_classification_ensemble(train, group, ntree = 100, depth = 1000,
-  delta_range = c(0, 0.2), anchor_fct = anchor_random_classify,
+  delta_range = c(0, 0.2), anchor_fct = anchor_extremal,
   distance_fct = distance_cdist("euclidean"),
   stop_fct = stop_relative_filter_max_nodes(relative_filter = 0, max_nodes =
   depth), filter_fct = entropy_filter)
@@ -59,9 +59,6 @@ fit <- divisive_classification_ensemble(train = train,
 # get predictions
 predictions <- predict_divisive_classification_ensemble(fit, test)
 
-# calculate misclassification error
+# confusion matrix
 table(observed, predictions)
-tab <- table(observed, predictions)
-misclassification_error <- 1 - sum(diag(tab)) / sum(tab)
-misclassification_error
 }

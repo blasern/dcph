@@ -8,7 +8,7 @@
 \usage{
 \method{predict}{cover}(object, newdata, predict_fct, ...)
 
-group_from_predict_cover(pc, group = NULL)
+group_from_predict_cover(pc, group = NULL, cover_mat = NULL)
 }
 \arguments{
 \item{object}{a divisive cover}

@@ -87,7 +87,7 @@ divide_pred <- function(cover, index, newdata, predict_fct){
 #' 
 #' table(observed, predicted)
 #' @rdname predict_cover
-group_from_predict_cover <- function(pc, group = NULL){
+group_from_predict_cover <- function(pc, group = NULL, cover_mat = NULL){
   # use external nodes
   sc <- subcover(pc, method = "external")
   # check group
@@ -96,9 +96,11 @@ group_from_predict_cover <- function(pc, group = NULL){
   }
   # cover matrix
   cpm <- cover_predicted_matrix(sc)
-  cm <- cover_matrix(sc)
+  if (is.null(cover_mat)){
+    cover_mat <- cover_matrix(sc)
+  }
   # cover distance between predicted points and original points
-  distance <- rdist::cdist(cpm, cm, metric = "minkowski", p = 1)
+  distance <- rdist::cdist(cpm, cover_mat, metric = "minkowski", p = 1)
   # get unique groups
   unique_groups <- unique(group)
   # calculate group probabilities
@@ -113,37 +115,6 @@ group_from_predict_cover <- function(pc, group = NULL){
   return(predicted)
 }
 
-group_from_predict_matrix <- function(pc, pred, mode = c("predict", "OOB")){
-  browser()
-  `%>%` <- dplyr::`%>%`
-  . <- NULL
-  # match mode
-  mode <- match.arg(mode)
-  # subcover 
-  psc <- subcover(pc)
-  # cover matrix
-  cpm <- switch(mode, 
-                predict = cover_predicted_matrix(psc), 
-                OOB = cover_matrix(psc))
-  # find groups
-  cpm_df <- as.data.frame(cpm)
-  # find class
-  predicted_class <- cpm_df %>% 
-    dplyr::group_by_(.dots = colnames(cpm_df)) %>% 
-    dplyr::do({
-      subsets <- unlist(.[1, ])
-      tab <- colSums(pred[subsets == 1, , drop = FALSE])
-      # add predicted group
-      data.frame(predicted_group = which.max(tab))
-    }) %>% 
-    dplyr::right_join(cpm_df, by = colnames(cpm_df)) %>%
-    dplyr::ungroup() %>% 
-    dplyr::select_("predicted_group") %>%
-    unlist %>%
-    unname
-  colnames(pred)[predicted_class]
-}
-
 cover_predicted_matrix <- function (cover) 
 {
   npoints <- length(unique(unlist(lapply(cover@subsets, slot, "predicted"))))
@@ -152,16 +123,4 @@ cover_predicted_matrix <- function (cover)
     vec[x@predicted] <- 1
     vec
   }, npoints = npoints)
-}
-
-cover_prediction_matrix <- function(cov){
-  # groups
-  group <- cov@parameters$group
-  unique_groups <- unique(group)
-  # cover prediction matrix
-  mat <- do.call(rbind, lapply(cov@subsets, function(subset, group, unique_groups){
-    tabulate(match(group[subset@indices], unique_groups), nbins = length(unique_groups))
-  }, group = group, unique_groups = unique_groups))
-  colnames(mat) <- unique_groups
-  return(mat)
 }

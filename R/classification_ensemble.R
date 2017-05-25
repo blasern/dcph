@@ -34,14 +34,11 @@
 #' # get predictions
 #' predictions <- predict_divisive_classification_ensemble(fit, test)
 #' 
-#' # calculate misclassification error
+#' # confusion matrix
 #' table(observed, predictions)
-#' tab <- table(observed, predictions)
-#' misclassification_error <- 1 - sum(diag(tab)) / sum(tab)
-#' misclassification_error
 #' @export
 divisive_classification_ensemble <- function(train, group, ntree = 100, depth = 1000, delta_range = c(0, 0.2), 
-                                             anchor_fct = anchor_random_classify, 
+                                             anchor_fct = anchor_extremal, 
                                              distance_fct = distance_cdist("euclidean"), 
                                              stop_fct = stop_relative_filter_max_nodes(relative_filter = 0, max_nodes = depth), 
                                              filter_fct = entropy_filter){
@@ -80,9 +77,11 @@ random_division_classification <- function(train, group, depth, delta_range, anc
                        
   skelet <- cover_skeleton(dc)
   sc <- subcover(dc)
-  pred_mat <- cover_prediction_matrix(sc)
+  cover_mat <- cover_matrix(sc)
   
-  return(list(rotation = rotation, weights = weights, rows = rows, relative_gap = relative_gap, skelet = skelet, pred_mat = pred_mat))
+  return(list(rotation = rotation, weights = weights, rows = rows, 
+              relative_gap = relative_gap, skelet = skelet, 
+              cover_mat = cover_mat, group = group[rows]))
 }
 
 #' @rdname divisive_classification_ensemble
@@ -113,7 +112,7 @@ predict_dc_probabilities <- function(dc_list, test){
   # predict
   pc <- predict(object = dc_list$skelet, newdata = used_test, 
                 predict_fct = relative_gap_prediction(relative_gap = dc_list$relative_gap, euclidean = TRUE))
-  group_from_predict_matrix(pc, dc_list$pred_mat)
+  group_from_predict_cover(pc, group = dc_list$group, cover_mat = dc_list$cover_mat)
 }
 
 #' Print divisive ensemble
