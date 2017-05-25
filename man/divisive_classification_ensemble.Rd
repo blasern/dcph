@@ -11,7 +11,8 @@ divisive_classification_ensemble(train, group, ntree = 100, depth = 1000,
   stop_fct = stop_relative_filter_max_nodes(relative_filter = 0, max_nodes =
   depth), filter_fct = entropy_filter)
 
-predict_divisive_classification_ensemble(dc_ensemble, test)
+predict_divisive_classification_ensemble(dc_ensemble, test,
+  voting = c("average_probability", "majority"))
 }
 \arguments{
 \item{train}{Training data}
@@ -35,6 +36,8 @@ predict_divisive_classification_ensemble(dc_ensemble, test)
 \item{dc_ensemble}{Output of \code{divisive_classification_ensemble}}
 
 \item{test}{Test data}
+
+\item{voting}{Use average probability voting or majority voting}
 }
 \description{
 A divisive classification ensemble is an algorithm similar to random 

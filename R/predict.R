@@ -58,9 +58,9 @@ divide_pred <- function(cover, index, newdata, predict_fct){
 #' Extract group from predict cover
 #' 
 #' @param pc prediction cover
-#' @param group specify the group of the training set (not necessary if used in divisive_cover)
+#' @param group specify the group of the training set (optional)
+#' @param cover_mat specify cover matrix (optional)
 #' @export
-#' @importFrom dplyr group_by_ select_ do right_join ungroup
 #' @examples
 #' iris <- datasets::iris
 #' 
@@ -79,8 +79,6 @@ divide_pred <- function(cover, index, newdata, predict_fct){
 #' 
 #' pc <- predict(object = dc, newdata = test[, 1:4], 
 #'               predict_fct = relative_gap_prediction(relative_gap = 0.01))
-#' # plot
-#' sc <- subcover(pc, method = "snapshot", relative_filter = 0.6)
 #' 
 #' predicted <- group_from_predict_cover(pc)
 #' observed <- test[, 5]

@@ -16,6 +16,7 @@
 #' @param filter_fct Which filter function should be used (see \code{\link{filter_fct}})
 #' @param dc_ensemble Output of \code{divisive_classification_ensemble}
 #' @param test Test data
+#' @param voting Use average probability voting or majority voting
 #' 
 #' @examples
 #' # data
@@ -37,6 +38,7 @@
 #' # confusion matrix
 #' table(observed, predictions)
 #' @export
+#' @importFrom stats predict rnorm runif
 divisive_classification_ensemble <- function(train, group, ntree = 100, depth = 1000, delta_range = c(0, 0.2), 
                                              anchor_fct = anchor_extremal, 
                                              distance_fct = distance_cdist("euclidean"), 
@@ -59,8 +61,8 @@ random_division_classification <- function(train, group, depth, delta_range, anc
                                            distance_fct, stop_fct, filter_fct){
   # sample data, features and relative gap
   rows <- sample(nrow(train), replace = TRUE)
-  weights <- runif(ncol(train))
-  relative_gap <- runif(1, delta_range[1], delta_range[2])
+  weights <- stats::runif(ncol(train))
+  relative_gap <- stats::runif(1, delta_range[1], delta_range[2])
   
   rotation <- random_rotation_matrix(ncol(train))
 
@@ -86,17 +88,31 @@ random_division_classification <- function(train, group, depth, delta_range, anc
 
 #' @rdname divisive_classification_ensemble
 #' @export
-predict_divisive_classification_ensemble <- function(dc_ensemble, test){
+predict_divisive_classification_ensemble <- function(dc_ensemble, test, 
+                                                     voting = c("average_probability", "majority")){
   individual_predictions <- lapply(dc_ensemble, predict_dc_probabilities, test = test)
-  # predictions
-  predictions <- sapply(individual_predictions, identity)
   # voting
-  majority_voting <- majority_voting(predictions)  
+  voting <- match.arg(voting)
+  # class prediction
+  predicted_class <- switch(voting, 
+                            majority = majority_voting(individual_predictions), 
+                            average_probability = average_probability_voting(individual_predictions))
   # return
-  majority_voting
+  predicted_class
+}
+
+average_probability_voting <- function(predictions){
+  unique_groups <- levels(factor(unlist(predictions)))
+  predictions <- lapply(predictions, function(x){
+    attr(x, "probabilities")[, unique_groups]
+  })
+  average_probabilities <- Reduce("+", predictions) / length(predictions)
+  predicted <- unique_groups[apply(average_probabilities, 1, which.max)]
+  return(predicted)
 }
 
 majority_voting <- function(predictions){
+  predictions <- sapply(predictions, identity)
   apply(predictions, 1, function(x){
     uniqv <- unique(x)
     tab <- tabulate(match(x, uniqv))
@@ -137,7 +153,7 @@ print.divisive_ensemble <- function(x, ...){
 
 # random rotation matrix (source: Blaser & Fryzlewicz. Random Rotation Ensembles. 2016.)
 random_On <- function(d){
-  QR <- qr(matrix(rnorm(d^2), ncol = d))
+  QR <- qr(matrix(stats::rnorm(d^2), ncol = d))
   M <- qr.Q(QR) %*% diag(sign(diag(qr.R(QR))))
   return(M)
 }

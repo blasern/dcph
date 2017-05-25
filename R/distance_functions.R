@@ -20,15 +20,16 @@
 #' @param X,Y indices
 #' @name distance_fct
 #' @export
+#' @importFrom rdist cdist
 distance_cdist <- function(metric = "euclidean"){
   function(data, X, Y){
-    cdist(data[X, , drop = FALSE], data[Y, , drop = FALSE], metric = metric)
+    rdist::cdist(data[X, , drop = FALSE], data[Y, , drop = FALSE], metric = metric)
   }
 }
 #' @rdname distance_fct
 #' @export
 distance_euclidean <- function(data, X, Y){
-  cdist(data[X, , drop = FALSE], data[Y, , drop = FALSE], "euclidean")
+  rdist::cdist(data[X, , drop = FALSE], data[Y, , drop = FALSE], "euclidean")
 }
 #' @rdname distance_fct
 #' @export

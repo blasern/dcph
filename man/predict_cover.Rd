@@ -21,7 +21,9 @@ group_from_predict_cover(pc, group = NULL, cover_mat = NULL)
 
 \item{pc}{prediction cover}
 
-\item{group}{specify the group of the training set (not necessary if used in divisive_cover)}
+\item{group}{specify the group of the training set (optional)}
+
+\item{cover_mat}{specify cover matrix (optional)}
 }
 \description{
 Predict in which subsets new data come to lie when given a previous
@@ -47,8 +49,6 @@ dc <- divisive_cover(data = train[, 1:4],
 
 pc <- predict(object = dc, newdata = test[, 1:4], 
               predict_fct = relative_gap_prediction(relative_gap = 0.01))
-# plot
-sc <- subcover(pc, method = "snapshot", relative_filter = 0.6)
 
 predicted <- group_from_predict_cover(pc)
 observed <- test[, 5]
