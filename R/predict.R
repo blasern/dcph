@@ -88,8 +88,6 @@ divide_pred <- function(cover, index, newdata, predict_fct){
 #' table(observed, predicted)
 #' @rdname predict_cover
 group_from_predict_cover <- function(pc, group = NULL){
-  `%>%` <- dplyr::`%>%`
-  . <- NULL
   # use external nodes
   sc <- subcover(pc, method = "external")
   # check group
@@ -98,26 +96,25 @@ group_from_predict_cover <- function(pc, group = NULL){
   }
   # cover matrix
   cpm <- cover_predicted_matrix(sc)
-  # find groups
-  cpm_df <- as.data.frame(cpm)
+  cm <- cover_matrix(sc)
+  # cover distance between predicted points and original points
+  distance <- rdist::cdist(cpm, cm, metric = "minkowski", p = 1)
+  # get unique groups
   unique_groups <- unique(group)
-  cpm_df %>% 
-    dplyr::group_by_(.dots = colnames(cpm_df)) %>% 
-    dplyr::do({
-      subsets <- unlist(.[1, ])
-      possible_groups <- group[unlist(lapply(sc@subsets[which(subsets == 1)], slot, "indices"))]
-      tab <- tabulate(match(possible_groups, unique_groups), nbins = length(unique_groups))
-      # add predicted group
-      data.frame(predicted_group = unique_groups[which.max(tab)])
-    }) %>% 
-    dplyr::right_join(cpm_df, by = colnames(cpm_df)) %>%
-    dplyr::ungroup() %>% 
-    dplyr::select_("predicted_group") %>%
-    unlist %>%
-    unname
+  # calculate group probabilities
+  probabilities <- t(apply(distance, 1, function(x, group, all_groups){
+    indices <- which(x == min(x))
+    possible_groups <- group[indices]
+    table(factor(possible_groups, all_groups))/length(possible_groups)
+  }, group = group, all_groups = unique_groups))
+  # get group
+  predicted <- unique_groups[apply(probabilities, 1, which.max)]
+  attr(predicted, "probabilities") <- probabilities
+  return(predicted)
 }
 
 group_from_predict_matrix <- function(pc, pred, mode = c("predict", "OOB")){
+  browser()
   `%>%` <- dplyr::`%>%`
   . <- NULL
   # match mode
