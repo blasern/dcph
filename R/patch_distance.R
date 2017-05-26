@@ -27,16 +27,18 @@
 #' # distance
 #' patch_cdist(data_matrix, patches, patches)
 #' patch_hausdorff_dist(data_matrix, patches, patches)
+#' patch_centroid_dist(data_matrix, patches, patches)
 #' 
 #' @importFrom rdist cdist
 #' @export
+#' @name patch_dist
 patch_cdist <- function(data, X, Y, metric = "jaccard"){
   rdist::cdist(t(patch_matrix(X, n = nrow(data))), 
                t(patch_matrix(Y, n = nrow(data))), 
                metric = metric)
 }
 
-#' @rdname patch_cdist
+#' @rdname patch_dist
 #' @export
 patch_hausdorff_dist <- function(data, X, Y, metric = "euclidean"){
   matrix(mapply(pointwise_patch_hausdorff, 
@@ -62,3 +64,17 @@ hausdorff_dist <- function (P, Q, metric = "euclidean")
   return(max(dhd_PQ, dhd_QP))
 }
   
+#' @rdname patch_dist
+#' @export
+patch_centroid_dist <- function(data, X, Y, metric = "euclidean"){
+  cdist(centroid(data, X),
+        centroid(data, Y),
+        metric=metric)
+}
+
+centroid <- function(data, X){
+  do.call(rbind, 
+          lapply(X, function(x){
+            colMeans(data[slot(x, "indices"), ])
+          }))
+}
