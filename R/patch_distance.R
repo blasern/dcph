@@ -21,9 +21,12 @@
 #'                      division_fct = relative_gap_division(0.05), 
 #'                      stop_fct = stop_relative_filter(0.5))
 #' 
-#' # distance of external nodes
+#' # external patches
 #' patches <- slot(subcover(dc), "subsets")
+#' 
+#' # distance
 #' patch_cdist(data_matrix, patches, patches)
+#' patch_hausdorff_dist(data_matrix, patches, patches)
 #' 
 #' @importFrom rdist cdist
 #' @export
@@ -33,3 +36,29 @@ patch_cdist <- function(data, X, Y, metric = "jaccard"){
                metric = metric)
 }
 
+#' @rdname patch_cdist
+#' @export
+patch_hausdorff_dist <- function(data, X, Y, metric = "euclidean"){
+  matrix(mapply(pointwise_patch_hausdorff, 
+                rep(X, times = length(Y)), 
+                rep(Y, each = length(X)), 
+                MoreArgs = list(data = data, metric = metric)), 
+         nrow = length(X), 
+         ncol = length(Y))
+}
+  
+pointwise_patch_hausdorff <- function(data, P, Q, metric = "euclidean"){
+  u <- data[P@indices, , drop = FALSE]
+  v <- data[Q@indices, , drop = FALSE]
+  hausdorff_dist(u, v, metric = metric)
+}
+
+hausdorff_dist <- function (P, Q, metric = "euclidean") 
+{
+  # inspired by pracma::hausdorff_dist
+  D <- cdist(P, Q, metric = metric)
+  dhd_PQ <- max(apply(D, 1, min))
+  dhd_QP <- max(apply(D, 2, min))
+  return(max(dhd_PQ, dhd_QP))
+}
+  

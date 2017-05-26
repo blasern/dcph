@@ -2,9 +2,12 @@
 % Please edit documentation in R/patch_distance.R
 \name{patch_cdist}
 \alias{patch_cdist}
+\alias{patch_hausdorff_dist}
 \title{patch distances}
 \usage{
 patch_cdist(data, X, Y, metric = "jaccard")
+
+patch_hausdorff_dist(data, X, Y, metric = "euclidean")
 }
 \arguments{
 \item{data}{Original data}
@@ -31,8 +34,11 @@ dc <- divisive_cover(data = data_matrix,
                      division_fct = relative_gap_division(0.05), 
                      stop_fct = stop_relative_filter(0.5))
 
-# distance of external nodes
+# external patches
 patches <- slot(subcover(dc), "subsets")
+
+# distance
 patch_cdist(data_matrix, patches, patches)
+patch_hausdorff_dist(data_matrix, patches, patches)
 
 }
