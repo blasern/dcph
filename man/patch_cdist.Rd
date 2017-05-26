@@ -4,13 +4,12 @@
 \alias{patch_cdist}
 \title{patch distances}
 \usage{
-patch_cdist(patches, X = 1:length(patches), Y = 1:length(patches),
-  metric = "jaccard")
+patch_cdist(data, X, Y, metric = "jaccard")
 }
 \arguments{
-\item{patches}{Patches to calculate distance from}
+\item{data}{Original data}
 
-\item{X, Y}{Indices}
+\item{X, Y}{Patches to calculate distance from}
 
 \item{metric}{Used metric}
 }
@@ -33,6 +32,7 @@ dc <- divisive_cover(data = data_matrix,
                      stop_fct = stop_relative_filter(0.5))
 
 # distance of external nodes
-patch_cdist(slot(subcover(dc), "subsets"))
+patches <- slot(subcover(dc), "subsets")
+patch_cdist(data_matrix, patches, patches)
 
 }

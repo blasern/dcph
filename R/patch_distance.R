@@ -2,8 +2,8 @@
 #' 
 #' Calculate the distances between patches
 #' 
-#' @param patches Patches to calculate distance from
-#' @param X,Y Indices
+#' @param data Original data
+#' @param X,Y Patches to calculate distance from
 #' @param metric Used metric
 #' 
 #' @examples
@@ -22,12 +22,14 @@
 #'                      stop_fct = stop_relative_filter(0.5))
 #' 
 #' # distance of external nodes
-#' patch_cdist(slot(subcover(dc), "subsets"))
+#' patches <- slot(subcover(dc), "subsets")
+#' patch_cdist(data_matrix, patches, patches)
 #' 
 #' @importFrom rdist cdist
 #' @export
-patch_cdist <- function(patches, X = 1:length(patches), Y = 1:length(patches), metric = "jaccard"){
-  rdist::cdist(t(patch_matrix(patches[X])), 
-               t(patch_matrix(patches[Y])), 
+patch_cdist <- function(data, X, Y, metric = "jaccard"){
+  rdist::cdist(t(patch_matrix(X, n = nrow(data))), 
+               t(patch_matrix(Y, n = nrow(data))), 
                metric = metric)
 }
+

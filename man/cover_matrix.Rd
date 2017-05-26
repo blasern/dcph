@@ -5,12 +5,14 @@
 \alias{predict_cover_matrix}
 \title{Cover matrix}
 \usage{
-cover_matrix(cover)
+cover_matrix(cover, n = NULL)
 
-predict_cover_matrix(cover)
+predict_cover_matrix(cover, n = NULL)
 }
 \arguments{
 \item{cover}{A cover}
+
+\item{n}{Data size}
 }
 \description{
 Calculate the n * m matrix C, where n is the number of data points and m is the 
