@@ -7,12 +7,20 @@
 #' @param cover A cover
 #' @export
 cover_matrix <- function(cover){
+  patch_matrix(cover@subsets)
+}
+
+patch_matrix <- function(patches){
+  indices_matrix(lapply(patches, slot, "indices"))
+}
+
+indices_matrix <- function(indices){
   # get number of points
-  npoints <- length(unique(unlist(lapply(cover@subsets, slot, "indices"))))
+  npoints <- length(unique(unlist(indices)))
   # calculate cover matrix
-  sapply(cover@subsets, function(x, npoints){
+  sapply(indices, function(x, npoints){
     vec <- rep(0, npoints)
-    vec[x@indices] <- 1
+    vec[x] <- 1
     vec
   }, npoints = npoints)
 }
@@ -20,12 +28,5 @@ cover_matrix <- function(cover){
 #' @rdname cover_matrix
 #' @export
 predict_cover_matrix <- function(cover){
-  # get number of points
-  npoints <- length(unique(unlist(lapply(cover@subsets, slot, "predicted"))))
-  # calculate cover matrix
-  sapply(cover@subsets, function(x, npoints){
-    vec <- rep(0, npoints)
-    vec[x@predicted] <- 1
-    vec
-  }, npoints = npoints)
+  indices_matrix(lapply(cover@subsets, slot, "predicted"))
 }
