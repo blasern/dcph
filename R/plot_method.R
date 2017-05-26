@@ -13,6 +13,38 @@
 #' @author Nello Blaser
 #' @keywords plotting
 #' @seealso \code{\link{cover-class}}, \code{\link{subcover}}
+#' @examples
+#' # generate sample data
+#' rcircle <- function(N, r, sd){
+#'   radius <- rnorm(N, r, sd)
+#'   angle <- runif(N, 0, 2 * pi)
+#'   data.frame(x = radius * cos(angle), 
+#'              y = radius * sin(angle))
+#' }
+#' data_matrix <- rcircle(200, 1, .1)
+#' 
+#' # calculate divisive cover
+#' dc <- divisive_cover(data = data_matrix,
+#'                      division_fct = relative_gap_division(0.05), 
+#'                      stop_fct = stop_relative_filter(0.5))
+#' 
+#' # external nodes
+#' sc <- subcover(dc)
+#' 
+#' # distance
+#' patches <- slot(sc, "subsets")
+#' d_centroid <- patch_centroid_dist(data_matrix, patches, patches)
+#' 
+#' # colors 
+#' coloring <- cover_coloring(sc, color_values = data_matrix[, 1], FUN = median)
+#' 
+#' # plot
+#' \dontrun{
+#'   plot(sc, coloring = coloring)
+#'   # custom layout
+#'   plot(sc, coloring = coloring, layout = igraph::layout_with_kk)
+#'   plot(sc, coloring = coloring, layout = igraph::norm_coords(cmdscale(d_centroid)))
+#' }
 #' @importFrom igraph graph_from_adjacency_matrix plot.igraph E
 #' @method plot cover
 #' @export
