@@ -38,7 +38,7 @@ remove_subsets <- function(x){
   is_subset[which(adjmat == dimmat, arr.ind = TRUE)[, 1]] <- TRUE
   x@subsets <- x@subsets[!is_subset]
   # update internal and external nodes
-  simple <- which(!is.subset)
+  simple <- which(!is_subset)
   internal_nodes <- match(x@internal_nodes, simple)
   x@internal_nodes <- internal_nodes[!is.na(internal_nodes)]
   external_nodes <- match(x@external_nodes, simple)
