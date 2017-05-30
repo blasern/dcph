@@ -10,6 +10,6 @@
 #' @param representation Boundary matrix representation from PHAT
 #' @param reduction Reduction method from PHAT
 persistence_from_cover <- function(cover, max_dim, representation, reduction) {
-    .Call('dcph_persistence_from_cover', PACKAGE = 'dcph', cover, max_dim, representation, reduction)
+    .Call(dcph_persistence_from_cover, cover, max_dim, representation, reduction)
 }
 
