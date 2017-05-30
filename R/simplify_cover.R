@@ -17,6 +17,12 @@ simplify_cover <- function(x, method = c("none", "duplicates", "subsets")){
 remove_duplicates <- function(x){
   simple <- which(!duplicated(lapply(lapply(x@subsets, slot, "indices"), sort)))
   x@subsets <- x@subsets[simple]
+  # update internal and external nodes
+  internal_nodes <- match(x@internal_nodes, simple)
+  x@internal_nodes <- internal_nodes[!is.na(internal_nodes)]
+  external_nodes <- match(x@external_nodes, simple)
+  x@external_nodes <- external_nodes[!is.na(external_nodes)]
+  # return 
   attr(x, "simple") <- simple
   x
 }
@@ -31,6 +37,13 @@ remove_subsets <- function(x){
   #
   is_subset[which(adjmat == dimmat, arr.ind = TRUE)[, 1]] <- TRUE
   x@subsets <- x@subsets[!is_subset]
+  # update internal and external nodes
+  simple <- which(!is.subset)
+  internal_nodes <- match(x@internal_nodes, simple)
+  x@internal_nodes <- internal_nodes[!is.na(internal_nodes)]
+  external_nodes <- match(x@external_nodes, simple)
+  x@external_nodes <- external_nodes[!is.na(external_nodes)]
+  # return 
   attr(x, "simple") <- attr(x, "simple")[!is_subset]
   x
 }
