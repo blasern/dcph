@@ -17,8 +17,6 @@
 #' 
 #' @param relative_factor corresponds to (1-2 * delta)/(1+2 * delta)
 #' @param relative_gap delta-parameter for delta-filtered cover (0 < delta <= 1/2)
-#' @param euclidean logical, if TRUE then (1-delta)/(1+delta) is used instead of 
-#' (1-2 * delta)/(1+2 * delta)
 #' @name division_fct
 #' @export
 relative_factor_division <- function(relative_factor){
@@ -42,11 +40,6 @@ relative_factor_division <- function(relative_factor){
 
 #' @rdname division_fct
 #' @export
-relative_gap_division <- function(relative_gap, euclidean = FALSE){
-  if (euclidean){
-    return(relative_factor_division((1-relative_gap)/(1+relative_gap)))
-  }
-  else {
-    return(relative_factor_division((1-2 * relative_gap)/(1+2 * relative_gap)))
-  }
+relative_gap_division <- function(relative_gap){
+  return(relative_factor_division((1-2 * relative_gap)/(1+2 * relative_gap)))
 }

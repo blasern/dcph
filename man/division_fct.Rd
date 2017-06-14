@@ -8,15 +8,12 @@
 \usage{
 relative_factor_division(relative_factor)
 
-relative_gap_division(relative_gap, euclidean = FALSE)
+relative_gap_division(relative_gap)
 }
 \arguments{
 \item{relative_factor}{corresponds to (1-2 * delta)/(1+2 * delta)}
 
 \item{relative_gap}{delta-parameter for delta-filtered cover (0 < delta <= 1/2)}
-
-\item{euclidean}{logical, if TRUE then (1-delta)/(1+delta) is used instead of 
-(1-2 * delta)/(1+2 * delta)}
 }
 \description{
 This function does the actual division in divisive cover.

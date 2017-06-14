@@ -75,7 +75,7 @@ random_division_classification <- function(train, group, depth, delta_range, anc
                        stop_fct = stop_fct, 
                        anchor_fct = anchor_fct, 
                        filter_fct = filter_fct, 
-                       division_fct = relative_gap_division(relative_gap, euclidean = TRUE))
+                       division_fct = relative_gap_division(relative_gap))
                        
   skelet <- cover_skeleton(dc)
   sc <- subcover(dc)
@@ -127,7 +127,7 @@ predict_dc_probabilities <- function(dc_list, test){
   
   # predict
   pc <- predict(object = dc_list$skelet, newdata = used_test, 
-                predict_fct = relative_gap_prediction(relative_gap = dc_list$relative_gap, euclidean = TRUE))
+                predict_fct = relative_gap_prediction(relative_gap = dc_list$relative_gap))
   group_from_predict_cover(pc, group = dc_list$group, cover_mat = dc_list$cover_mat)
 }
 
