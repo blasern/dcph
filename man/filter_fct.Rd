@@ -39,6 +39,9 @@ two anchor points.
 The function \code{cardinality_filter} returns the cardinality of the
 subset. 
 
+The function \code{entropy_filter} returns the entropy of 
+elements in a subset based on group affiliation.
+
 The function \code{classification_filter} returns the proportion of 
 elements in a subset that do not belong to the largest group.
 }

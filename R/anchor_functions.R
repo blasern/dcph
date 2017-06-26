@@ -7,6 +7,10 @@
 #' furthest apart. Use this function together with \code{\link{distance_matrix}}
 #' as distance function. 
 #' 
+#' The function \code{anchor_decision} returns the two points that are 
+#' furthest apart under the L-infinity distance. The distance function will
+#' be ignored. 
+#' 
 #' The function \code{anchor_heuristic_extremal} returns two points that 
 #' approximate extremal points. Use this function together with
 #' \code{\link{distance_cdist}} or \code{\link{distance_euclidean}}. 
@@ -31,6 +35,14 @@
 #' @export
 anchor_extremal <- function(points, data, distance_fct, ...){
   points[arrayInd(which.max(distance_fct(data, points, points)), rep(length(points), 2))]
+}
+
+#' @rdname anchor_fct
+#' @export
+anchor_decision <- function(points, data, distance_fct, ...){
+  ares <- apply(data[points, , drop = FALSE], 2, function(x) c(which.min(x), which.max(x), diff(range(x))))
+  anchor_indices <- ares[c(1, 2), which.max(ares[3, ])]
+  points[anchor_indices]
 }
 
 #' @rdname anchor_fct

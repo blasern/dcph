@@ -3,6 +3,7 @@
 \name{anchor_fct}
 \alias{anchor_fct}
 \alias{anchor_extremal}
+\alias{anchor_decision}
 \alias{anchor_heuristic_extremal}
 \alias{anchor_random_extremal}
 \alias{anchor_classify}
@@ -11,6 +12,8 @@
 \title{Anchor functions for divisive cover}
 \usage{
 anchor_extremal(points, data, distance_fct, ...)
+
+anchor_decision(points, data, distance_fct, ...)
 
 anchor_heuristic_extremal(points, data, distance_fct, ...)
 
@@ -40,6 +43,10 @@ Find the anchor points used to divide a subset.
 The function \code{anchor_extremal} returns the two points that are 
 furthest apart. Use this function together with \code{\link{distance_matrix}}
 as distance function. 
+
+The function \code{anchor_decision} returns the two points that are 
+furthest apart under the L-infinity distance. The distance function will
+be ignored. 
 
 The function \code{anchor_heuristic_extremal} returns two points that 
 approximate extremal points. Use this function together with

@@ -52,15 +52,22 @@
 #'                       data = data_matrix,
 #'                       division_fct = relative_gap_division(0.05),
 #'                       stop_fct = stop_max_nodes(20))
+#' dc3 <- divisive_cover(data = data_matrix,
+#'                       distance_fct = distance_cdist(metric = "maximum"), 
+#'                       division_fct = decision_gap_division(0.1), 
+#'                       anchor_fct = anchor_decision, 
+#'                       stop_fct = stop_max_nodes(50))
 #' 
 #' # get one snapshot for plotting
-#' ddc1 <- subcover(dc1, relative_filter = 0, method = "snapshot")
-#' ddc2 <- subcover(dc2, relative_filter = 0, method = "snapshot")
+#' ddc1 <- subcover(dc1)
+#' ddc2 <- subcover(dc2)
+#' ddc3 <- subcover(dc3)
 #' 
 #' \dontrun{
 #' plot(data_matrix)
 #' plot(ddc1)
 #' plot(ddc2)
+#' plot(ddc3)
 #' }
 #' @export
 divisive_cover <- function(cover = NULL,
