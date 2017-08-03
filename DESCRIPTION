@@ -16,7 +16,8 @@ Imports:
     ggplot2,
     infotheo,
     rdist,
-    combinat
+    combinat, 
+    scales
 Suggests:
     testthat, 
     datasets

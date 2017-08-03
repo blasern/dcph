@@ -88,8 +88,8 @@ plot_core <- function(cover, adjacency, label = NA, coloring = NULL, legend = TR
     igraph::plot.igraph(g1, 
                         vertex.label = label, 
                         vertex.color = coloring,
-                        edge.width = resize(igraph::E(g1)$weight, min = 1, max = 5), 
-                        vertex.size = resize(sapply(lapply(cover@subsets, slot, "indices"), length), min = 10, max = 20), 
+                        edge.width = scales::rescale(igraph::E(g1)$weight, to = c(1, 5)), 
+                        vertex.size = scales::rescale(sapply(lapply(cover@subsets, slot, "indices"), length), to = c(10, 20)), 
                         ...
     )
     if (legend && !is.null(attr(coloring, "legend"))){
@@ -102,8 +102,8 @@ plot_core <- function(cover, adjacency, label = NA, coloring = NULL, legend = TR
     igraph::tkplot(g1, 
                    vertex.label = label, 
                    vertex.color = coloring,
-                   edge.width = resize(igraph::E(g1)$weight, min = 1, max = 5), 
-                   vertex.size = resize(sapply(lapply(cover@subsets, slot, "indices"), length), min = 10, max = 20), 
+                   edge.width = scales::rescale(igraph::E(g1)$weight, to = c(1, 5)), 
+                   vertex.size = scales::rescale(sapply(lapply(cover@subsets, slot, "indices"), length), to = c(10, 20)), 
                    ...
     )
   }
@@ -116,19 +116,22 @@ plot_core <- function(cover, adjacency, label = NA, coloring = NULL, legend = TR
 #' @param x cover
 #' @param color_values value for each row
 #' @param FUN summary function 
+#' @param color_value_range range of color values
 #' @param ... other orguments passed to FUN
 #' @importFrom RColorBrewer brewer.pal
 #' @importFrom grDevices colorRamp rgb
 #' @importFrom stats quantile var
+#' @importFrom scales rescale
 #' @export
-cover_coloring <- function(x, color_values, FUN = mean, ...){
+cover_coloring <- function(x, color_values, FUN = mean, color_value_range = range(color_values), ...){
   node_values <- sapply(lapply(x@subsets, slot, "indices"), 
                         function(point) FUN(color_values[point], ...))
-  resized_node_values <- resize(node_values, 0, 1)
+  resized_node_values <- scales::rescale(node_values, to = c(0, 1), from = color_value_range)
+  
   legend_values <- seq(min(node_values, na.rm = TRUE), max(node_values, na.rm = TRUE), length = 5)
   
   cols <- get_color(resized_node_values)
-  legend_cols <- get_color(resize(legend_values, 0, 1))
+  legend_cols <- get_color(scales::rescale(legend_values, to = c(0, 1), from = color_value_range))
   
   attr(cols, "legend") <- data.frame(value = legend_values, 
                                      color = legend_cols, 
@@ -146,26 +149,16 @@ get_color <- function(values){
 #' @export
 predict_coloring <- function(x){
   node_legend_values <- sapply(lapply(x@subsets, slot, "predicted"), length)
-  node_values <- resize(node_legend_values, 0, 1)
-  legend_values <- seq(min(node_legend_values), max(node_legend_values), length = 5)
+  max_value <- length(unique(unlist(lapply(x@subsets, slot, "predicted"))))
+  node_values <- scales::rescale(node_legend_values, to = c(0, 1), from = c(0, max_value))
+  legend_values <- seq(0, 1, length = 5)
   
   cols <- get_color(node_values)
-  legend_cols <- get_color(resize(legend_values, 0, 1))
+  legend_cols <- get_color(legend_values)
   
   attr(cols, "legend") <- data.frame(value = legend_values, 
                                      color = legend_cols, 
                                      stringsAsFactors = FALSE)
   
   return(cols)
-}
-
-
-# function to resize nodes, edges, colors
-resize <- function(x, min, max){
-  if (length(x) == 0) return(NULL)
-  if (length(x) == 1) return((max + min)/2)
-  if (all(is.na(x))) return(x)
-  if (stats::var(x, na.rm = TRUE) == 0) return((max + min)/2)
-  lambda <- (max - min)/ diff(range(x, na.rm = TRUE))
-  min + (x - min(x, na.rm = TRUE)) * lambda
 }

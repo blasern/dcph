@@ -5,7 +5,8 @@
 \alias{predict_coloring}
 \title{Generate coloring for cover}
 \usage{
-cover_coloring(x, color_values, FUN = mean, ...)
+cover_coloring(x, color_values, FUN = mean,
+  color_value_range = range(color_values), ...)
 
 predict_coloring(x)
 }
@@ -15,6 +16,8 @@ predict_coloring(x)
 \item{color_values}{value for each row}
 
 \item{FUN}{summary function}
+
+\item{color_value_range}{range of color values}
 
 \item{...}{other orguments passed to FUN}
 }
