@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/blasern/dcph.svg?branch=master)](https://travis-ci.org/blasern/dcph)
+
 # Divisive Cover Persistent Homology
 
 ## Description
