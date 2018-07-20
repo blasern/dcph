@@ -7,7 +7,7 @@ using namespace Rcpp;
 
 // persistence_from_cover
 Rcpp::NumericMatrix persistence_from_cover(Rcpp::S4 cover, int max_dim, Rcpp::String representation, Rcpp::String reduction);
-RcppExport SEXP dcph_persistence_from_cover(SEXP coverSEXP, SEXP max_dimSEXP, SEXP representationSEXP, SEXP reductionSEXP) {
+RcppExport SEXP _dcph_persistence_from_cover(SEXP coverSEXP, SEXP max_dimSEXP, SEXP representationSEXP, SEXP reductionSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;

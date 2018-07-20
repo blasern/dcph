@@ -3,15 +3,11 @@
 #include <stdlib.h> // for NULL
 #include <R_ext/Rdynload.h>
 
-/* FIXME: 
-   Check these declarations against the C/Fortran source code.
-*/
-
 /* .Call calls */
-extern SEXP dcph_persistence_from_cover(SEXP, SEXP, SEXP, SEXP);
+extern SEXP _dcph_persistence_from_cover(SEXP, SEXP, SEXP, SEXP);
 
 static const R_CallMethodDef CallEntries[] = {
-    {"dcph_persistence_from_cover", (DL_FUNC) &dcph_persistence_from_cover, 4},
+    {"_dcph_persistence_from_cover", (DL_FUNC) &_dcph_persistence_from_cover, 4},
     {NULL, NULL, 0}
 };
 
