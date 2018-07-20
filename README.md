@@ -4,7 +4,7 @@
 
 An R package for calculating persistent homology with the divisive cover algorithm described in:
 
-> N. Blaser, M. Brun (2017). [Filtered covers](https://arxiv.org/abs/1702.05350).
+> N. Blaser, M. Brun. Mathematics in Computer Science (2018). [Divisive Cover](https://doi.org/10.1007/s11786-018-0352-6).
 
 To install the latest version of this R package directly from github:
 
